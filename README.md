@@ -1,6 +1,3 @@
-<p align="center">
-   <img width="200" src="https://raw.githubusercontent.com/SvenTiigi/SwiftKit/gh-pages/readMeAssets/SwiftKitLogo.png" alt="TextPicker Logo">
-</p>
 
 <p align="center">
    <a href="https://developer.apple.com/swift/">
@@ -30,16 +27,11 @@
 
 - [x] ℹ️ Add TextPicker features
 
-## Example
-
-The example application is the best way to see `TextPicker` in action. Simply open the `TextPicker.xcodeproj` and run the `Example` scheme.
-
 ## Installation
 
 ### CocoaPods
 
-TextPicker is available through [CocoaPods](http://cocoapods.org). To install
-it, simply add the following line to your Podfile:
+TextPicker is available through [CocoaPods](http://cocoapods.org). To install it, simply add the following line to your Podfile:
 
 ```bash
 pod 'TextPicker'
@@ -52,7 +44,7 @@ pod 'TextPicker'
 To integrate TextPicker into your Xcode project using Carthage, specify it in your `Cartfile`:
 
 ```ogdl
-github "Kare Morstol/TextPicker"
+github "NotTooBadSoftware/textpicker"
 ```
 
 Run `carthage update` to build the framework and drag the built `TextPicker.framework` into your Xcode project. 
@@ -65,7 +57,7 @@ To integrate using Apple's [Swift Package Manager](https://swift.org/package-man
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/NotTooBadSoftware/TextPicker.git", from: "1.0.0")
+    .package(url: "https://github.com/NotTooBadSoftware/textpicker.git", from: "0.1.0")
 ]
 ```
 
