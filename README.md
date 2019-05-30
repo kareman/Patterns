@@ -19,13 +19,20 @@
 
 # TextPicker
 
-<p align="center">
-ℹ️ Short description of TextPicker
-</p>
+TextPicker is a Swift framework for searching for text patterns, similar in functionality to regex.
+
+Its primary goal is to be easier to read than regexes.
+
+There is also a [Mac application](https://nottoobadsoftware.com/textpicker/) of the same name, which can automatically generate TextPicker patterns.
 
 ## Features
 
-- [x] ℹ️ Add TextPicker features
+- [x] Easy to read
+- [x] Easy to write
+- [x] Cross-platform
+- [x] Negation 
+- [ ] Support human language features like word, sentence and paragraph.
+
 
 ## Installation
 
