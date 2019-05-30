@@ -15,7 +15,14 @@ jobs:
     - stage: Tests
       os: linux
       dist: trusty
-      name: Linux Tests
+      name: Linux Swift 5.0
+      env:
+        - SWIFT_BRANCH=swift-5.0-release
+        - SWIFT_VERSION=swift-5.0-RELEASE
+      install:
+        - mkdir swift
+        - curl https://swift.org/builds/$SWIFT_BRANCH/ubuntu1404/$SWIFT_VERSION/$SWIFT_VERSION-ubuntu14.04.tar.gz -s | tar -xz -C swift
+        - export PATH="$(pwd)/swift/$SWIFT_VERSION-ubuntu14.04/usr/bin:$PATH"
       script: swift test
     - stage: Tests
       os: osx
