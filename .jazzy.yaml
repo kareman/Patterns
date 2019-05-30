@@ -1,0 +1,7 @@
+# TextPicker document generator jazzy settings
+
+copyright: Copyright 2019 NotTooBad Software
+author: Kare Morstol
+xcodebuild_arguments: [-target, TextPicker-iOS]
+clean: true
+output: ./Documentation
