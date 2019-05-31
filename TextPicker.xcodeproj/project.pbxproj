@@ -24,6 +24,7 @@
 		BA5856D522A0531500161457 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5856D422A0531500161457 /* Group.swift */; };
 		BA5856D722A0532200161457 /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5856D622A0532200161457 /* General.swift */; };
 		BA5856D922A0536A00161457 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA5856D822A0536A00161457 /* TestHelpers.swift */; };
+		BADE0A9222A19C5400F885EC /* GeneralTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADE0A9122A19C5400F885EC /* GeneralTests.swift */; };
 		OBJ_28 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Parser.swift */; };
 		OBJ_29 /* SeriesParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* SeriesParser.swift */; };
 		OBJ_36 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
@@ -53,6 +54,7 @@
 		BA5856D422A0531500161457 /* Group.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
 		BA5856D622A0532200161457 /* General.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = General.swift; sourceTree = "<group>"; };
 		BA5856D822A0536A00161457 /* TestHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
+		BADE0A9122A19C5400F885EC /* GeneralTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralTests.swift; sourceTree = "<group>"; };
 		OBJ_10 /* SeriesParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesParser.swift; sourceTree = "<group>"; };
 		OBJ_13 /* ParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParserTests.swift; sourceTree = "<group>"; };
 		OBJ_14 /* SeriesParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesParserTests.swift; sourceTree = "<group>"; };
@@ -99,6 +101,7 @@
 				OBJ_13 /* ParserTests.swift */,
 				OBJ_14 /* SeriesParserTests.swift */,
 				BA5856D822A0536A00161457 /* TestHelpers.swift */,
+				BADE0A9122A19C5400F885EC /* GeneralTests.swift */,
 			);
 			name = TextPickerTests;
 			path = Tests/TextPickerTests;
@@ -253,6 +256,7 @@
 			files = (
 				OBJ_47 /* ParserTests.swift in Sources */,
 				OBJ_48 /* SeriesParserTests.swift in Sources */,
+				BADE0A9222A19C5400F885EC /* GeneralTests.swift in Sources */,
 				BA5856D922A0536A00161457 /* TestHelpers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -7,7 +7,7 @@
 //
 
 import Foundation
-@testable import TextPicker
+import TextPicker
 import XCTest
 
 let digits = OneOfParser.wholeNumber.set
