@@ -29,7 +29,6 @@
 		OBJ_36 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
 		OBJ_47 /* ParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* ParserTests.swift */; };
 		OBJ_48 /* SeriesParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_14 /* SeriesParserTests.swift */; };
-		OBJ_49 /* XCTestManifests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_15 /* XCTestManifests.swift */; };
 		OBJ_51 /* TextPicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "TextPicker::TextPicker::Product" /* TextPicker.framework */; };
 /* End PBXBuildFile section */
 
@@ -57,7 +56,6 @@
 		OBJ_10 /* SeriesParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesParser.swift; sourceTree = "<group>"; };
 		OBJ_13 /* ParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParserTests.swift; sourceTree = "<group>"; };
 		OBJ_14 /* SeriesParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesParserTests.swift; sourceTree = "<group>"; };
-		OBJ_15 /* XCTestManifests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestManifests.swift; sourceTree = "<group>"; };
 		OBJ_19 /* fastlane */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fastlane; sourceTree = SOURCE_ROOT; };
 		OBJ_20 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		OBJ_21 /* TextPicker.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = TextPicker.podspec; sourceTree = "<group>"; };
@@ -100,7 +98,6 @@
 			children = (
 				OBJ_13 /* ParserTests.swift */,
 				OBJ_14 /* SeriesParserTests.swift */,
-				OBJ_15 /* XCTestManifests.swift */,
 				BA5856D822A0536A00161457 /* TestHelpers.swift */,
 			);
 			name = TextPickerTests;
@@ -116,7 +113,7 @@
 			name = Products;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		OBJ_5 /*  */ = {
+		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
 				OBJ_6 /* Package.swift */,
@@ -128,7 +125,6 @@
 				OBJ_21 /* TextPicker.podspec */,
 				OBJ_22 /* README.md */,
 			);
-			name = "";
 			sourceTree = "<group>";
 		};
 		OBJ_7 /* Sources */ = {
@@ -218,7 +214,7 @@
 				English,
 				en,
 			);
-			mainGroup = OBJ_5 /*  */;
+			mainGroup = OBJ_5;
 			productRefGroup = OBJ_16 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -257,7 +253,6 @@
 			files = (
 				OBJ_47 /* ParserTests.swift in Sources */,
 				OBJ_48 /* SeriesParserTests.swift in Sources */,
-				OBJ_49 /* XCTestManifests.swift in Sources */,
 				BA5856D922A0536A00161457 /* TestHelpers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
