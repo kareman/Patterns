@@ -5,7 +5,7 @@
 //  Created by Kåre Morstøl on 18/05/2018.
 //
 
-@testable import TextPicker
+import TextPicker
 import XCTest
 
 class SeriesParserTests: XCTestCase {

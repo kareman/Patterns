@@ -145,7 +145,7 @@ public struct SubstringParser: Parser {
 }
 
 public struct OneOfParser: Parser {
-	let set: Group<Character>
+	public let set: Group<Character>
 
 	public let description: String
 	public var regex: String { return set.regex }
@@ -165,34 +165,37 @@ public struct OneOfParser: Parser {
 		return (index < input.endIndex && set.contains(input[index])) ? index ..< input.index(after: index) : nil
 	}
 
-	static let alphanumeric = OneOfParser(Group(description: "alphanumeric", regex: #"(?:\p{Alphabetic}|\p{Nd})"#,
+	public static let alphanumeric = OneOfParser(Group(
+		description: "alphanumeric", regex: #"(?:\p{Alphabetic}|\p{Nd})"#,
 		contains: { $0.isWholeNumber || $0.isLetter }))
-	static let wholeNumber = OneOfParser(Group(description: "wholeNumber", regex: #"\p{Nd}"#,
+	public static let wholeNumber = OneOfParser(Group(description: "wholeNumber", regex: #"\p{Nd}"#,
 		contains: (\Character.isWholeNumber).toFunc))
-	static let letter = OneOfParser(Group(description: "letter", regex: #"\p{Alphabetic}"#,
+	public static let letter = OneOfParser(Group(description: "letter", regex: #"\p{Alphabetic}"#,
 		contains: (\Character.isLetter).toFunc))
-	static let lowercaseLetter = OneOfParser(Group(description: "lowercaseLetter", regex: #"\p{Ll}"#,
+	public static let lowercaseLetter = OneOfParser(Group(description: "lowercaseLetter", regex: #"\p{Ll}"#,
 		contains: (\Character.isLowercase).toFunc))
-	static let newline = OneOfParser(Group(description: "newline", regex: #"\p{Zl}"#,
+	public static let newline = OneOfParser(Group(description: "newline", regex: #"\p{Zl}"#,
 		contains: (\Character.isNewline).toFunc))
-	static let punctuationCharacter = OneOfParser(Group(description: "punctuationCharacter", regex: #"\p{P}"#,
+	public static let punctuationCharacter = OneOfParser(Group(
+		description: "punctuationCharacter", regex: #"\p{P}"#,
 		contains: (\Character.isPunctuation).toFunc))
-	static let symbol = OneOfParser(Group(description: "symbol", regex: #"\p{S}"#,
+	public static let symbol = OneOfParser(Group(description: "symbol", regex: #"\p{S}"#,
 		contains: (\Character.isSymbol).toFunc))
-	static let uppercaseLetter = OneOfParser(Group(description: "uppercaseLetter", regex: #"\p{Lu}"#,
+	public static let uppercaseLetter = OneOfParser(Group(description: "uppercaseLetter", regex: #"\p{Lu}"#,
 		contains: (\Character.isUppercase).toFunc))
-	static let whitespaceOrNewline = OneOfParser(Group(description: "whitespaceOrNewline", regex: #"\p{White_Space}"#,
+	public static let whitespaceOrNewline = OneOfParser(Group(
+		description: "whitespaceOrNewline", regex: #"\p{White_Space}"#,
 		contains: (\Character.isWhitespace).toFunc))
 
 	public static let baseParsers: [OneOfParser] = [
 		alphanumeric, wholeNumber, letter, lowercaseLetter, newline, punctuationCharacter, symbol,
 		uppercaseLetter, whitespaceOrNewline]
 
-	static func parsers(for c: Character) -> [Parser] {
+	public static func parsers(for c: Character) -> [Parser] {
 		return OneOfParser.baseParsers.filter { $0.set.contains(c) }
 	}
 
-	static func parsers<S: Sequence>(for s: S) -> [Parser] where S.Element == Input.Element {
+	public static func parsers<S: Sequence>(for s: S) -> [Parser] where S.Element == Input.Element {
 		return OneOfParser.baseParsers.filter { $0.set.contains(contentsOf: s) }
 	}
 }
@@ -358,7 +361,7 @@ public struct NotParser: Parser {
 }
 
 extension Parser {
-	var not: NotParser {
+	public var not: NotParser {
 		return NotParser(parser: self)
 	}
 }

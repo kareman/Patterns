@@ -56,6 +56,8 @@ public struct SeriesParser: Parser {
 		public var regex = "()"
 		public let length: Int? = 0
 
+		public init() { }
+
 		public func parse(_ input: Parser.Input, at startindex: Parser.Input.Index) -> ParsedRange? {
 			assertionFailure("do not call this"); return nil
 		}
@@ -194,8 +196,8 @@ public struct SeriesParser: Parser {
 
 public extension SeriesParser {
 	struct Match {
-		let fullRange: ParsedRange
-		let marks: [Input.Index]
+		public let fullRange: ParsedRange
+		public let marks: [Input.Index]
 
 		public var range: ParsedRange {
 			return marks.isEmpty ? fullRange : marks.first! ..< marks.last!
