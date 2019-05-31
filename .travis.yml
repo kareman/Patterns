@@ -1,24 +1,35 @@
-
-notifications:
-  email:
-    on_success: change
-    on_failure: always
-
-language: swift
-
-stages:
-  - Tests
-  - Compatibility
-
-jobs:
+matrix:
   include:
-    - stage: Tests
+    - name: "Linux Swift 5.0.1"
       os: linux
+      language: generic
       dist: trusty
-      name: Linux Tests
-      script: swift test
-    - stage: Tests
+      sudo: required
+      env:
+        - SWIFT_BRANCH=swift-5.0.1-release
+        - SWIFT_VERSION=swift-5.0.1-RELEASE
+      install:
+        - mkdir swift
+        - curl https://swift.org/builds/$SWIFT_BRANCH/ubuntu1404/$SWIFT_VERSION/$SWIFT_VERSION-ubuntu14.04.tar.gz -s | tar -xz -C swift
+        - export PATH="$(pwd)/swift/$SWIFT_VERSION-ubuntu14.04/usr/bin:$PATH"
+
+    - name: "macOS Xcode 10.2"
       os: osx
       osx_image: xcode10.2
-      name: macOS Tests
-      script: swift test
+      language: generic
+      sudo: required
+      install: 
+        - gem install xcpretty-travis-formatter
+      script:
+        - swift --version
+        - swift package reset
+        - swift build
+        - swift test
+        - xcodebuild test -scheme TextPicker | xcpretty -f `xcpretty-travis-formatter`
+        - pod repo update --silent; pod lib lint --allow-warnings
+
+script:
+  - swift --version
+  - swift package reset
+  - swift build
+  - swift test

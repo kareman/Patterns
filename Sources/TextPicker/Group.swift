@@ -35,7 +35,7 @@ public extension Group {
 	}
 }
 
-import Foundation.NSRegularExpression
+import Foundation
 
 public extension Group where Element: Hashable {
 	init(contentsOf set: Set<Element>) {

@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import XCTest
 @testable import TextPicker
+import XCTest
 
 let digits = OneOfParser.wholeNumber.set
 let letters = OneOfParser.letter.set
@@ -50,11 +50,11 @@ class ParserTests: XCTestCase {
 
 	func testBeginningOfLineParser() throws {
 		let text = """
-			line 1
-			line 2
-			line 3
-			line 4
-			"""
+		line 1
+		line 2
+		line 3
+		line 4
+		"""
 		let parser: Parser = BeginningOfLineParser()
 		assertParseAll(parser, input: "", result: "", count: 1)
 		assertParseAll(parser, input: "\n", count: 2)
@@ -84,11 +84,11 @@ class ParserTests: XCTestCase {
 		assertParseAll(parser, input: "\n\n", count: 3)
 
 		let text = """
-			line 1
-			line 2
-			line 3
-			line 4
-			"""
+		line 1
+		line 2
+		line 3
+		line 4
+		"""
 		assertParseAll(parser, input: text, count: 4)
 		assertParseAll(
 			try SeriesParser(verify: SubstringParser(" "), SeriesParser.Bound(), SeriesParser.Skip(), SeriesParser.Bound(), EndOfLineParser()),
@@ -130,7 +130,7 @@ class ParserTests: XCTestCase {
 		let text = try! String(contentsOfFile: file, encoding: .utf8)
 		let startAt = text.range(of: "func testParseFile()")!.upperBound
 
-		let parser: Parser = try SeriesParser(verify: SeriesParser.Bound(),	SubstringParser("\tlet "), SeriesParser.Skip() ,SeriesParser.Bound(), SubstringParser("="))
+		let parser: Parser = try SeriesParser(verify: SeriesParser.Bound(), SubstringParser("\tlet "), SeriesParser.Skip(), SeriesParser.Bound(), SubstringParser("="))
 		let ranges = parser.parseAll(text, from: startAt)
 
 		XCTAssertEqual(ranges.count, 5)
