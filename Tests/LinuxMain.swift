@@ -1,7 +1,11 @@
+
 import XCTest
 
-import TextPickerTests
+@testable import TextPickerTests
 
-var tests = [XCTestCaseEntry]()
-tests += TextPickerTests.allTests()
+let tests: [XCTestCaseEntry] = [
+	testCase(ParserTests.allTests),
+	testCase(SeriesParserTests.allTests),
+]
+
 XCTMain(tests)

@@ -5,8 +5,8 @@
 //  Created by Kåre Morstøl on 18/05/2018.
 //
 
-import XCTest
 @testable import TextPicker
+import XCTest
 
 class SeriesParserTests: XCTestCase {
 	func testSeriesParserSimple() throws {
@@ -45,20 +45,20 @@ class SeriesParserTests: XCTestCase {
 			input: text, result: [" is ", " test "])
 
 		/*
-		assertParseAll(
-			try SeriesParser(verify:
-				SubstringParser(" "),
-				SeriesParser.Skip(),
-				SubstringParser("d")),
-			input: " ab cd", result: [" cd"])
+		 assertParseAll(
+		 try SeriesParser(verify:
+		 SubstringParser(" "),
+		 SeriesParser.Skip(),
+		 SubstringParser("d")),
+		 input: " ab cd", result: [" cd"])
 
-		assertParseAll(
-			try SeriesParser(verify:
-				SubstringParser(" "),
-				OneOfParser(Group(contentsOf: " ").inverted()).repeat(min: 1),
-				SubstringParser("d")),
-			input: " ab cd", result: [" cd"])
-		*/
+		 assertParseAll(
+		 try SeriesParser(verify:
+		 SubstringParser(" "),
+		 OneOfParser(Group(contentsOf: " ").inverted()).repeat(min: 1),
+		 SubstringParser("d")),
+		 input: " ab cd", result: [" cd"])
+		 */
 	}
 
 	func testSeriesParserWithRepeat() throws {
@@ -160,13 +160,13 @@ class SeriesParserTests: XCTestCase {
 
 	func testSkipWithRepeatingParser() throws {
 		let text = """
-			yes (a)
-			yes (aaaaa)
-			no (aaabaa)
-			no (woieru
-			lkjfd)
-			yes ()
-			"""
+		yes (a)
+		yes (aaaaa)
+		no (aaabaa)
+		no (woieru
+		lkjfd)
+		yes ()
+		"""
 
 		assertParseAll(
 			try SeriesParser(verify:
@@ -192,11 +192,11 @@ class SeriesParserTests: XCTestCase {
 
 	func testMatchBeginningOfLines() throws {
 		let text = """
-			airs
-			blip
-			cera user
-			dilled10 io
-			"""
+		airs
+		blip
+		cera user
+		dilled10 io
+		"""
 		let parser = try SeriesParser(verify: BeginningOfLineParser(), SeriesParser.Bound())
 		let m = Array(parser.matches(in: text[...]))
 
@@ -206,12 +206,12 @@ class SeriesParserTests: XCTestCase {
 
 	func testMatchEndOfLines() throws {
 		let text = """
-			airs
-			blip
-			cera user
-			dilled10 io
+		airs
+		blip
+		cera user
+		dilled10 io
 
-			"""
+		"""
 		var parser = try SeriesParser(verify: EndOfLineParser(), SeriesParser.Bound())
 		var m = Array(parser.matches(in: text[...]))
 		XCTAssertEqual(m.dropLast().map { text[$0.marks[0]] }, Array(repeating: Character("\n"), count: 4))
@@ -230,5 +230,8 @@ extension SeriesParserTests {
 		("testSeriesParserWithBounds", testSeriesParserWithBounds),
 		("testRepeatOrThenEndOfLine", testRepeatOrThenEndOfLine),
 		("testSeriesParserWithSkipAndBounds", testSeriesParserWithSkipAndBounds),
+		("testSkipWithRepeatingParser", testSkipWithRepeatingParser),
+		("testMatchBeginningOfLines", testMatchBeginningOfLines),
+		("testMatchEndOfLines", testMatchEndOfLines),
 	]
 }
