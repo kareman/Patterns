@@ -115,9 +115,10 @@ public struct SubstringParser: Parser {
 
 	public var length: Int? { return substring.count }
 
-	public init<S: Sequence>(_ substring: S) where S.Element == Character {
-		self.substring = Parser.Input(substring)
+	public init<S: Sequence>(_ sequence: S) where S.Element == Character {
+		self.substring = Parser.Input(sequence)
 		self.searchCache = SearchCache(pattern: self.substring)
+		assert(!self.substring.isEmpty, "Cannot have an empty SubstringParser.")
 	}
 
 	public init(_ substring: String) {
