@@ -64,7 +64,7 @@
 		OBJ_22 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		OBJ_9 /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
-		"TextPicker::TextPicker::Product" /* TextPicker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TextPicker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		"TextPicker::TextPicker::Product" /* TextPicker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = TextPicker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"TextPicker::TextPickerTests::Product" /* TextPickerTests.xctest */ = {isa = PBXFileReference; lastKnownFileType = file; path = TextPickerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -296,7 +296,7 @@
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = TextPicker;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nottoobadsoftware.TextPicker.framework;
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -327,7 +327,7 @@
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = TextPicker;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nottoobadsoftware.TextPicker.framework;
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
