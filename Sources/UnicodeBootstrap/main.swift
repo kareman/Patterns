@@ -18,18 +18,49 @@ func unicodeProperty<S: StringProtocol>(fromDataFile text: S) -> [(range: Closed
 	let rorhex4 = rhex4 <|> { $0 ... $0 } <^> hex4
 	let v = tuple <^> rorhex4 <* oneOrMore(whitespace) <* string("; ") <*> oneOrMore(not(" "))
 	let l = v <* oneOrMore(any())
-	return (text.split(separator: "\n"))
-		.compactMap {
-			try? parse(l, $0)
+	return text.split(separator: "\n").compactMap {
+		try? parse(l, $0)
+	}
+}
+
+extension Sequence {
+	func flatMapPairs(_ transform: (Element, Element) -> [Element]) -> [Element] {
+		var result = ContiguousArray<Element>()
+		result.reserveCapacity(underestimatedCount)
+		var iterator = self.makeIterator()
+		guard var current = iterator.next() else { return [] }
+
+		while let next = iterator.next() {
+			let transformation = transform(current, next)
+			result.append(contentsOf: transformation.dropLast())
+			guard let last = transformation.last ?? iterator.next() else { return Array(result) }
+			current = last
 		}
+		result.append(current)
+		return Array(result)
+	}
 }
 
 do {
+	print([1, 2, 4, 5, 7, 9, 10].flatMapPairs { a, b in
+		a + 1 == b ? [b] : [a, b]
+	})
 	let scripts = try String(contentsOf: getLocalURL(for: "Scripts.txt"))
 
 	let result = unicodeProperty(fromDataFile: scripts)
+	let properties = Dictionary(grouping: result, by: { $0.property })
+		.mapValues { $0.map { property in property.range } }
 
-	print(result)
+	var common = properties["Katakana"]!
+	print(common.count, common)
+	common = common.flatMapPairs { a, b in
+		a.upperBound + 1 == b.lowerBound ? [a.lowerBound ... b.upperBound] : [a, b]
+	}
+	print(common.count, common)
+
+	// let ranges = properties.values.sorted(by: { $0.count < $1.count })
+
+	// print(ranges)
 } catch {
 	print(error)
 }
