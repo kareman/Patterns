@@ -14,20 +14,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "TextPicker::TextPicker"
-               BuildableName = "TextPicker.framework"
-               BlueprintName = "TextPicker"
-               ReferencedContainer = "container:TextPicker.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "TextPicker::UnicodeBootstrap"
                BuildableName = "UnicodeBootstrap"
                BlueprintName = "UnicodeBootstrap"
@@ -42,16 +28,6 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "TextPicker::TextPickerTests"
-               BuildableName = "TextPickerTests.xctest"
-               BlueprintName = "TextPickerTests"
-               ReferencedContainer = "container:TextPicker.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <AdditionalOptions>
       </AdditionalOptions>
@@ -66,15 +42,16 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "TextPicker::TextPicker"
-            BuildableName = "TextPicker.framework"
-            BlueprintName = "TextPicker"
+            BlueprintIdentifier = "TextPicker::UnicodeBootstrap"
+            BuildableName = "UnicodeBootstrap"
+            BlueprintName = "UnicodeBootstrap"
             ReferencedContainer = "container:TextPicker.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>

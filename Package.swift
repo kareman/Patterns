@@ -24,5 +24,8 @@ let package = Package(
         .testTarget(
             name: "TextPickerTests",
             dependencies: ["TextPicker"]),
+				.target(
+					name: "UnicodeBootstrap",
+					dependencies: []),
     ]
 )
