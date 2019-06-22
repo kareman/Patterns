@@ -43,12 +43,12 @@ extension Sequence {
 
 func caseName(_ string: String) -> String {
 	var caseName = string.replacingOccurrences(of:  "_", with: "")
-	let firstLetter = caseName.removeFirst().lowercased()
+	let firstLetter = caseName.allSatisfy { $0.isUppercase } ? "" : caseName.removeFirst().lowercased()
 	return firstLetter + caseName
 }
 
 do {
-	let scripts = try String(contentsOf: getLocalURL(for: "Scripts.txt"))
+	let scripts = try String(contentsOf: getLocalURL(for: "WordBreakProperty.txt"))
 	let properties = Dictionary(grouping: unicodeProperty(fromDataFile: scripts), by: { $0.property })
 		.mapValues { ranges -> [ClosedRange<UInt32>] in
 			ranges.map { $0.range }
@@ -74,3 +74,4 @@ do {
 } catch {
 	print(error)
 }
+
