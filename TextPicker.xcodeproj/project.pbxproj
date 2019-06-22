@@ -9,11 +9,11 @@
 /* Begin PBXAggregateTarget section */
 		"TextPicker::TextPickerPackageTests::ProductTarget" /* TextPickerPackageTests */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = OBJ_77 /* Build configuration list for PBXAggregateTarget "TextPickerPackageTests" */;
+			buildConfigurationList = OBJ_78 /* Build configuration list for PBXAggregateTarget "TextPickerPackageTests" */;
 			buildPhases = (
 			);
 			dependencies = (
-				OBJ_80 /* PBXTargetDependency */,
+				OBJ_81 /* PBXTargetDependency */,
 			);
 			name = TextPickerPackageTests;
 			productName = TextPickerPackageTests;
@@ -21,43 +21,43 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		OBJ_100 /* FootlessParser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "FootlessParser::FootlessParser::Product" /* FootlessParser.framework */; };
-		OBJ_47 /* Converters.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_25 /* Converters.swift */; };
-		OBJ_48 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_26 /* Error.swift */; };
-		OBJ_49 /* Parser+Operators.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_27 /* Parser+Operators.swift */; };
-		OBJ_50 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_28 /* Parser.swift */; };
-		OBJ_51 /* Parsers.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_29 /* Parsers.swift */; };
-		OBJ_52 /* StringParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_30 /* StringParser.swift */; };
-		OBJ_59 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_31 /* Package.swift */; };
-		OBJ_65 /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* General.swift */; };
-		OBJ_66 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* Group.swift */; };
-		OBJ_67 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* Parser.swift */; };
-		OBJ_68 /* SeriesParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* SeriesParser.swift */; };
-		OBJ_75 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
-		OBJ_86 /* GeneralTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_18 /* GeneralTests.swift */; };
-		OBJ_87 /* ParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_19 /* ParserTests.swift */; };
-		OBJ_88 /* SeriesParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_20 /* SeriesParserTests.swift */; };
-		OBJ_89 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_21 /* TestHelpers.swift */; };
-		OBJ_91 /* TextPicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "TextPicker::TextPicker::Product" /* TextPicker.framework */; };
-		OBJ_98 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_15 /* main.swift */; };
+		OBJ_101 /* FootlessParser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "FootlessParser::FootlessParser::Product" /* FootlessParser.framework */; };
+		OBJ_48 /* Converters.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_26 /* Converters.swift */; };
+		OBJ_49 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_27 /* Error.swift */; };
+		OBJ_50 /* Parser+Operators.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_28 /* Parser+Operators.swift */; };
+		OBJ_51 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_29 /* Parser.swift */; };
+		OBJ_52 /* Parsers.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_30 /* Parsers.swift */; };
+		OBJ_53 /* StringParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_31 /* StringParser.swift */; };
+		OBJ_60 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_32 /* Package.swift */; };
+		OBJ_66 /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* General.swift */; };
+		OBJ_67 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* Group.swift */; };
+		OBJ_68 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* Parser.swift */; };
+		OBJ_69 /* SeriesParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* SeriesParser.swift */; };
+		OBJ_76 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
+		OBJ_87 /* GeneralTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_19 /* GeneralTests.swift */; };
+		OBJ_88 /* ParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_20 /* ParserTests.swift */; };
+		OBJ_89 /* SeriesParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_21 /* SeriesParserTests.swift */; };
+		OBJ_90 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_22 /* TestHelpers.swift */; };
+		OBJ_92 /* TextPicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "TextPicker::TextPicker::Product" /* TextPicker.framework */; };
+		OBJ_99 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_16 /* main.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		BABBFB7322BCFC2F00749F2E /* PBXContainerItemProxy */ = {
+		BACCFE0222BEDA27002B5104 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = OBJ_1 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = "FootlessParser::FootlessParser";
 			remoteInfo = FootlessParser;
 		};
-		BABBFB7422BCFC3200749F2E /* PBXContainerItemProxy */ = {
+		BACCFE0322BEDA27002B5104 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = OBJ_1 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = "TextPicker::TextPicker";
 			remoteInfo = TextPicker;
 		};
-		BABBFB7522BCFC3200749F2E /* PBXContainerItemProxy */ = {
+		BACCFE0422BEDA28002B5104 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = OBJ_1 /* Project object */;
 			proxyType = 1;
@@ -67,164 +67,165 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		BA51A91922BE988E00CD7724 /* WordBreakProperty.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = WordBreakProperty.txt; sourceTree = "<group>"; };
 		"FootlessParser::FootlessParser::Product" /* FootlessParser.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FootlessParser.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_10 /* Group.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
 		OBJ_11 /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
 		OBJ_12 /* SeriesParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesParser.swift; sourceTree = "<group>"; };
-		OBJ_14 /* Scripts.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Scripts.txt; sourceTree = "<group>"; };
-		OBJ_15 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		OBJ_18 /* GeneralTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralTests.swift; sourceTree = "<group>"; };
-		OBJ_19 /* ParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParserTests.swift; sourceTree = "<group>"; };
-		OBJ_20 /* SeriesParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesParserTests.swift; sourceTree = "<group>"; };
-		OBJ_21 /* TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
-		OBJ_25 /* Converters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Converters.swift; sourceTree = "<group>"; };
-		OBJ_26 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
-		OBJ_27 /* Parser+Operators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Parser+Operators.swift"; sourceTree = "<group>"; };
-		OBJ_28 /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
-		OBJ_29 /* Parsers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parsers.swift; sourceTree = "<group>"; };
-		OBJ_30 /* StringParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringParser.swift; sourceTree = "<group>"; };
-		OBJ_31 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; name = Package.swift; path = /Users/karemorstol/Programming/Xtracter/TextPicker/.build/checkouts/FootlessParser/Package.swift; sourceTree = "<group>"; };
-		OBJ_37 /* fastlane */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fastlane; sourceTree = SOURCE_ROOT; };
-		OBJ_38 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		OBJ_39 /* TextPicker.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = TextPicker.podspec; sourceTree = "<group>"; };
-		OBJ_40 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		OBJ_41 /* ci.bash */ = {isa = PBXFileReference; lastKnownFileType = text; path = ci.bash; sourceTree = "<group>"; };
+		OBJ_14 /* WordBreakProperty.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = WordBreakProperty.txt; sourceTree = "<group>"; };
+		OBJ_15 /* Scripts.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Scripts.txt; sourceTree = "<group>"; };
+		OBJ_16 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		OBJ_19 /* GeneralTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralTests.swift; sourceTree = "<group>"; };
+		OBJ_20 /* ParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParserTests.swift; sourceTree = "<group>"; };
+		OBJ_21 /* SeriesParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesParserTests.swift; sourceTree = "<group>"; };
+		OBJ_22 /* TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
+		OBJ_26 /* Converters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Converters.swift; sourceTree = "<group>"; };
+		OBJ_27 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		OBJ_28 /* Parser+Operators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Parser+Operators.swift"; sourceTree = "<group>"; };
+		OBJ_29 /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
+		OBJ_30 /* Parsers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parsers.swift; sourceTree = "<group>"; };
+		OBJ_31 /* StringParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringParser.swift; sourceTree = "<group>"; };
+		OBJ_32 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; name = Package.swift; path = /Users/karemorstol/Programming/Xtracter/TextPicker/.build/checkouts/FootlessParser/Package.swift; sourceTree = "<group>"; };
+		OBJ_38 /* fastlane */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fastlane; sourceTree = SOURCE_ROOT; };
+		OBJ_39 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		OBJ_40 /* TextPicker.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = TextPicker.podspec; sourceTree = "<group>"; };
+		OBJ_41 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		OBJ_42 /* ci.bash */ = {isa = PBXFileReference; lastKnownFileType = text; path = ci.bash; sourceTree = "<group>"; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		OBJ_9 /* General.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = General.swift; sourceTree = "<group>"; };
 		"TextPicker::TextPicker::Product" /* TextPicker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TextPicker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"TextPicker::TextPickerTests::Product" /* TextPickerTests.xctest */ = {isa = PBXFileReference; lastKnownFileType = file; path = TextPickerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		"TextPicker::UnicodeBootstrap::Product" /* UnicodeBootstrap */ = {isa = PBXFileReference; lastKnownFileType = text; path = UnicodeBootstrap; sourceTree = BUILT_PRODUCTS_DIR; };
+		"TextPicker::unicode_properties::Product" /* unicode_properties */ = {isa = PBXFileReference; lastKnownFileType = text; path = unicode_properties; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		OBJ_53 /* Frameworks */ = {
+		OBJ_100 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 0;
+			files = (
+				OBJ_101 /* FootlessParser.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		OBJ_54 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		OBJ_69 /* Frameworks */ = {
+		OBJ_70 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		OBJ_90 /* Frameworks */ = {
+		OBJ_91 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
 			files = (
-				OBJ_91 /* TextPicker.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		OBJ_99 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 0;
-			files = (
-				OBJ_100 /* FootlessParser.framework in Frameworks */,
+				OBJ_92 /* TextPicker.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		OBJ_13 /* UnicodeBootstrap */ = {
+		OBJ_13 /* unicode_properties */ = {
 			isa = PBXGroup;
 			children = (
-				BA51A91922BE988E00CD7724 /* WordBreakProperty.txt */,
-				OBJ_14 /* Scripts.txt */,
-				OBJ_15 /* main.swift */,
+				OBJ_14 /* WordBreakProperty.txt */,
+				OBJ_15 /* Scripts.txt */,
+				OBJ_16 /* main.swift */,
 			);
-			name = UnicodeBootstrap;
-			path = Sources/UnicodeBootstrap;
+			name = unicode_properties;
+			path = Sources/unicode_properties;
 			sourceTree = SOURCE_ROOT;
 		};
-		OBJ_16 /* Tests */ = {
+		OBJ_17 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_17 /* TextPickerTests */,
+				OBJ_18 /* TextPickerTests */,
 			);
 			name = Tests;
 			sourceTree = SOURCE_ROOT;
 		};
-		OBJ_17 /* TextPickerTests */ = {
+		OBJ_18 /* TextPickerTests */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_18 /* GeneralTests.swift */,
-				OBJ_19 /* ParserTests.swift */,
-				OBJ_20 /* SeriesParserTests.swift */,
-				OBJ_21 /* TestHelpers.swift */,
+				OBJ_19 /* GeneralTests.swift */,
+				OBJ_20 /* ParserTests.swift */,
+				OBJ_21 /* SeriesParserTests.swift */,
+				OBJ_22 /* TestHelpers.swift */,
 			);
 			name = TextPickerTests;
 			path = Tests/TextPickerTests;
 			sourceTree = SOURCE_ROOT;
 		};
-		OBJ_22 /* Dependencies */ = {
+		OBJ_23 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_23 /* FootlessParser 0.5.2 */,
+				OBJ_24 /* FootlessParser 0.5.2 */,
 			);
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		OBJ_23 /* FootlessParser 0.5.2 */ = {
+		OBJ_24 /* FootlessParser 0.5.2 */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_24 /* FootlessParser */,
-				OBJ_31 /* Package.swift */,
+				OBJ_25 /* FootlessParser */,
+				OBJ_32 /* Package.swift */,
 			);
 			name = "FootlessParser 0.5.2";
 			sourceTree = SOURCE_ROOT;
 		};
-		OBJ_24 /* FootlessParser */ = {
+		OBJ_25 /* FootlessParser */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_25 /* Converters.swift */,
-				OBJ_26 /* Error.swift */,
-				OBJ_27 /* Parser+Operators.swift */,
-				OBJ_28 /* Parser.swift */,
-				OBJ_29 /* Parsers.swift */,
-				OBJ_30 /* StringParser.swift */,
+				OBJ_26 /* Converters.swift */,
+				OBJ_27 /* Error.swift */,
+				OBJ_28 /* Parser+Operators.swift */,
+				OBJ_29 /* Parser.swift */,
+				OBJ_30 /* Parsers.swift */,
+				OBJ_31 /* StringParser.swift */,
 			);
 			name = FootlessParser;
 			path = .build/checkouts/FootlessParser/Sources/FootlessParser;
 			sourceTree = SOURCE_ROOT;
 		};
-		OBJ_32 /* Products */ = {
+		OBJ_33 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				"TextPicker::TextPickerTests::Product" /* TextPickerTests.xctest */,
 				"TextPicker::TextPicker::Product" /* TextPicker.framework */,
+				"TextPicker::TextPickerTests::Product" /* TextPickerTests.xctest */,
+				"TextPicker::unicode_properties::Product" /* unicode_properties */,
 				"FootlessParser::FootlessParser::Product" /* FootlessParser.framework */,
-				"TextPicker::UnicodeBootstrap::Product" /* UnicodeBootstrap */,
 			);
 			name = Products;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		OBJ_5 = {
+		OBJ_5 /*  */ = {
 			isa = PBXGroup;
 			children = (
 				OBJ_6 /* Package.swift */,
 				OBJ_7 /* Sources */,
-				OBJ_16 /* Tests */,
-				OBJ_22 /* Dependencies */,
-				OBJ_32 /* Products */,
-				OBJ_37 /* fastlane */,
-				OBJ_38 /* LICENSE */,
-				OBJ_39 /* TextPicker.podspec */,
-				OBJ_40 /* README.md */,
-				OBJ_41 /* ci.bash */,
+				OBJ_17 /* Tests */,
+				OBJ_23 /* Dependencies */,
+				OBJ_33 /* Products */,
+				OBJ_38 /* fastlane */,
+				OBJ_39 /* LICENSE */,
+				OBJ_40 /* TextPicker.podspec */,
+				OBJ_41 /* README.md */,
+				OBJ_42 /* ci.bash */,
 			);
+			name = "";
 			sourceTree = "<group>";
 		};
 		OBJ_7 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
 				OBJ_8 /* TextPicker */,
-				OBJ_13 /* UnicodeBootstrap */,
+				OBJ_13 /* unicode_properties */,
 			);
 			name = Sources;
 			sourceTree = SOURCE_ROOT;
@@ -246,10 +247,10 @@
 /* Begin PBXNativeTarget section */
 		"FootlessParser::FootlessParser" /* FootlessParser */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = OBJ_43 /* Build configuration list for PBXNativeTarget "FootlessParser" */;
+			buildConfigurationList = OBJ_44 /* Build configuration list for PBXNativeTarget "FootlessParser" */;
 			buildPhases = (
-				OBJ_46 /* Sources */,
-				OBJ_53 /* Frameworks */,
+				OBJ_47 /* Sources */,
+				OBJ_54 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -262,9 +263,9 @@
 		};
 		"FootlessParser::SwiftPMPackageDescription" /* FootlessParserPackageDescription */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = OBJ_55 /* Build configuration list for PBXNativeTarget "FootlessParserPackageDescription" */;
+			buildConfigurationList = OBJ_56 /* Build configuration list for PBXNativeTarget "FootlessParserPackageDescription" */;
 			buildPhases = (
-				OBJ_58 /* Sources */,
+				OBJ_59 /* Sources */,
 			);
 			buildRules = (
 			);
@@ -276,9 +277,9 @@
 		};
 		"TextPicker::SwiftPMPackageDescription" /* TextPickerPackageDescription */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = OBJ_71 /* Build configuration list for PBXNativeTarget "TextPickerPackageDescription" */;
+			buildConfigurationList = OBJ_72 /* Build configuration list for PBXNativeTarget "TextPickerPackageDescription" */;
 			buildPhases = (
-				OBJ_74 /* Sources */,
+				OBJ_75 /* Sources */,
 			);
 			buildRules = (
 			);
@@ -290,10 +291,10 @@
 		};
 		"TextPicker::TextPicker" /* TextPicker */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = OBJ_61 /* Build configuration list for PBXNativeTarget "TextPicker" */;
+			buildConfigurationList = OBJ_62 /* Build configuration list for PBXNativeTarget "TextPicker" */;
 			buildPhases = (
-				OBJ_64 /* Sources */,
-				OBJ_69 /* Frameworks */,
+				OBJ_65 /* Sources */,
+				OBJ_70 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -306,36 +307,36 @@
 		};
 		"TextPicker::TextPickerTests" /* TextPickerTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = OBJ_82 /* Build configuration list for PBXNativeTarget "TextPickerTests" */;
+			buildConfigurationList = OBJ_83 /* Build configuration list for PBXNativeTarget "TextPickerTests" */;
 			buildPhases = (
-				OBJ_85 /* Sources */,
-				OBJ_90 /* Frameworks */,
+				OBJ_86 /* Sources */,
+				OBJ_91 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				OBJ_92 /* PBXTargetDependency */,
+				OBJ_93 /* PBXTargetDependency */,
 			);
 			name = TextPickerTests;
 			productName = TextPickerTests;
 			productReference = "TextPicker::TextPickerTests::Product" /* TextPickerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		"TextPicker::UnicodeBootstrap" /* UnicodeBootstrap */ = {
+		"TextPicker::unicode_properties" /* unicode_properties */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = OBJ_94 /* Build configuration list for PBXNativeTarget "UnicodeBootstrap" */;
+			buildConfigurationList = OBJ_95 /* Build configuration list for PBXNativeTarget "unicode_properties" */;
 			buildPhases = (
-				OBJ_97 /* Sources */,
-				OBJ_99 /* Frameworks */,
+				OBJ_98 /* Sources */,
+				OBJ_100 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				OBJ_101 /* PBXTargetDependency */,
+				OBJ_102 /* PBXTargetDependency */,
 			);
-			name = UnicodeBootstrap;
-			productName = UnicodeBootstrap;
-			productReference = "TextPicker::UnicodeBootstrap::Product" /* UnicodeBootstrap */;
+			name = unicode_properties;
+			productName = unicode_properties;
+			productReference = "TextPicker::unicode_properties::Product" /* unicode_properties */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -355,8 +356,8 @@
 				English,
 				en,
 			);
-			mainGroup = OBJ_5;
-			productRefGroup = OBJ_32 /* Products */;
+			mainGroup = OBJ_5 /*  */;
+			productRefGroup = OBJ_33 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -366,88 +367,88 @@
 				"TextPicker::SwiftPMPackageDescription" /* TextPickerPackageDescription */,
 				"TextPicker::TextPickerPackageTests::ProductTarget" /* TextPickerPackageTests */,
 				"TextPicker::TextPickerTests" /* TextPickerTests */,
-				"TextPicker::UnicodeBootstrap" /* UnicodeBootstrap */,
+				"TextPicker::unicode_properties" /* unicode_properties */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		OBJ_46 /* Sources */ = {
+		OBJ_47 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
-				OBJ_47 /* Converters.swift in Sources */,
-				OBJ_48 /* Error.swift in Sources */,
-				OBJ_49 /* Parser+Operators.swift in Sources */,
-				OBJ_50 /* Parser.swift in Sources */,
-				OBJ_51 /* Parsers.swift in Sources */,
-				OBJ_52 /* StringParser.swift in Sources */,
+				OBJ_48 /* Converters.swift in Sources */,
+				OBJ_49 /* Error.swift in Sources */,
+				OBJ_50 /* Parser+Operators.swift in Sources */,
+				OBJ_51 /* Parser.swift in Sources */,
+				OBJ_52 /* Parsers.swift in Sources */,
+				OBJ_53 /* StringParser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		OBJ_58 /* Sources */ = {
+		OBJ_59 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
-				OBJ_59 /* Package.swift in Sources */,
+				OBJ_60 /* Package.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		OBJ_64 /* Sources */ = {
+		OBJ_65 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
-				OBJ_65 /* General.swift in Sources */,
-				OBJ_66 /* Group.swift in Sources */,
-				OBJ_67 /* Parser.swift in Sources */,
-				OBJ_68 /* SeriesParser.swift in Sources */,
+				OBJ_66 /* General.swift in Sources */,
+				OBJ_67 /* Group.swift in Sources */,
+				OBJ_68 /* Parser.swift in Sources */,
+				OBJ_69 /* SeriesParser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		OBJ_74 /* Sources */ = {
+		OBJ_75 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
-				OBJ_75 /* Package.swift in Sources */,
+				OBJ_76 /* Package.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		OBJ_85 /* Sources */ = {
+		OBJ_86 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
-				OBJ_86 /* GeneralTests.swift in Sources */,
-				OBJ_87 /* ParserTests.swift in Sources */,
-				OBJ_88 /* SeriesParserTests.swift in Sources */,
-				OBJ_89 /* TestHelpers.swift in Sources */,
+				OBJ_87 /* GeneralTests.swift in Sources */,
+				OBJ_88 /* ParserTests.swift in Sources */,
+				OBJ_89 /* SeriesParserTests.swift in Sources */,
+				OBJ_90 /* TestHelpers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		OBJ_97 /* Sources */ = {
+		OBJ_98 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
-				OBJ_98 /* main.swift in Sources */,
+				OBJ_99 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		OBJ_101 /* PBXTargetDependency */ = {
+		OBJ_102 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = "FootlessParser::FootlessParser" /* FootlessParser */;
-			targetProxy = BABBFB7322BCFC2F00749F2E /* PBXContainerItemProxy */;
+			targetProxy = BACCFE0222BEDA27002B5104 /* PBXContainerItemProxy */;
 		};
-		OBJ_80 /* PBXTargetDependency */ = {
+		OBJ_81 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = "TextPicker::TextPickerTests" /* TextPickerTests */;
-			targetProxy = BABBFB7522BCFC3200749F2E /* PBXContainerItemProxy */;
+			targetProxy = BACCFE0422BEDA28002B5104 /* PBXContainerItemProxy */;
 		};
-		OBJ_92 /* PBXTargetDependency */ = {
+		OBJ_93 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = "TextPicker::TextPicker" /* TextPicker */;
-			targetProxy = BABBFB7422BCFC3200749F2E /* PBXContainerItemProxy */;
+			targetProxy = BACCFE0322BEDA27002B5104 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -504,7 +505,7 @@
 			};
 			name = Release;
 		};
-		OBJ_44 /* Debug */ = {
+		OBJ_45 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ENABLE_TESTABILITY = YES;
@@ -531,7 +532,7 @@
 			};
 			name = Debug;
 		};
-		OBJ_45 /* Release */ = {
+		OBJ_46 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ENABLE_TESTABILITY = YES;
@@ -558,7 +559,7 @@
 			};
 			name = Release;
 		};
-		OBJ_56 /* Debug */ = {
+		OBJ_57 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				LD = /usr/bin/true;
@@ -567,7 +568,7 @@
 			};
 			name = Debug;
 		};
-		OBJ_57 /* Release */ = {
+		OBJ_58 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				LD = /usr/bin/true;
@@ -576,7 +577,7 @@
 			};
 			name = Release;
 		};
-		OBJ_62 /* Debug */ = {
+		OBJ_63 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ENABLE_TESTABILITY = YES;
@@ -607,7 +608,7 @@
 			};
 			name = Debug;
 		};
-		OBJ_63 /* Release */ = {
+		OBJ_64 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ENABLE_TESTABILITY = YES;
@@ -638,7 +639,7 @@
 			};
 			name = Release;
 		};
-		OBJ_72 /* Debug */ = {
+		OBJ_73 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				LD = /usr/bin/true;
@@ -647,7 +648,7 @@
 			};
 			name = Debug;
 		};
-		OBJ_73 /* Release */ = {
+		OBJ_74 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				LD = /usr/bin/true;
@@ -656,19 +657,19 @@
 			};
 			name = Release;
 		};
-		OBJ_78 /* Debug */ = {
+		OBJ_79 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 			};
 			name = Debug;
 		};
-		OBJ_79 /* Release */ = {
+		OBJ_80 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 			};
 			name = Release;
 		};
-		OBJ_83 /* Debug */ = {
+		OBJ_84 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
@@ -697,7 +698,7 @@
 			};
 			name = Debug;
 		};
-		OBJ_84 /* Release */ = {
+		OBJ_85 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
@@ -726,7 +727,7 @@
 			};
 			name = Release;
 		};
-		OBJ_95 /* Debug */ = {
+		OBJ_96 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
@@ -734,7 +735,7 @@
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = TextPicker.xcodeproj/UnicodeBootstrap_Info.plist;
+				INFOPLIST_FILE = TextPicker.xcodeproj/unicode_properties_Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -749,13 +750,13 @@
 				SWIFT_FORCE_DYNAMIC_LINK_STDLIB = YES;
 				SWIFT_FORCE_STATIC_LINK_STDLIB = NO;
 				SWIFT_VERSION = 5.0;
-				TARGET_NAME = UnicodeBootstrap;
+				TARGET_NAME = unicode_properties;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
 			name = Debug;
 		};
-		OBJ_96 /* Release */ = {
+		OBJ_97 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
@@ -763,7 +764,7 @@
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = TextPicker.xcodeproj/UnicodeBootstrap_Info.plist;
+				INFOPLIST_FILE = TextPicker.xcodeproj/unicode_properties_Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -778,7 +779,7 @@
 				SWIFT_FORCE_DYNAMIC_LINK_STDLIB = YES;
 				SWIFT_FORCE_STATIC_LINK_STDLIB = NO;
 				SWIFT_VERSION = 5.0;
-				TARGET_NAME = UnicodeBootstrap;
+				TARGET_NAME = unicode_properties;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
@@ -796,65 +797,65 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		OBJ_43 /* Build configuration list for PBXNativeTarget "FootlessParser" */ = {
+		OBJ_44 /* Build configuration list for PBXNativeTarget "FootlessParser" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				OBJ_44 /* Debug */,
-				OBJ_45 /* Release */,
+				OBJ_45 /* Debug */,
+				OBJ_46 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		OBJ_55 /* Build configuration list for PBXNativeTarget "FootlessParserPackageDescription" */ = {
+		OBJ_56 /* Build configuration list for PBXNativeTarget "FootlessParserPackageDescription" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				OBJ_56 /* Debug */,
-				OBJ_57 /* Release */,
+				OBJ_57 /* Debug */,
+				OBJ_58 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		OBJ_61 /* Build configuration list for PBXNativeTarget "TextPicker" */ = {
+		OBJ_62 /* Build configuration list for PBXNativeTarget "TextPicker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				OBJ_62 /* Debug */,
-				OBJ_63 /* Release */,
+				OBJ_63 /* Debug */,
+				OBJ_64 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		OBJ_71 /* Build configuration list for PBXNativeTarget "TextPickerPackageDescription" */ = {
+		OBJ_72 /* Build configuration list for PBXNativeTarget "TextPickerPackageDescription" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				OBJ_72 /* Debug */,
-				OBJ_73 /* Release */,
+				OBJ_73 /* Debug */,
+				OBJ_74 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		OBJ_77 /* Build configuration list for PBXAggregateTarget "TextPickerPackageTests" */ = {
+		OBJ_78 /* Build configuration list for PBXAggregateTarget "TextPickerPackageTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				OBJ_78 /* Debug */,
-				OBJ_79 /* Release */,
+				OBJ_79 /* Debug */,
+				OBJ_80 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		OBJ_82 /* Build configuration list for PBXNativeTarget "TextPickerTests" */ = {
+		OBJ_83 /* Build configuration list for PBXNativeTarget "TextPickerTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				OBJ_83 /* Debug */,
-				OBJ_84 /* Release */,
+				OBJ_84 /* Debug */,
+				OBJ_85 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		OBJ_94 /* Build configuration list for PBXNativeTarget "UnicodeBootstrap" */ = {
+		OBJ_95 /* Build configuration list for PBXNativeTarget "unicode_properties" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				OBJ_95 /* Debug */,
-				OBJ_96 /* Release */,
+				OBJ_96 /* Debug */,
+				OBJ_97 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
