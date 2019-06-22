@@ -67,6 +67,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		BA51A91922BE988E00CD7724 /* WordBreakProperty.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = WordBreakProperty.txt; sourceTree = "<group>"; };
 		"FootlessParser::FootlessParser::Product" /* FootlessParser.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FootlessParser.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_10 /* Group.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
 		OBJ_11 /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
@@ -133,6 +134,7 @@
 		OBJ_13 /* UnicodeBootstrap */ = {
 			isa = PBXGroup;
 			children = (
+				BA51A91922BE988E00CD7724 /* WordBreakProperty.txt */,
 				OBJ_14 /* Scripts.txt */,
 				OBJ_15 /* main.swift */,
 			);
@@ -202,7 +204,7 @@
 			name = Products;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		OBJ_5 /*  */ = {
+		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
 				OBJ_6 /* Package.swift */,
@@ -216,7 +218,6 @@
 				OBJ_40 /* README.md */,
 				OBJ_41 /* ci.bash */,
 			);
-			name = "";
 			sourceTree = "<group>";
 		};
 		OBJ_7 /* Sources */ = {
@@ -354,7 +355,7 @@
 				English,
 				en,
 			);
-			mainGroup = OBJ_5 /*  */;
+			mainGroup = OBJ_5;
 			productRefGroup = OBJ_32 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
