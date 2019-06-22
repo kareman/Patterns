@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "TextPicker::UnicodeBootstrap"
-               BuildableName = "UnicodeBootstrap"
-               BlueprintName = "UnicodeBootstrap"
+               BlueprintIdentifier = "TextPicker::unicode_properties"
+               BuildableName = "unicode_properties"
+               BlueprintName = "unicode_properties"
                ReferencedContainer = "container:TextPicker.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -38,7 +38,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "YES"
-      customWorkingDirectory = "${PROJECT_DIR}/Sources/UnicodeBootstrap"
+      customWorkingDirectory = "${PROJECT_DIR}/Sources/unicode_properties"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
@@ -47,9 +47,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "TextPicker::UnicodeBootstrap"
-            BuildableName = "UnicodeBootstrap"
-            BlueprintName = "UnicodeBootstrap"
+            BlueprintIdentifier = "TextPicker::unicode_properties"
+            BuildableName = "unicode_properties"
+            BlueprintName = "unicode_properties"
             ReferencedContainer = "container:TextPicker.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
