@@ -42,21 +42,20 @@ extension Sequence {
 }
 
 do {
-	print([1, 2, 4, 5, 7, 9, 10].flatMapPairs { a, b in
-		a + 1 == b ? [b] : [a, b]
-	})
 	let scripts = try String(contentsOf: getLocalURL(for: "Scripts.txt"))
-
-	let result = unicodeProperty(fromDataFile: scripts)
-	let properties = Dictionary(grouping: result, by: { $0.property })
-		.mapValues { $0.map { property in property.range } }
-
-	var common = properties["Katakana"]!
-	print(common.count, common)
-	common = common.flatMapPairs { a, b in
-		a.upperBound + 1 == b.lowerBound ? [a.lowerBound ... b.upperBound] : [a, b]
+	var properties = Dictionary(grouping: unicodeProperty(fromDataFile: scripts), by: { $0.property })
+		.mapValues { ranges -> [ClosedRange<UInt32>] in
+		ranges.map { $0.range }
+			.sorted { $0.lowerBound < $1.lowerBound }
+			.flatMapPairs { a, b in // compact the list of ranges by joining together adjacent ranges
+				a.upperBound + 1 == b.lowerBound ? [a.lowerBound ... b.upperBound] : [a, b]
+			}
 	}
-	print(common.count, common)
+
+
+	print(properties.keys)
+	var common = properties["Common"]!
+	// print(common.count, common)
 
 	// let ranges = properties.values.sorted(by: { $0.count < $1.count })
 
