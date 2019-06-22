@@ -41,25 +41,32 @@ extension Sequence {
 	}
 }
 
+func caseName(_ string: String) -> String {
+	var caseName = string.replacingOccurrences(of:  "_", with: "")
+	let firstLetter = caseName.removeFirst().lowercased()
+	return #"\#(firstLetter + caseName) = "\#(string)""#
+}
+
 do {
 	let scripts = try String(contentsOf: getLocalURL(for: "Scripts.txt"))
 	var properties = Dictionary(grouping: unicodeProperty(fromDataFile: scripts), by: { $0.property })
 		.mapValues { ranges -> [ClosedRange<UInt32>] in
-		ranges.map { $0.range }
-			.sorted { $0.lowerBound < $1.lowerBound }
-			.flatMapPairs { a, b in // compact the list of ranges by joining together adjacent ranges
-				a.upperBound + 1 == b.lowerBound ? [a.lowerBound ... b.upperBound] : [a, b]
+			ranges.map { $0.range }
+				.sorted { $0.lowerBound < $1.lowerBound }
+				// compact the list of ranges by joining together adjacent ranges
+				.flatMapPairs { a, b in
+					a.upperBound + 1 == b.lowerBound ? [a.lowerBound ... b.upperBound] : [a, b]
 			}
 	}
 
+	print()
+	print( "enum UnicodeScript: String {")
+	print( "  case", properties.keys.map(caseName).joined(separator:  ", "))
+	print ("}")
 
-	print(properties.keys)
-	var common = properties["Common"]!
-	// print(common.count, common)
+	print()
 
-	// let ranges = properties.values.sorted(by: { $0.count < $1.count })
 
-	// print(ranges)
 } catch {
 	print(error)
 }
