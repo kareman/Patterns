@@ -44,12 +44,12 @@ extension Sequence {
 func caseName(_ string: String) -> String {
 	var caseName = string.replacingOccurrences(of:  "_", with: "")
 	let firstLetter = caseName.removeFirst().lowercased()
-	return #"\#(firstLetter + caseName) = "\#(string)""#
+	return firstLetter + caseName
 }
 
 do {
 	let scripts = try String(contentsOf: getLocalURL(for: "Scripts.txt"))
-	var properties = Dictionary(grouping: unicodeProperty(fromDataFile: scripts), by: { $0.property })
+	let properties = Dictionary(grouping: unicodeProperty(fromDataFile: scripts), by: { $0.property })
 		.mapValues { ranges -> [ClosedRange<UInt32>] in
 			ranges.map { $0.range }
 				.sorted { $0.lowerBound < $1.lowerBound }
@@ -60,13 +60,17 @@ do {
 	}
 
 	print()
-	print( "enum UnicodeScript: String {")
-	print( "  case", properties.keys.map(caseName).joined(separator:  ", "))
-	print ("}")
+	print("enum UnicodeScript: String {")
+	print("  case", properties.keys.map { #"\#(caseName($0)) = "\#($0)""# }.joined(separator: ", "))
+	print("}")
 
 	print()
-
-
+	print("let scriptRanges: [UnicodeScript : ContiguousArray<ClosedRange<UInt32>>] = [")
+	properties.forEach { scriptName, ranges in
+		print("  .\(caseName(scriptName)): [", ranges.map {"\($0)"}.joined(separator: ", "), "],", separator: "")
+	}
+	print("]")
+	print()
 } catch {
 	print(error)
 }
