@@ -31,7 +31,7 @@
 		OBJ_60 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_32 /* Package.swift */; };
 		OBJ_66 /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* General.swift */; };
 		OBJ_67 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* Group.swift */; };
-		OBJ_68 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* Parser.swift */; };
+		OBJ_68 /* TextPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* TextPattern.swift */; };
 		OBJ_69 /* SeriesParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* SeriesParser.swift */; };
 		OBJ_76 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
 		OBJ_87 /* GeneralTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_19 /* GeneralTests.swift */; };
@@ -69,7 +69,7 @@
 /* Begin PBXFileReference section */
 		"FootlessParser::FootlessParser::Product" /* FootlessParser.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FootlessParser.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_10 /* Group.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
-		OBJ_11 /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
+		OBJ_11 /* TextPattern.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextPattern.swift; sourceTree = "<group>"; };
 		OBJ_12 /* SeriesParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesParser.swift; sourceTree = "<group>"; };
 		OBJ_14 /* WordBreakProperty.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = WordBreakProperty.txt; sourceTree = "<group>"; };
 		OBJ_15 /* Scripts.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Scripts.txt; sourceTree = "<group>"; };
@@ -204,7 +204,7 @@
 			name = Products;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		OBJ_5 /*  */ = {
+		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
 				OBJ_6 /* Package.swift */,
@@ -218,7 +218,6 @@
 				OBJ_41 /* README.md */,
 				OBJ_42 /* ci.bash */,
 			);
-			name = "";
 			sourceTree = "<group>";
 		};
 		OBJ_7 /* Sources */ = {
@@ -235,7 +234,7 @@
 			children = (
 				OBJ_9 /* General.swift */,
 				OBJ_10 /* Group.swift */,
-				OBJ_11 /* Parser.swift */,
+				OBJ_11 /* TextPattern.swift */,
 				OBJ_12 /* SeriesParser.swift */,
 			);
 			name = TextPicker;
@@ -356,7 +355,7 @@
 				English,
 				en,
 			);
-			mainGroup = OBJ_5 /*  */;
+			mainGroup = OBJ_5;
 			productRefGroup = OBJ_33 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -400,7 +399,7 @@
 			files = (
 				OBJ_66 /* General.swift in Sources */,
 				OBJ_67 /* Group.swift in Sources */,
-				OBJ_68 /* Parser.swift in Sources */,
+				OBJ_68 /* TextPattern.swift in Sources */,
 				OBJ_69 /* SeriesParser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -5,28 +5,28 @@
 //  Created by Kåre Morstøl on 23/10/2018.
 //
 
-public struct SeriesParser: Parser {
-	public struct Skip: Parser {
-		public let repeatedParser: Parser?
+public struct SeriesParser: TextPattern {
+	public struct Skip: TextPattern {
+		public let repeatedParser: TextPattern?
 		public let description: String
 		public var regex: String
 		public let length: Int? = nil
 
-		public init(whileRepeating repeatedParser: Parser? = nil) {
+		public init(whileRepeating repeatedParser: TextPattern? = nil) {
 			self.repeatedParser = repeatedParser?.repeat(min: 0)
 			self.description = "\(repeatedParser.map(String.init(describing:)) ?? "")*"
 			self.regex = repeatedParser.map { _ in "NOT IMPLEMENTED" } ?? ".*?"
 		}
 
-		public func parse(_ input: Parser.Input, at startindex: Parser.Input.Index) -> ParsedRange? {
+		public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> ParsedRange? {
 			assertionFailure("do not call this"); return nil
 		}
 
-		public func parse(_ input: Parser.Input, from startindex: Parser.Input.Index) -> ParsedRange? {
+		public func parse(_ input: TextPattern.Input, from startindex: TextPattern.Input.Index) -> ParsedRange? {
 			assertionFailure("do not call this"); return nil
 		}
 
-		public func _prepForSeriesParser(remainingParsers: inout ArraySlice<Parser>)
+		public func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>)
 			throws -> SeriesParser.Parserette {
 			let maybeStoreBound = Bound.getBoundHandler(&remainingParsers)
 
@@ -51,29 +51,29 @@ public struct SeriesParser: Parser {
 		}
 	}
 
-	public struct Bound: Parser {
+	public struct Bound: TextPattern {
 		public var description: String { return "|" }
 		public var regex = "()"
 		public let length: Int? = 0
 
 		public init() { }
 
-		public func parse(_ input: Parser.Input, at startindex: Parser.Input.Index) -> ParsedRange? {
+		public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> ParsedRange? {
 			assertionFailure("do not call this"); return nil
 		}
 
-		public func parse(_ input: Parser.Input, from startindex: Parser.Input.Index) -> ParsedRange? {
+		public func parse(_ input: TextPattern.Input, from startindex: TextPattern.Input.Index) -> ParsedRange? {
 			assertionFailure("do not call this"); return nil
 		}
 
-		public func _prepForSeriesParser(remainingParsers: inout ArraySlice<Parser>) -> SeriesParser.Parserette {
+		public func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>) -> SeriesParser.Parserette {
 			return ({ (_: Input, index: Input.Index, bounds: inout ContiguousArray<Input.Index>) in
 				bounds.append(index)
 				return index ..< index
 			}, description)
 		}
 
-		static func getBoundHandler(_ remainingParsers: inout ArraySlice<Parser>)
+		static func getBoundHandler(_ remainingParsers: inout ArraySlice<TextPattern>)
 			-> (Input.Index, inout ContiguousArray<Input.Index>) -> Void {
 			return remainingParsers.first is SeriesParser.Bound
 				? { remainingParsers.removeFirst(); return { $1.append($0) } }()
@@ -82,7 +82,7 @@ public struct SeriesParser: Parser {
 	}
 
 	public enum InitError: Error, CustomStringConvertible {
-		case invalid([Parser])
+		case invalid([TextPattern])
 		case message(String)
 
 		public var description: String {
@@ -95,24 +95,24 @@ public struct SeriesParser: Parser {
 		}
 	}
 
-	public let series: Array<Parser>
+	public let series: Array<TextPattern>
 	public var regex: String {
-		return series.map((\Parser.regex).toFunc).joined()
+		return series.map((\TextPattern.regex).toFunc).joined()
 	}
 
 	public var length: Int? {
-		let lengths = series.compactMap((\Parser.length).toFunc)
+		let lengths = series.compactMap((\TextPattern.length).toFunc)
 		return lengths.count == series.count ? lengths.reduce(0, +) : nil
 	}
 
 	public typealias Parserette =
 		(parser: (Input, Input.Index, inout ContiguousArray<Input.Index>) -> ParsedRange?, description: String)
 	private let parserettes: [Parserette]
-	private let parserFrom: Parser?
+	private let parserFrom: TextPattern?
 
 	public let description: String
 
-	private static func createParserettes(_ parsers: Array<Parser>) throws -> [Parserette] {
+	private static func createParserettes(_ parsers: Array<TextPattern>) throws -> [Parserette] {
 		var remainingParsers = parsers[...]
 		var result = [Parserette]()
 		while let nextParser = remainingParsers.popFirst() {
@@ -130,7 +130,7 @@ public struct SeriesParser: Parser {
 		return result
 	}
 
-	public init(verify series: [Parser?]) throws {
+	public init(verify series: [TextPattern?]) throws {
 		self.series = series.compactMap { $0 }.flattenParsers()
 		if series.isEmpty || (series.filter({ $0 is SeriesParser.Bound }).count > 2) {
 			throw InitError.invalid(self.series.array())
@@ -146,7 +146,7 @@ public struct SeriesParser: Parser {
 		self.description = self.series.map(String.init(describing:)).joined(separator: " ")
 	}
 
-	public init(verify series: Parser?...) throws {
+	public init(verify series: TextPattern?...) throws {
 		try self.init(verify: series)
 	}
 
@@ -157,7 +157,7 @@ public struct SeriesParser: Parser {
 
 	public func parse(_ input: Input, at startindex: Input.Index, wholeRange: inout ParsedRange?) -> ParsedRange? {
 		var index = startindex
-		var boundIndices = ContiguousArray<Parser.Input.Index>()
+		var boundIndices = ContiguousArray<TextPattern.Input.Index>()
 
 		for parserette in parserettes {
 			guard let range = parserette.parser(input, index, &boundIndices) else { return nil }
@@ -189,7 +189,7 @@ public struct SeriesParser: Parser {
 		return nil
 	}
 
-	public func appending(_ parser: Parser) throws -> SeriesParser {
+	public func appending(_ parser: TextPattern) throws -> SeriesParser {
 		return try SeriesParser(verify: self.series + [parser])
 	}
 }
@@ -238,9 +238,9 @@ public extension SeriesParser {
 	}
 }
 
-fileprivate extension Sequence where Element == Parser {
-	func flattenParsers() -> [Parser] {
-		return self.flatMap { (parser: Parser) -> [Parser] in
+fileprivate extension Sequence where Element == TextPattern {
+	func flattenParsers() -> [TextPattern] {
+		return self.flatMap { (parser: TextPattern) -> [TextPattern] in
 			if let series = parser as? SeriesParser, !series.series.contains(where: { $0 is SeriesParser.Bound }) {
 				return series.series.array()
 			}

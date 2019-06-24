@@ -8,28 +8,28 @@
 
 import Foundation
 
-public typealias ParsedRange = Range<Parser.Input.Index>
+public typealias ParsedRange = Range<TextPattern.Input.Index>
 
-public protocol Parser: CustomStringConvertible {
+public protocol TextPattern: CustomStringConvertible {
 	typealias Input = Substring
 
 	func parse(_ input: Input, at index: Input.Index) -> ParsedRange?
 	func parse(_ input: Input, from index: Input.Index) -> ParsedRange?
 	func parseAllLazy(_ input: Input, from startindex: Input.Index)
 		-> UnfoldSequence<ParsedRange, Input.Index>
-	func `repeat`(min: Int) -> Parser
-	func `repeat`(min: Int, max: Int?) -> Parser
-	func _prepForSeriesParser(remainingParsers: inout ArraySlice<Parser>) throws -> SeriesParser.Parserette
+	func `repeat`(min: Int) -> TextPattern
+	func `repeat`(min: Int, max: Int?) -> TextPattern
+	func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>) throws -> SeriesParser.Parserette
 	/// The length this parser always parses, if it is constant
 	var length: Int? { get }
 	var regex: String { get }
 }
 
-public protocol ParserWrapper: Parser {
-	var parser: Parser { get }
+public protocol TextPatternWrapper: TextPattern {
+	var parser: TextPattern { get }
 }
 
-public extension ParserWrapper {
+public extension TextPatternWrapper {
 	func parse(_ input: Input, at index: Input.Index) -> ParsedRange? {
 		return parser.parse(input, at: index)
 	}
@@ -43,7 +43,7 @@ public extension ParserWrapper {
 		return parser.parseAllLazy(input, from: startindex)
 	}
 
-	func `repeat`(min: Int) -> Parser {
+	func `repeat`(min: Int) -> TextPattern {
 		return parser.repeat(min: min)
 	}
 
@@ -52,7 +52,7 @@ public extension ParserWrapper {
 	}
 }
 
-extension Parser {
+extension TextPattern {
 	public func parseAll(_ input: Input, from startindex: Input.Index) -> [ParsedRange] {
 		return Array(parseAllLazy(input, from: startindex))
 	}
@@ -94,14 +94,14 @@ extension Parser {
 		return nil
 	}
 
-	public func _prepForSeriesParser(remainingParsers: inout ArraySlice<Parser>) throws -> SeriesParser.Parserette {
+	public func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>) throws -> SeriesParser.Parserette {
 		return ({ (input: Input, index: Input.Index, _: inout ContiguousArray<Input.Index>) in
 			self.parse(input, at: index)
 		}, description)
 	}
 }
 
-public struct SubstringParser: Parser {
+public struct SubstringParser: TextPattern {
 	let substring: Input
 	let searchCache: SearchCache<Input.Element>
 
@@ -116,7 +116,7 @@ public struct SubstringParser: Parser {
 	public var length: Int? { return substring.count }
 
 	public init<S: Sequence>(_ sequence: S) where S.Element == Character {
-		self.substring = Parser.Input(sequence)
+		self.substring = TextPattern.Input(sequence)
 		self.searchCache = SearchCache(pattern: self.substring)
 		assert(!self.substring.isEmpty, "Cannot have an empty SubstringParser.")
 	}
@@ -129,7 +129,7 @@ public struct SubstringParser: Parser {
 		self.init(String(character))
 	}
 
-	public func parse(_ input: Parser.Input, at index: Parser.Input.Index) -> ParsedRange? {
+	public func parse(_ input: TextPattern.Input, at index: TextPattern.Input.Index) -> ParsedRange? {
 		return input[index ..< input.endIndex].starts(with: substring)
 			? index ..< input.index(index, offsetBy: substring.count) : nil
 	}
@@ -151,7 +151,7 @@ extension SubstringParser: ExpressibleByStringLiteral {
 	}
 }
 
-public struct OneOfParser: Parser {
+public struct OneOfParser: TextPattern {
 	public let set: Group<Character>
 
 	public let description: String
@@ -168,7 +168,7 @@ public struct OneOfParser: Parser {
 		description = "OneOf(\(set.description))"
 	}
 
-	public func parse(_ input: Parser.Input, at index: Parser.Input.Index) -> ParsedRange? {
+	public func parse(_ input: TextPattern.Input, at index: TextPattern.Input.Index) -> ParsedRange? {
 		return (index < input.endIndex && set.contains(input[index])) ? index ..< input.index(after: index) : nil
 	}
 
@@ -198,17 +198,17 @@ public struct OneOfParser: Parser {
 		alphanumeric, wholeNumber, letter, lowercaseLetter, newline, punctuationCharacter, symbol,
 		uppercaseLetter, whitespaceOrNewline]
 
-	public static func parsers(for c: Character) -> [Parser] {
+	public static func parsers(for c: Character) -> [TextPattern] {
 		return OneOfParser.baseParsers.filter { $0.set.contains(c) }
 	}
 
-	public static func parsers<S: Sequence>(for s: S) -> [Parser] where S.Element == Input.Element {
+	public static func parsers<S: Sequence>(for s: S) -> [TextPattern] where S.Element == Input.Element {
 		return OneOfParser.baseParsers.filter { $0.set.contains(contentsOf: s) }
 	}
 }
 
-public struct RepeatParser: Parser {
-	let repeatedParser: Parser
+public struct RepeatParser: TextPattern {
+	let repeatedParser: TextPattern
 	let min: Int
 	let max: Int?
 
@@ -224,7 +224,7 @@ public struct RepeatParser: Parser {
 		return min == max ? repeatedParser.length.map { $0 * min } : nil
 	}
 
-	public func parse(_ input: Parser.Input, at startindex: Parser.Input.Index) -> ParsedRange? {
+	public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> ParsedRange? {
 		var index = startindex
 		for _ in 0 ..< min {
 			guard let nextindex = repeatedParser.parse(input, at: index)?.upperBound else { return nil }
@@ -251,19 +251,19 @@ public struct RepeatParser: Parser {
 	 */
 }
 
-extension Parser {
-	public func `repeat`(min: Int, max: Int?) -> Parser {
+extension TextPattern {
+	public func `repeat`(min: Int, max: Int?) -> TextPattern {
 		assert(min >= 0 && max.map { $0 >= min } ?? true)
 		return RepeatParser(repeatedParser: self, min: min, max: max)
 	}
 
-	public func `repeat`(min: Int) -> Parser {
+	public func `repeat`(min: Int) -> TextPattern {
 		return self.repeat(min: min, max: nil)
 	}
 }
 
-public struct OrParser: Parser {
-	let parser1, parser2: Parser
+public struct OrParser: TextPattern {
+	let parser1, parser2: TextPattern
 
 	public var description: String {
 		return "(\(parser1) OR \(parser2))"
@@ -276,11 +276,11 @@ public struct OrParser: Parser {
 		return parser1.length == parser2.length ? parser1.length : nil
 	}
 
-	public func parse(_ input: Parser.Input, at startindex: Parser.Input.Index) -> ParsedRange? {
+	public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> ParsedRange? {
 		return parser1.parse(input, at: startindex) ?? parser2.parse(input, at: startindex)
 	}
 
-	public func parse(_ input: Parser.Input, from startindex: Parser.Input.Index) -> ParsedRange? {
+	public func parse(_ input: TextPattern.Input, from startindex: TextPattern.Input.Index) -> ParsedRange? {
 		let result1 = parser1.parse(input, from: startindex)
 		let result2 = parser2.parse(input, from: startindex)
 		if result1?.lowerBound == result2?.lowerBound { return result1 }
@@ -288,11 +288,11 @@ public struct OrParser: Parser {
 	}
 }
 
-public func || (p1: Parser, p2: Parser) -> OrParser {
+public func || (p1: TextPattern, p2: TextPattern) -> OrParser {
 	return OrParser(parser1: p1, parser2: p2)
 }
 
-public struct BeginningOfLineParser: Parser {
+public struct BeginningOfLineParser: TextPattern {
 	public init() {}
 
 	public var description: String {
@@ -301,7 +301,7 @@ public struct BeginningOfLineParser: Parser {
 	public var regex = "^"
 	public var length: Int? = 0
 
-	public func parse(_ input: Parser.Input, at startindex: Parser.Input.Index) -> ParsedRange? {
+	public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> ParsedRange? {
 		return startindex == input.startIndex || input[input.index(before: startindex)].isNewline
 			? startindex ..< startindex
 			: nil
@@ -315,7 +315,7 @@ public struct BeginningOfLineParser: Parser {
 	}
 }
 
-public struct EndOfLineParser: Parser {
+public struct EndOfLineParser: TextPattern {
 	public init() {}
 
 	public var description: String {
@@ -324,7 +324,7 @@ public struct EndOfLineParser: Parser {
 	public let regex = "$"
 	public let length: Int? = 0
 
-	public func parse(_ input: Parser.Input, at startindex: Parser.Input.Index) -> ParsedRange? {
+	public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> ParsedRange? {
 		if startindex == input.endIndex || input[startindex].isNewline {
 			return startindex ..< startindex
 		}
@@ -336,7 +336,7 @@ public struct EndOfLineParser: Parser {
 			?? input.endIndex ..< input.endIndex
 	}
 	
-	public func _prepForSeriesParser(remainingParsers: inout ArraySlice<Parser>) throws -> SeriesParser.Parserette {
+	public func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>) throws -> SeriesParser.Parserette {
 		if (remainingParsers.first.map { !($0 is SeriesParser.Bound) } ?? false) {
 			return ({ (input: Input, index: Input.Index, _: inout ContiguousArray<Input.Index>) in
 				index == input.endIndex ? nil : self.parse(input, at: index)
@@ -348,8 +348,8 @@ public struct EndOfLineParser: Parser {
 	}
 }
 
-public struct NotParser: Parser {
-	let parser: Parser
+public struct NotParser: TextPattern {
+	let parser: TextPattern
 	public var description: String {
 		return "!\(parser)"
 	}
@@ -367,7 +367,7 @@ public struct NotParser: Parser {
 	}
 }
 
-extension Parser {
+extension TextPattern {
 	public var not: NotParser {
 		return NotParser(parser: self)
 	}
