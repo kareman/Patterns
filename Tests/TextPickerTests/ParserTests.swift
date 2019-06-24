@@ -26,8 +26,8 @@ class ParserTests: XCTestCase {
 	}
 
 	func testOptional() throws {
-		assertParseAll(try SeriesParser(verify: OneOf(digits).repeat(min: 0)), input: "123abc123", count: 5)
-		assertParseAll(try SeriesParser(verify: OneOf(digits).repeat(min: 0, max: 1), OneOf(letters)),
+		assertParseAll(try Patterns(verify: OneOf(digits).repeat(min: 0)), input: "123abc123", count: 5)
+		assertParseAll(try Patterns(verify: OneOf(digits).repeat(min: 0, max: 1), OneOf(letters)),
 		               input: "123abc", result: ["3a", "b", "c"])
 	}
 
@@ -60,21 +60,21 @@ class ParserTests: XCTestCase {
 		assertParseAll(parser, input: "\n", count: 2)
 		assertParseAll(parser, input: text, result: "", count: 4)
 		assertParseAll(
-			try SeriesParser(verify: BeginningOfLineParser(), SeriesParser.Bound(), SeriesParser.Skip(), SeriesParser.Bound(), Literal(" ")),
+			try Patterns(verify: BeginningOfLineParser(), Patterns.Bound(), Patterns.Skip(), Patterns.Bound(), Literal(" ")),
 			input: text, result: "line", count: 4)
 		assertParseAll(
-			try SeriesParser(verify: BeginningOfLineParser(), Literal("line")),
+			try Patterns(verify: BeginningOfLineParser(), Literal("line")),
 			input: text, result: "line", count: 4)
 		assertParseAll(
-			try SeriesParser(
-				verify: OneOf(digits), SeriesParser.Skip(), BeginningOfLineParser(), Literal("l")),
+			try Patterns(
+				verify: OneOf(digits), Patterns.Skip(), BeginningOfLineParser(), Literal("l")),
 			input: text, result: ["1\nl", "2\nl", "3\nl"])
 
-		XCTAssertThrowsError(try SeriesParser(verify: [BeginningOfLineParser(), BeginningOfLineParser()]))
-		XCTAssertThrowsError(try SeriesParser(verify: [BeginningOfLineParser(), SeriesParser.Bound(), BeginningOfLineParser()]))
+		XCTAssertThrowsError(try Patterns(verify: [BeginningOfLineParser(), BeginningOfLineParser()]))
+		XCTAssertThrowsError(try Patterns(verify: [BeginningOfLineParser(), Patterns.Bound(), BeginningOfLineParser()]))
 		XCTAssertThrowsError(
-			try SeriesParser(verify: [BeginningOfLineParser(), SeriesParser.Skip(), BeginningOfLineParser()]))
-		XCTAssertNoThrow(try SeriesParser(verify: [BeginningOfLineParser(), SeriesParser.Skip(whileRepeating: OneOf.alphanumeric || Literal("\n")), BeginningOfLineParser()]))
+			try Patterns(verify: [BeginningOfLineParser(), Patterns.Skip(), BeginningOfLineParser()]))
+		XCTAssertNoThrow(try Patterns(verify: [BeginningOfLineParser(), Patterns.Skip(whileRepeating: OneOf.alphanumeric || Literal("\n")), BeginningOfLineParser()]))
 	}
 
 	func testEndOfLineParser() throws {
@@ -91,24 +91,24 @@ class ParserTests: XCTestCase {
 		"""
 		assertParseAll(parser, input: text, count: 4)
 		assertParseAll(
-			try SeriesParser(verify: Literal(" "), SeriesParser.Bound(), SeriesParser.Skip(), SeriesParser.Bound(), EndOfLineParser()),
+			try Patterns(verify: Literal(" "), Patterns.Bound(), Patterns.Skip(), Patterns.Bound(), EndOfLineParser()),
 			input: text, result: ["1", "2", "3", "4"])
 		assertParseAll(
-			try SeriesParser(verify: OneOf(digits), EndOfLineParser()),
+			try Patterns(verify: OneOf(digits), EndOfLineParser()),
 			input: text, result: ["1", "2", "3", "4"])
 		assertParseAll(
-			try SeriesParser(verify: OneOf(digits), EndOfLineParser(), SeriesParser.Skip(), Literal("l")),
+			try Patterns(verify: OneOf(digits), EndOfLineParser(), Patterns.Skip(), Literal("l")),
 			input: text, result: ["1\nl", "2\nl", "3\nl"])
 
-		XCTAssertThrowsError(try SeriesParser(verify: EndOfLineParser(), EndOfLineParser()))
+		XCTAssertThrowsError(try Patterns(verify: EndOfLineParser(), EndOfLineParser()))
 		XCTAssertThrowsError(
-			try SeriesParser(verify: EndOfLineParser(), SeriesParser.Bound(), EndOfLineParser()))
+			try Patterns(verify: EndOfLineParser(), Patterns.Bound(), EndOfLineParser()))
 		XCTAssertThrowsError(
-			try SeriesParser(verify: EndOfLineParser(), SeriesParser.Skip(), EndOfLineParser()))
-		XCTAssertNoThrow(try SeriesParser(verify: [EndOfLineParser(), SeriesParser.Skip(whileRepeating: OneOf.alphanumeric || Literal("\n")), EndOfLineParser()]))
+			try Patterns(verify: EndOfLineParser(), Patterns.Skip(), EndOfLineParser()))
+		XCTAssertNoThrow(try Patterns(verify: [EndOfLineParser(), Patterns.Skip(whileRepeating: OneOf.alphanumeric || Literal("\n")), EndOfLineParser()]))
 
 		assertParseAll(
-			try SeriesParser(verify: EndOfLineParser()),
+			try Patterns(verify: EndOfLineParser()),
 			input: "\n", count: 2)
 	}
 

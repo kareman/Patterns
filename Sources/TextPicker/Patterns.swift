@@ -5,7 +5,7 @@
 //  Created by Kåre Morstøl on 23/10/2018.
 //
 
-public struct SeriesParser: TextPattern {
+public struct Patterns: TextPattern {
 	public struct Skip: TextPattern {
 		public let repeatedParser: TextPattern?
 		public let description: String
@@ -27,7 +27,7 @@ public struct SeriesParser: TextPattern {
 		}
 
 		public func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>)
-			throws -> SeriesParser.Parserette {
+			throws -> Patterns.Parserette {
 			let maybeStoreBound = Bound.getBoundHandler(&remainingParsers)
 
 			guard let next = remainingParsers.first else {
@@ -36,7 +36,7 @@ public struct SeriesParser: TextPattern {
 					return index ..< input.endIndex
 				}, description + " (to the end)")
 			}
-			guard !(next is SeriesParser.Skip) else {
+			guard !(next is Patterns.Skip) else {
 				throw InitError.message("Cannot have 2 Skip in a row.")
 			}
 
@@ -66,7 +66,7 @@ public struct SeriesParser: TextPattern {
 			assertionFailure("do not call this"); return nil
 		}
 
-		public func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>) -> SeriesParser.Parserette {
+		public func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>) -> Patterns.Parserette {
 			return ({ (_: Input, index: Input.Index, bounds: inout ContiguousArray<Input.Index>) in
 				bounds.append(index)
 				return index ..< index
@@ -75,7 +75,7 @@ public struct SeriesParser: TextPattern {
 
 		static func getBoundHandler(_ remainingParsers: inout ArraySlice<TextPattern>)
 			-> (Input.Index, inout ContiguousArray<Input.Index>) -> Void {
-			return remainingParsers.first is SeriesParser.Bound
+			return remainingParsers.first is Patterns.Bound
 				? { remainingParsers.removeFirst(); return { $1.append($0) } }()
 				: { _, _ in }
 		}
@@ -116,13 +116,13 @@ public struct SeriesParser: TextPattern {
 		var remainingParsers = parsers[...]
 		var result = [Parserette]()
 		while let nextParser = remainingParsers.popFirst() {
-			if !(nextParser is SeriesParser.Bound), nextParser.length == 0, let first = remainingParsers.first {
+			if !(nextParser is Patterns.Bound), nextParser.length == 0, let first = remainingParsers.first {
 				if type(of: nextParser) == type(of: first) {
-					throw SeriesParser.InitError.message("Cannot have 2 \(type(of: nextParser)) in a row, as they will always parse the same position.") }
+					throw Patterns.InitError.message("Cannot have 2 \(type(of: nextParser)) in a row, as they will always parse the same position.") }
 				if let second = remainingParsers.second,
 					type(of: nextParser) == type(of: second),
-					first.length == 0 || (first as? SeriesParser.Skip)?.repeatedParser == nil {
-					throw SeriesParser.InitError.message("Cannot have 2 \(type(of: nextParser)) with a \(first) in between, as they will always parse the same position.")
+					first.length == 0 || (first as? Patterns.Skip)?.repeatedParser == nil {
+					throw Patterns.InitError.message("Cannot have 2 \(type(of: nextParser)) with a \(first) in between, as they will always parse the same position.")
 				}
 			}
 			result.append(try nextParser._prepForSeriesParser(remainingParsers: &remainingParsers))
@@ -132,17 +132,17 @@ public struct SeriesParser: TextPattern {
 
 	public init(verify series: [TextPattern?]) throws {
 		self.series = series.compactMap { $0 }.flattenParsers()
-		if series.isEmpty || (series.filter({ $0 is SeriesParser.Bound }).count > 2) {
+		if series.isEmpty || (series.filter({ $0 is Patterns.Bound }).count > 2) {
 			throw InitError.invalid(self.series.array())
 		}
 
-		self.parserettes = try SeriesParser.createParserettes(self.series)
+		self.parserettes = try Patterns.createParserettes(self.series)
 
 		// find first parseable parser 'parserFrom', if there is no Skip parser before it use it in Self.parse(_:from:):
-		let parserFromIndex = self.series.firstIndex(where: { !($0 is SeriesParser.Skip || $0 is SeriesParser.Bound) })!
+		let parserFromIndex = self.series.firstIndex(where: { !($0 is Patterns.Skip || $0 is Patterns.Bound) })!
 		let parserFrom = self.series[parserFromIndex]
-		let firstSkipIndex = self.series.firstIndex(where: { $0 is SeriesParser.Skip })
-		self.parserFrom = (firstSkipIndex.map { $0 < parserFromIndex } ?? false) ? nil : (parserFrom as? SeriesParser)?.parserFrom ?? parserFrom
+		let firstSkipIndex = self.series.firstIndex(where: { $0 is Patterns.Skip })
+		self.parserFrom = (firstSkipIndex.map { $0 < parserFromIndex } ?? false) ? nil : (parserFrom as? Patterns)?.parserFrom ?? parserFrom
 		self.description = self.series.map(String.init(describing:)).joined(separator: " ")
 	}
 
@@ -189,12 +189,12 @@ public struct SeriesParser: TextPattern {
 		return nil
 	}
 
-	public func appending(_ parser: TextPattern) throws -> SeriesParser {
-		return try SeriesParser(verify: self.series + [parser])
+	public func appending(_ parser: TextPattern) throws -> Patterns {
+		return try Patterns(verify: self.series + [parser])
 	}
 }
 
-public extension SeriesParser {
+public extension Patterns {
 	struct Match {
 		public let fullRange: ParsedRange
 		public let marks: [Input.Index]
@@ -241,7 +241,7 @@ public extension SeriesParser {
 fileprivate extension Sequence where Element == TextPattern {
 	func flattenParsers() -> [TextPattern] {
 		return self.flatMap { (parser: TextPattern) -> [TextPattern] in
-			if let series = parser as? SeriesParser, !series.series.contains(where: { $0 is SeriesParser.Bound }) {
+			if let series = parser as? Patterns, !series.series.contains(where: { $0 is Patterns.Bound }) {
 				return series.series.array()
 			}
 			return [parser]
@@ -249,7 +249,7 @@ fileprivate extension Sequence where Element == TextPattern {
 	}
 }
 
-extension SeriesParser: CustomDebugStringConvertible {
+extension Patterns: CustomDebugStringConvertible {
 	public var debugDescription: String {
 		return self.description
 	}

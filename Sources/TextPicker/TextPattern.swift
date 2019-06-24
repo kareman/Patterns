@@ -19,7 +19,7 @@ public protocol TextPattern: CustomStringConvertible {
 		-> UnfoldSequence<ParsedRange, Input.Index>
 	func `repeat`(min: Int) -> TextPattern
 	func `repeat`(min: Int, max: Int?) -> TextPattern
-	func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>) throws -> SeriesParser.Parserette
+	func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>) throws -> Patterns.Parserette
 	/// The length this parser always parses, if it is constant
 	var length: Int? { get }
 	var regex: String { get }
@@ -94,7 +94,7 @@ extension TextPattern {
 		return nil
 	}
 
-	public func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>) throws -> SeriesParser.Parserette {
+	public func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>) throws -> Patterns.Parserette {
 		return ({ (input: Input, index: Input.Index, _: inout ContiguousArray<Input.Index>) in
 			self.parse(input, at: index)
 		}, description)
@@ -336,8 +336,8 @@ public struct EndOfLineParser: TextPattern {
 			?? input.endIndex ..< input.endIndex
 	}
 	
-	public func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>) throws -> SeriesParser.Parserette {
-		if (remainingParsers.first.map { !($0 is SeriesParser.Bound) } ?? false) {
+	public func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>) throws -> Patterns.Parserette {
+		if (remainingParsers.first.map { !($0 is Patterns.Bound) } ?? false) {
 			return ({ (input: Input, index: Input.Index, _: inout ContiguousArray<Input.Index>) in
 				index == input.endIndex ? nil : self.parse(input, at: index)
 			}, "EndOfLineParser (test for end)")
