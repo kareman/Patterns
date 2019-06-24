@@ -40,7 +40,7 @@ class SeriesParserTests: XCTestCase {
 		assertParseAll(
 			try Patterns(verify:
 				Literal(" "),
-				Patterns.Skip(),
+				Skip(),
 				Literal(" ")),
 			input: text, result: [" is ", " test "])
 
@@ -72,9 +72,9 @@ class SeriesParserTests: XCTestCase {
 		assertParseAll(
 			try Patterns(verify:
 				Literal(" "),
-				Patterns.Bound(),
+				Bound(),
 				OneOf.wholeNumber.repeat(min: 0),
-				Patterns.Bound(),
+				Bound(),
 				Literal(" ")),
 			input: text, result: ["4", "6", "123"])
 	}
@@ -82,12 +82,12 @@ class SeriesParserTests: XCTestCase {
 	func testSeriesParserWithBounds() throws {
 		assertParseAll(
 			try Patterns(verify:
-				Patterns.Bound(), Literal("a")),
+				Bound(), Literal("a")),
 			input: "xaa xa", result: "", count: 3)
 		assertParseAll(
 			try Patterns(verify:
 				try Patterns(verify:
-					Literal("x"), Patterns.Bound(), Literal("a")),
+					Literal("x"), Bound(), Literal("a")),
 				Literal("a")),
 			input: "xaxa xa", count: 3)
 
@@ -95,9 +95,9 @@ class SeriesParserTests: XCTestCase {
 		assertParseAll(
 			try Patterns(verify:
 				Literal(" "),
-				Patterns.Bound(),
+				Bound(),
 				OneOf(letters).repeat(min: 1),
-				Patterns.Bound(),
+				Bound(),
 				Literal(" ")),
 			input: text, result: ["is", "a", "test"])
 		assertParseAll(
@@ -106,8 +106,8 @@ class SeriesParserTests: XCTestCase {
 		assertParseAll(
 			try Patterns(verify:
 				OneOf(letters),
-				Patterns.Bound(),
-				Patterns.Bound(),
+				Bound(),
+				Bound(),
 				Literal(" ")),
 			input: text, result: "", count: 4)
 	}
@@ -126,35 +126,35 @@ class SeriesParserTests: XCTestCase {
 		assertParseAll(
 			try Patterns(verify:
 				Literal(" "),
-				Patterns.Bound(),
+				Bound(),
 				OneOf(letters),
-				Patterns.Skip(),
-				Patterns.Bound(),
+				Skip(),
+				Bound(),
 				Literal(" ")),
 			input: text, result: ["is", "a", "test"])
 		assertParseAll(
 			try Patterns(verify:
 				Literal(" "),
-				Patterns.Bound(),
-				Patterns.Skip(),
+				Bound(),
+				Skip(),
 				OneOf(letters),
-				Patterns.Bound(),
+				Bound(),
 				Literal(" ")),
 			input: text, result: ["a"])
 		assertParseAll(
 			try Patterns(verify:
 				Literal(" "),
-				Patterns.Bound(),
-				Patterns.Skip(),
-				Patterns.Bound(),
+				Bound(),
+				Skip(),
+				Bound(),
 				Literal(" ")),
 			input: text, result: ["is", "a", "test"])
 		assertParseAll(
 			try Patterns(verify:
 				Literal(" "),
-				Patterns.Bound(),
-				Patterns.Skip(),
-				Patterns.Bound()),
+				Bound(),
+				Skip(),
+				Bound()),
 			input: text, result: ["is a test text."])
 	}
 
@@ -171,21 +171,21 @@ class SeriesParserTests: XCTestCase {
 		assertParseAll(
 			try Patterns(verify:
 				Literal("("),
-				Patterns.Skip(whileRepeating: Literal("a")),
+				Skip(whileRepeating: Literal("a")),
 				Literal(")")),
 			input: text, result: ["(a)", "(aaaaa)", "()"])
 		assertParseAll(
 			try Patterns(verify:
 				Literal("("),
-				Patterns.Bound(),
-				Patterns.Skip(whileRepeating: Literal("a")),
-				Patterns.Bound(),
+				Bound(),
+				Skip(whileRepeating: Literal("a")),
+				Bound(),
 				Literal(")")),
 			input: text, result: ["a", "aaaaa", ""])
 		assertParseAll(
 			try Patterns(verify:
 				Literal("("),
-				Patterns.Skip(whileRepeating: OneOf.newline.not),
+				Skip(whileRepeating: OneOf.newline.not),
 				Literal(")")),
 			input: text, result: ["(a)", "(aaaaa)", "(aaabaa)", "()"])
 	}
@@ -197,7 +197,7 @@ class SeriesParserTests: XCTestCase {
 		cera user
 		dilled10 io
 		"""
-		let parser = try Patterns(verify: BeginningOfLineParser(), Patterns.Bound())
+		let parser = try Patterns(verify: BeginningOfLineParser(), Bound())
 		let m = Array(parser.matches(in: text[...]))
 
 		XCTAssertEqual(m.map { text[$0.marks[0]] }, ["a", "b", "c", "d"].map(Character.init))
@@ -212,11 +212,11 @@ class SeriesParserTests: XCTestCase {
 		dilled10 io
 
 		"""
-		var parser = try Patterns(verify: EndOfLineParser(), Patterns.Bound())
+		var parser = try Patterns(verify: EndOfLineParser(), Bound())
 		var m = Array(parser.matches(in: text[...]))
 		XCTAssertEqual(m.dropLast().map { text[$0.marks[0]] }, Array(repeating: Character("\n"), count: 4))
 
-		parser = try Patterns(verify: Patterns.Bound(), EndOfLineParser())
+		parser = try Patterns(verify: Bound(), EndOfLineParser())
 		m = Array(parser.matches(in: text[...]))
 		XCTAssertEqual(m.dropLast().map { text[$0.marks[0]] }, Array(repeating: Character("\n"), count: 4))
 	}
