@@ -145,6 +145,12 @@ public struct SubstringParser: Parser {
 	 */
 }
 
+extension SubstringParser: ExpressibleByStringLiteral {
+	public init(stringLiteral value: StaticString) {
+		self.init( String(describing: value))
+	}
+}
+
 public struct OneOfParser: Parser {
 	public let set: Group<Character>
 
