@@ -10,35 +10,35 @@ import Foundation
 import TextPicker
 import XCTest
 
-let digits = OneOfParser.wholeNumber.set
-let letters = OneOfParser.letter.set
-let doublequote = SubstringParser("\"")
+let digits = OneOf.wholeNumber.set
+let letters = OneOf.letter.set
+let doublequote = Literal("\"")
 
 class ParserTests: XCTestCase {
 	func testSubstring() {
-		assertParseAll(SubstringParser("a"), input: "abcd", result: "a", count: 1)
-		assertParseAll(SubstringParser("b"), input: "abcdb", result: "b", count: 2)
-		assertParseAll(SubstringParser("ab"), input: "abcaba", result: "ab", count: 2)
+		assertParseAll(Literal("a"), input: "abcd", result: "a", count: 1)
+		assertParseAll(Literal("b"), input: "abcdb", result: "b", count: 2)
+		assertParseAll(Literal("ab"), input: "abcaba", result: "ab", count: 2)
 	}
 
 	func testOneOf() {
-		assertParseAll(OneOfParser(digits), input: "ab12c3,d4", count: 4)
+		assertParseAll(OneOf(digits), input: "ab12c3,d4", count: 4)
 	}
 
 	func testOptional() throws {
-		assertParseAll(try SeriesParser(verify: OneOfParser(digits).repeat(min: 0)), input: "123abc123", count: 5)
-		assertParseAll(try SeriesParser(verify: OneOfParser(digits).repeat(min: 0, max: 1), OneOfParser(letters)),
+		assertParseAll(try SeriesParser(verify: OneOf(digits).repeat(min: 0)), input: "123abc123", count: 5)
+		assertParseAll(try SeriesParser(verify: OneOf(digits).repeat(min: 0, max: 1), OneOf(letters)),
 		               input: "123abc", result: ["3a", "b", "c"])
 	}
 
 	func testRepeat() {
-		assertParseAll(OneOfParser(digits).repeat(min: 2), input: "123abc123", count: 2)
-		assertParseAll(OneOfParser(digits).repeat(min: 1), input: "123abc", result: "123", count: 1)
-		assertParseAll(OneOfParser(digits).repeat(min: 3), input: "123abc", result: "123", count: 1)
-		assertParseAll(OneOfParser(digits).repeat(min: 4), input: "123abc", count: 0)
+		assertParseAll(OneOf(digits).repeat(min: 2), input: "123abc123", count: 2)
+		assertParseAll(OneOf(digits).repeat(min: 1), input: "123abc", result: "123", count: 1)
+		assertParseAll(OneOf(digits).repeat(min: 3), input: "123abc", result: "123", count: 1)
+		assertParseAll(OneOf(digits).repeat(min: 4), input: "123abc", count: 0)
 
-		assertParseAll(OneOfParser(digits).repeat(min: 1), input: "a123abc123d", result: "123", count: 2)
-		assertParseAll(OneOfParser(digits).repeat(min: 1), input: "123abc09d4 8", count: 4)
+		assertParseAll(OneOf(digits).repeat(min: 1), input: "a123abc123d", result: "123", count: 2)
+		assertParseAll(OneOf(digits).repeat(min: 1), input: "123abc09d4 8", count: 4)
 	}
 
 	func testOrParser() {
@@ -60,21 +60,21 @@ class ParserTests: XCTestCase {
 		assertParseAll(parser, input: "\n", count: 2)
 		assertParseAll(parser, input: text, result: "", count: 4)
 		assertParseAll(
-			try SeriesParser(verify: BeginningOfLineParser(), SeriesParser.Bound(), SeriesParser.Skip(), SeriesParser.Bound(), SubstringParser(" ")),
+			try SeriesParser(verify: BeginningOfLineParser(), SeriesParser.Bound(), SeriesParser.Skip(), SeriesParser.Bound(), Literal(" ")),
 			input: text, result: "line", count: 4)
 		assertParseAll(
-			try SeriesParser(verify: BeginningOfLineParser(), SubstringParser("line")),
+			try SeriesParser(verify: BeginningOfLineParser(), Literal("line")),
 			input: text, result: "line", count: 4)
 		assertParseAll(
 			try SeriesParser(
-				verify: OneOfParser(digits), SeriesParser.Skip(), BeginningOfLineParser(), SubstringParser("l")),
+				verify: OneOf(digits), SeriesParser.Skip(), BeginningOfLineParser(), Literal("l")),
 			input: text, result: ["1\nl", "2\nl", "3\nl"])
 
 		XCTAssertThrowsError(try SeriesParser(verify: [BeginningOfLineParser(), BeginningOfLineParser()]))
 		XCTAssertThrowsError(try SeriesParser(verify: [BeginningOfLineParser(), SeriesParser.Bound(), BeginningOfLineParser()]))
 		XCTAssertThrowsError(
 			try SeriesParser(verify: [BeginningOfLineParser(), SeriesParser.Skip(), BeginningOfLineParser()]))
-		XCTAssertNoThrow(try SeriesParser(verify: [BeginningOfLineParser(), SeriesParser.Skip(whileRepeating: OneOfParser.alphanumeric || SubstringParser("\n")), BeginningOfLineParser()]))
+		XCTAssertNoThrow(try SeriesParser(verify: [BeginningOfLineParser(), SeriesParser.Skip(whileRepeating: OneOf.alphanumeric || Literal("\n")), BeginningOfLineParser()]))
 	}
 
 	func testEndOfLineParser() throws {
@@ -91,13 +91,13 @@ class ParserTests: XCTestCase {
 		"""
 		assertParseAll(parser, input: text, count: 4)
 		assertParseAll(
-			try SeriesParser(verify: SubstringParser(" "), SeriesParser.Bound(), SeriesParser.Skip(), SeriesParser.Bound(), EndOfLineParser()),
+			try SeriesParser(verify: Literal(" "), SeriesParser.Bound(), SeriesParser.Skip(), SeriesParser.Bound(), EndOfLineParser()),
 			input: text, result: ["1", "2", "3", "4"])
 		assertParseAll(
-			try SeriesParser(verify: OneOfParser(digits), EndOfLineParser()),
+			try SeriesParser(verify: OneOf(digits), EndOfLineParser()),
 			input: text, result: ["1", "2", "3", "4"])
 		assertParseAll(
-			try SeriesParser(verify: OneOfParser(digits), EndOfLineParser(), SeriesParser.Skip(), SubstringParser("l")),
+			try SeriesParser(verify: OneOf(digits), EndOfLineParser(), SeriesParser.Skip(), Literal("l")),
 			input: text, result: ["1\nl", "2\nl", "3\nl"])
 
 		XCTAssertThrowsError(try SeriesParser(verify: EndOfLineParser(), EndOfLineParser()))
@@ -105,7 +105,7 @@ class ParserTests: XCTestCase {
 			try SeriesParser(verify: EndOfLineParser(), SeriesParser.Bound(), EndOfLineParser()))
 		XCTAssertThrowsError(
 			try SeriesParser(verify: EndOfLineParser(), SeriesParser.Skip(), EndOfLineParser()))
-		XCTAssertNoThrow(try SeriesParser(verify: [EndOfLineParser(), SeriesParser.Skip(whileRepeating: OneOfParser.alphanumeric || SubstringParser("\n")), EndOfLineParser()]))
+		XCTAssertNoThrow(try SeriesParser(verify: [EndOfLineParser(), SeriesParser.Skip(whileRepeating: OneOf.alphanumeric || Literal("\n")), EndOfLineParser()]))
 
 		assertParseAll(
 			try SeriesParser(verify: EndOfLineParser()),

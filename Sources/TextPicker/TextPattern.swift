@@ -101,7 +101,7 @@ extension TextPattern {
 	}
 }
 
-public struct SubstringParser: TextPattern {
+public struct Literal: TextPattern {
 	let substring: Input
 	let searchCache: SearchCache<Input.Element>
 
@@ -145,13 +145,13 @@ public struct SubstringParser: TextPattern {
 	 */
 }
 
-extension SubstringParser: ExpressibleByStringLiteral {
+extension Literal: ExpressibleByStringLiteral {
 	public init(stringLiteral value: StaticString) {
 		self.init( String(describing: value))
 	}
 }
 
-public struct OneOfParser: TextPattern {
+public struct OneOf: TextPattern {
 	public let set: Group<Character>
 
 	public let description: String
@@ -172,42 +172,42 @@ public struct OneOfParser: TextPattern {
 		return (index < input.endIndex && set.contains(input[index])) ? index ..< input.index(after: index) : nil
 	}
 
-	public static let alphanumeric = OneOfParser(Group(
+	public static let alphanumeric = OneOf(Group(
 		description: "alphanumeric", regex: #"(?:\p{Alphabetic}|\p{Nd})"#,
 		contains: { $0.isWholeNumber || $0.isLetter }))
-	public static let wholeNumber = OneOfParser(Group(description: "wholeNumber", regex: #"\p{Nd}"#,
+	public static let wholeNumber = OneOf(Group(description: "wholeNumber", regex: #"\p{Nd}"#,
 		contains: (\Character.isWholeNumber).toFunc))
-	public static let letter = OneOfParser(Group(description: "letter", regex: #"\p{Alphabetic}"#,
+	public static let letter = OneOf(Group(description: "letter", regex: #"\p{Alphabetic}"#,
 		contains: (\Character.isLetter).toFunc))
-	public static let lowercaseLetter = OneOfParser(Group(description: "lowercaseLetter", regex: #"\p{Ll}"#,
+	public static let lowercaseLetter = OneOf(Group(description: "lowercaseLetter", regex: #"\p{Ll}"#,
 		contains: (\Character.isLowercase).toFunc))
-	public static let newline = OneOfParser(Group(description: "newline", regex: #"\p{Zl}"#,
+	public static let newline = OneOf(Group(description: "newline", regex: #"\p{Zl}"#,
 		contains: (\Character.isNewline).toFunc))
-	public static let punctuationCharacter = OneOfParser(Group(
+	public static let punctuationCharacter = OneOf(Group(
 		description: "punctuationCharacter", regex: #"\p{P}"#,
 		contains: (\Character.isPunctuation).toFunc))
-	public static let symbol = OneOfParser(Group(description: "symbol", regex: #"\p{S}"#,
+	public static let symbol = OneOf(Group(description: "symbol", regex: #"\p{S}"#,
 		contains: (\Character.isSymbol).toFunc))
-	public static let uppercaseLetter = OneOfParser(Group(description: "uppercaseLetter", regex: #"\p{Lu}"#,
+	public static let uppercaseLetter = OneOf(Group(description: "uppercaseLetter", regex: #"\p{Lu}"#,
 		contains: (\Character.isUppercase).toFunc))
-	public static let whitespaceOrNewline = OneOfParser(Group(
+	public static let whitespaceOrNewline = OneOf(Group(
 		description: "whitespaceOrNewline", regex: #"\p{White_Space}"#,
 		contains: (\Character.isWhitespace).toFunc))
 
-	public static let baseParsers: [OneOfParser] = [
+	public static let baseParsers: [OneOf] = [
 		alphanumeric, wholeNumber, letter, lowercaseLetter, newline, punctuationCharacter, symbol,
 		uppercaseLetter, whitespaceOrNewline]
 
 	public static func parsers(for c: Character) -> [TextPattern] {
-		return OneOfParser.baseParsers.filter { $0.set.contains(c) }
+		return OneOf.baseParsers.filter { $0.set.contains(c) }
 	}
 
 	public static func parsers<S: Sequence>(for s: S) -> [TextPattern] where S.Element == Input.Element {
-		return OneOfParser.baseParsers.filter { $0.set.contains(contentsOf: s) }
+		return OneOf.baseParsers.filter { $0.set.contains(contentsOf: s) }
 	}
 }
 
-public struct RepeatParser: TextPattern {
+public struct RepeatPattern: TextPattern {
 	let repeatedParser: TextPattern
 	let min: Int
 	let max: Int?
@@ -254,7 +254,7 @@ public struct RepeatParser: TextPattern {
 extension TextPattern {
 	public func `repeat`(min: Int, max: Int?) -> TextPattern {
 		assert(min >= 0 && max.map { $0 >= min } ?? true)
-		return RepeatParser(repeatedParser: self, min: min, max: max)
+		return RepeatPattern(repeatedParser: self, min: min, max: max)
 	}
 
 	public func `repeat`(min: Int) -> TextPattern {
@@ -262,7 +262,7 @@ extension TextPattern {
 	}
 }
 
-public struct OrParser: TextPattern {
+public struct OrPattern: TextPattern {
 	let parser1, parser2: TextPattern
 
 	public var description: String {
@@ -288,8 +288,8 @@ public struct OrParser: TextPattern {
 	}
 }
 
-public func || (p1: TextPattern, p2: TextPattern) -> OrParser {
-	return OrParser(parser1: p1, parser2: p2)
+public func || (p1: TextPattern, p2: TextPattern) -> OrPattern {
+	return OrPattern(parser1: p1, parser2: p2)
 }
 
 public struct BeginningOfLineParser: TextPattern {
@@ -348,7 +348,7 @@ public struct EndOfLineParser: TextPattern {
 	}
 }
 
-public struct NotParser: TextPattern {
+public struct NotPattern: TextPattern {
 	let parser: TextPattern
 	public var description: String {
 		return "!\(parser)"
@@ -368,7 +368,7 @@ public struct NotParser: TextPattern {
 }
 
 extension TextPattern {
-	public var not: NotParser {
-		return NotParser(parser: self)
+	public var not: NotPattern {
+		return NotPattern(parser: self)
 	}
 }

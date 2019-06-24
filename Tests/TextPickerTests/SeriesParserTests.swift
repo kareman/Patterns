@@ -12,24 +12,24 @@ class SeriesParserTests: XCTestCase {
 	func testSeriesParserSimple() throws {
 		assertParseAll(
 			try SeriesParser(verify:
-				SubstringParser("a").repeat(min: 0, max: 1),
-				SubstringParser("b")),
+				Literal("a").repeat(min: 0, max: 1),
+				Literal("b")),
 			input: "ibiiiiabiii", count: 2)
 		assertParseAll(
 			try SeriesParser(verify:
-				SubstringParser("a").repeat(min: 0, max: 1),
-				SubstringParser("b")),
+				Literal("a").repeat(min: 0, max: 1),
+				Literal("b")),
 			input: "ibiiaiiababiibi", count: 4)
 		assertParseAll(
 			try SeriesParser(verify:
-				SubstringParser("b"),
-				SubstringParser("a").repeat(min: 0, max: 1)),
+				Literal("b"),
+				Literal("a").repeat(min: 0, max: 1)),
 			input: "ibiiiibaiii", count: 2)
 
 		let p = try SeriesParser(verify:
-			SubstringParser("ab"),
-			OneOfParser(digits),
-			SubstringParser("."))
+			Literal("ab"),
+			OneOf(digits),
+			Literal("."))
 		assertParseAll(p, input: "$#%/ab8.lsgj", result: "ab8.", count: 1)
 		assertParseAll(p, input: "$ab#%/ab8.lsgab3.j", count: 2)
 		assertParseAll(p, input: "$#%/ab8lsgj", count: 0)
@@ -39,9 +39,9 @@ class SeriesParserTests: XCTestCase {
 		let text = "This is a test text."
 		assertParseAll(
 			try SeriesParser(verify:
-				SubstringParser(" "),
+				Literal(" "),
 				SeriesParser.Skip(),
-				SubstringParser(" ")),
+				Literal(" ")),
 			input: text, result: [" is ", " test "])
 
 		/*
@@ -65,57 +65,57 @@ class SeriesParserTests: XCTestCase {
 		let text = "This is 4 6 a test 123 text."
 		assertParseAll(
 			try SeriesParser(verify:
-				SubstringParser(" "),
-				OneOfParser.wholeNumber.repeat(min: 0),
-				SubstringParser(" ")),
+				Literal(" "),
+				OneOf.wholeNumber.repeat(min: 0),
+				Literal(" ")),
 			input: text, result: [" 4 ", " 123 "])
 		assertParseAll(
 			try SeriesParser(verify:
-				SubstringParser(" "),
+				Literal(" "),
 				SeriesParser.Bound(),
-				OneOfParser.wholeNumber.repeat(min: 0),
+				OneOf.wholeNumber.repeat(min: 0),
 				SeriesParser.Bound(),
-				SubstringParser(" ")),
+				Literal(" ")),
 			input: text, result: ["4", "6", "123"])
 	}
 
 	func testSeriesParserWithBounds() throws {
 		assertParseAll(
 			try SeriesParser(verify:
-				SeriesParser.Bound(), SubstringParser("a")),
+				SeriesParser.Bound(), Literal("a")),
 			input: "xaa xa", result: "", count: 3)
 		assertParseAll(
 			try SeriesParser(verify:
 				try SeriesParser(verify:
-					SubstringParser("x"), SeriesParser.Bound(), SubstringParser("a")),
-				SubstringParser("a")),
+					Literal("x"), SeriesParser.Bound(), Literal("a")),
+				Literal("a")),
 			input: "xaxa xa", count: 3)
 
 		let text = "This is a test text."
 		assertParseAll(
 			try SeriesParser(verify:
-				SubstringParser(" "),
+				Literal(" "),
 				SeriesParser.Bound(),
-				OneOfParser(letters).repeat(min: 1),
+				OneOf(letters).repeat(min: 1),
 				SeriesParser.Bound(),
-				SubstringParser(" ")),
+				Literal(" ")),
 			input: text, result: ["is", "a", "test"])
 		assertParseAll(
-			try SeriesParser(verify: OneOfParser(letters).repeat(min: 1)),
+			try SeriesParser(verify: OneOf(letters).repeat(min: 1)),
 			input: text, result: ["This", "is", "a", "test", "text"])
 		assertParseAll(
 			try SeriesParser(verify:
-				OneOfParser(letters),
+				OneOf(letters),
 				SeriesParser.Bound(),
 				SeriesParser.Bound(),
-				SubstringParser(" ")),
+				Literal(" ")),
 			input: text, result: "", count: 4)
 	}
 
 	func testRepeatOrThenEndOfLine() throws {
 		assertParseAll(
 			try SeriesParser(verify:
-				(OneOfParser.alphanumeric || OneOfParser(contentsOf: " ")).repeat(min: 0),
+				(OneOf.alphanumeric || OneOf(contentsOf: " ")).repeat(min: 0),
 				EndOfLineParser()),
 			input: "FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S",
 			result: ["FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S"])
@@ -125,33 +125,33 @@ class SeriesParserTests: XCTestCase {
 		let text = "This is a test text."
 		assertParseAll(
 			try SeriesParser(verify:
-				SubstringParser(" "),
+				Literal(" "),
 				SeriesParser.Bound(),
-				OneOfParser(letters),
+				OneOf(letters),
 				SeriesParser.Skip(),
 				SeriesParser.Bound(),
-				SubstringParser(" ")),
+				Literal(" ")),
 			input: text, result: ["is", "a", "test"])
 		assertParseAll(
 			try SeriesParser(verify:
-				SubstringParser(" "),
+				Literal(" "),
 				SeriesParser.Bound(),
 				SeriesParser.Skip(),
-				OneOfParser(letters),
+				OneOf(letters),
 				SeriesParser.Bound(),
-				SubstringParser(" ")),
+				Literal(" ")),
 			input: text, result: ["a"])
 		assertParseAll(
 			try SeriesParser(verify:
-				SubstringParser(" "),
+				Literal(" "),
 				SeriesParser.Bound(),
 				SeriesParser.Skip(),
 				SeriesParser.Bound(),
-				SubstringParser(" ")),
+				Literal(" ")),
 			input: text, result: ["is", "a", "test"])
 		assertParseAll(
 			try SeriesParser(verify:
-				SubstringParser(" "),
+				Literal(" "),
 				SeriesParser.Bound(),
 				SeriesParser.Skip(),
 				SeriesParser.Bound()),
@@ -170,23 +170,23 @@ class SeriesParserTests: XCTestCase {
 
 		assertParseAll(
 			try SeriesParser(verify:
-				SubstringParser("("),
-				SeriesParser.Skip(whileRepeating: SubstringParser("a")),
-				SubstringParser(")")),
+				Literal("("),
+				SeriesParser.Skip(whileRepeating: Literal("a")),
+				Literal(")")),
 			input: text, result: ["(a)", "(aaaaa)", "()"])
 		assertParseAll(
 			try SeriesParser(verify:
-				SubstringParser("("),
+				Literal("("),
 				SeriesParser.Bound(),
-				SeriesParser.Skip(whileRepeating: SubstringParser("a")),
+				SeriesParser.Skip(whileRepeating: Literal("a")),
 				SeriesParser.Bound(),
-				SubstringParser(")")),
+				Literal(")")),
 			input: text, result: ["a", "aaaaa", ""])
 		assertParseAll(
 			try SeriesParser(verify:
-				SubstringParser("("),
-				SeriesParser.Skip(whileRepeating: OneOfParser.newline.not),
-				SubstringParser(")")),
+				Literal("("),
+				SeriesParser.Skip(whileRepeating: OneOf.newline.not),
+				Literal(")")),
 			input: text, result: ["(a)", "(aaaaa)", "(aaabaa)", "()"])
 	}
 
