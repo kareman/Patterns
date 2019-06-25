@@ -36,7 +36,7 @@
 		OBJ_76 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
 		OBJ_87 /* GeneralTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_19 /* GeneralTests.swift */; };
 		OBJ_88 /* ParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_20 /* ParserTests.swift */; };
-		OBJ_89 /* SeriesParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_21 /* SeriesParserTests.swift */; };
+		OBJ_89 /* PatternsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_21 /* PatternsTests.swift */; };
 		OBJ_90 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_22 /* TestHelpers.swift */; };
 		OBJ_92 /* TextPicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "TextPicker::TextPicker::Product" /* TextPicker.framework */; };
 		OBJ_99 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_16 /* main.swift */; };
@@ -76,7 +76,7 @@
 		OBJ_16 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		OBJ_19 /* GeneralTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralTests.swift; sourceTree = "<group>"; };
 		OBJ_20 /* ParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParserTests.swift; sourceTree = "<group>"; };
-		OBJ_21 /* SeriesParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesParserTests.swift; sourceTree = "<group>"; };
+		OBJ_21 /* PatternsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatternsTests.swift; sourceTree = "<group>"; };
 		OBJ_22 /* TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
 		OBJ_26 /* Converters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Converters.swift; sourceTree = "<group>"; };
 		OBJ_27 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
@@ -155,7 +155,7 @@
 			children = (
 				OBJ_19 /* GeneralTests.swift */,
 				OBJ_20 /* ParserTests.swift */,
-				OBJ_21 /* SeriesParserTests.swift */,
+				OBJ_21 /* PatternsTests.swift */,
 				OBJ_22 /* TestHelpers.swift */,
 			);
 			name = TextPickerTests;
@@ -418,7 +418,7 @@
 			files = (
 				OBJ_87 /* GeneralTests.swift in Sources */,
 				OBJ_88 /* ParserTests.swift in Sources */,
-				OBJ_89 /* SeriesParserTests.swift in Sources */,
+				OBJ_89 /* PatternsTests.swift in Sources */,
 				OBJ_90 /* TestHelpers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -1,5 +1,5 @@
 //
-//  Parser.swift
+//  TextPattern.swift
 //  TextPicker
 //
 //  Created by Kåre Morstøl on 20/03/2017.
@@ -19,7 +19,7 @@ public protocol TextPattern: CustomStringConvertible {
 		-> UnfoldSequence<ParsedRange, Input.Index>
 	func `repeat`(min: Int) -> TextPattern
 	func `repeat`(min: Int, max: Int?) -> TextPattern
-	func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>) throws -> Patterns.Parserette
+	func _prepForPatterns(remainingParsers: inout ArraySlice<TextPattern>) throws -> Patterns.Parserette
 	/// The length this parser always parses, if it is constant
 	var length: Int? { get }
 	var regex: String { get }
@@ -47,9 +47,18 @@ public extension TextPatternWrapper {
 		return parser.repeat(min: min)
 	}
 
+	func `repeat`(min: Int, max: Int?) -> TextPattern { return parser.repeat(min: min, max: max) }
+
+	func _prepForPatterns(remainingParsers: inout ArraySlice<TextPattern>) throws -> Patterns.Parserette {
+		return try parser._prepForPatterns(remainingParsers: &remainingParsers)
+	}
+
+	/// The length this parser always parses, if it is constant
 	var length: Int? {
 		return parser.length
 	}
+
+	var regex: String { return parser.regex }
 }
 
 extension TextPattern {
@@ -94,7 +103,7 @@ extension TextPattern {
 		return nil
 	}
 
-	public func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>) throws -> Patterns.Parserette {
+	public func _prepForPatterns(remainingParsers: inout ArraySlice<TextPattern>) throws -> Patterns.Parserette {
 		return ({ (input: Input, index: Input.Index, _: inout ContiguousArray<Input.Index>) in
 			self.parse(input, at: index)
 		}, description)
@@ -341,7 +350,7 @@ public struct Line: TextPatternWrapper {
 				?? input.endIndex ..< input.endIndex
 		}
 
-		public func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>) throws -> Patterns.Parserette {
+		public func _prepForPatterns(remainingParsers: inout ArraySlice<TextPattern>) throws -> Patterns.Parserette {
 			if (remainingParsers.first.map { !($0 is Bound) } ?? false) {
 				return ({ (input: Input, index: Input.Index, _: inout ContiguousArray<Input.Index>) in
 					index == input.endIndex ? nil : self.parse(input, at: index)

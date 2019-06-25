@@ -1,5 +1,5 @@
 //
-//  SeriesParser.swift
+//  Patterns.swift
 //  TextPicker
 //
 //  Created by Kåre Morstøl on 23/10/2018.
@@ -25,7 +25,7 @@ public struct Skip: TextPattern {
 		assertionFailure("do not call this"); return nil
 	}
 
-	public func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>)
+	public func _prepForPatterns(remainingParsers: inout ArraySlice<TextPattern>)
 		throws -> Patterns.Parserette {
 			let maybeStoreBound = Bound.getBoundHandler(&remainingParsers)
 
@@ -65,7 +65,7 @@ public struct Bound: TextPattern {
 		assertionFailure("do not call this"); return nil
 	}
 
-	public func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>) -> Patterns.Parserette {
+	public func _prepForPatterns(remainingParsers: inout ArraySlice<TextPattern>) -> Patterns.Parserette {
 		return ({ (_: Input, index: Input.Index, bounds: inout ContiguousArray<Input.Index>) in
 			bounds.append(index)
 			return index ..< index
@@ -125,7 +125,7 @@ public struct Patterns: TextPattern {
 					throw Patterns.InitError.message("Cannot have 2 \(type(of: nextParser)) with a \(first) in between, as they will always parse the same position.")
 				}
 			}
-			result.append(try nextParser._prepForSeriesParser(remainingParsers: &remainingParsers))
+			result.append(try nextParser._prepForPatterns(remainingParsers: &remainingParsers))
 		}
 		return result
 	}

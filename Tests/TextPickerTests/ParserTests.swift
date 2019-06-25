@@ -112,19 +112,6 @@ class ParserTests: XCTestCase {
 			input: "\n", count: 2)
 	}
 
-	/*
-	 func testLoadParser() {
-	 do {
-	 let manual = SeriesParser(SubstringParser("a\"b"), OneOfParser.baseParsers["decimalDigit"]!.repeat(min: 1), SubstringParser(".").repeat(min: 0, max: 5) || SubstringParser("b"))
-	 XCTAssert(manual.description.contains("a\\\"b"), "Quote was not properly escaped.")
-	 let opened = try loadParser(manual.description)
-	 XCTAssertEqual(manual.description, opened.description)
-	 } catch {
-	 XCTFail(String(describing: error))
-	 }
-	 }
-	 */
-
 	func testParseFile() throws {
 		let file = #file
 		let text = try! String(contentsOfFile: file, encoding: .utf8)

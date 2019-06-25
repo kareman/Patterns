@@ -1,5 +1,4 @@
 //
-//  ParserCreatorTests.swift
 //  TextPickerTests
 //
 //  Created by Kåre Morstøl on 18/05/2018.
@@ -8,8 +7,8 @@
 import TextPicker
 import XCTest
 
-class SeriesParserTests: XCTestCase {
-	func testSeriesParserSimple() throws {
+class PatternsTests: XCTestCase {
+	func testPatternsSimple() throws {
 		assertParseAll(
 			try Patterns(verify:
 				Literal("a").repeat(min: 0, max: 1),
@@ -35,7 +34,7 @@ class SeriesParserTests: XCTestCase {
 		assertParseAll(p, input: "$#%/ab8lsgj", count: 0)
 	}
 
-	func testSeriesParserWithSkip() throws {
+	func testPatternsWithSkip() throws {
 		let text = "This is a test text."
 		assertParseAll(
 			try Patterns(verify:
@@ -46,14 +45,14 @@ class SeriesParserTests: XCTestCase {
 
 		/*
 		 assertParseAll(
-		 try SeriesParser(verify:
+		 try Patterns(verify:
 		 SubstringParser(" "),
-		 SeriesParser.Skip(),
+		 Patterns.Skip(),
 		 SubstringParser("d")),
 		 input: " ab cd", result: [" cd"])
 
 		 assertParseAll(
-		 try SeriesParser(verify:
+		 try Patterns(verify:
 		 SubstringParser(" "),
 		 OneOfParser(Group(contentsOf: " ").inverted()).repeat(min: 1),
 		 SubstringParser("d")),
@@ -61,7 +60,7 @@ class SeriesParserTests: XCTestCase {
 		 */
 	}
 
-	func testSeriesParserWithRepeat() throws {
+	func testPatternsWithRepeat() throws {
 		let text = "This is 4 6 a test 123 text."
 		assertParseAll(
 			try Patterns(verify:
@@ -79,7 +78,7 @@ class SeriesParserTests: XCTestCase {
 			input: text, result: ["4", "6", "123"])
 	}
 
-	func testSeriesParserWithBounds() throws {
+	func testPatternsWithBounds() throws {
 		assertParseAll(
 			try Patterns(verify:
 				Bound(), Literal("a")),
@@ -121,7 +120,7 @@ class SeriesParserTests: XCTestCase {
 			result: ["FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S"])
 	}
 
-	func testSeriesParserWithSkipAndBounds() throws {
+	func testPatternsWithSkipAndBounds() throws {
 		let text = "This is a test text."
 		assertParseAll(
 			try Patterns(verify:
@@ -222,14 +221,14 @@ class SeriesParserTests: XCTestCase {
 	}
 }
 
-extension SeriesParserTests {
+extension PatternsTests {
 	public static var allTests = [
-		("testSeriesParserSimple", testSeriesParserSimple),
-		("testSeriesParserWithSkip", testSeriesParserWithSkip),
-		("testSeriesParserWithRepeat", testSeriesParserWithRepeat),
-		("testSeriesParserWithBounds", testSeriesParserWithBounds),
+		("testPatternsSimple", testPatternsSimple),
+		("testPatternsWithSkip", testPatternsWithSkip),
+		("testPatternsWithRepeat", testPatternsWithRepeat),
+		("testPatternsWithBounds", testPatternsWithBounds),
 		("testRepeatOrThenEndOfLine", testRepeatOrThenEndOfLine),
-		("testSeriesParserWithSkipAndBounds", testSeriesParserWithSkipAndBounds),
+		("testPatternsWithSkipAndBounds", testPatternsWithSkipAndBounds),
 		("testSkipWithRepeatingParser", testSkipWithRepeatingParser),
 		("testMatchBeginningOfLines", testMatchBeginningOfLines),
 		("testMatchEndOfLines", testMatchEndOfLines),
