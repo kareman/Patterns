@@ -27,7 +27,7 @@ class PatternsTests: XCTestCase {
 
 		let p = try Patterns(verify:
 			Literal("ab"),
-			OneOf(digits),
+			digit,
 			Literal("."))
 		assertParseAll(p, input: "$#%/ab8.lsgj", result: "ab8.", count: 1)
 		assertParseAll(p, input: "$ab#%/ab8.lsgab3.j", count: 2)
@@ -65,14 +65,14 @@ class PatternsTests: XCTestCase {
 		assertParseAll(
 			try Patterns(verify:
 				Literal(" "),
-				OneOf.wholeNumber.repeat(min: 0),
+				digit.repeat(min: 0),
 				Literal(" ")),
 			input: text, result: [" 4 ", " 123 "])
 		assertParseAll(
 			try Patterns(verify:
 				Literal(" "),
 				Bound(),
-				OneOf.wholeNumber.repeat(min: 0),
+				digit.repeat(min: 0),
 				Bound(),
 				Literal(" ")),
 			input: text, result: ["4", "6", "123"])
@@ -95,16 +95,16 @@ class PatternsTests: XCTestCase {
 			try Patterns(verify:
 				Literal(" "),
 				Bound(),
-				OneOf(letters).repeat(min: 1),
+				letter.repeat(min: 1),
 				Bound(),
 				Literal(" ")),
 			input: text, result: ["is", "a", "test"])
 		assertParseAll(
-			try Patterns(verify: OneOf(letters).repeat(min: 1)),
+			try Patterns(verify: letter.repeat(min: 1)),
 			input: text, result: ["This", "is", "a", "test", "text"])
 		assertParseAll(
 			try Patterns(verify:
-				OneOf(letters),
+				letter,
 				Bound(),
 				Bound(),
 				Literal(" ")),
@@ -114,7 +114,7 @@ class PatternsTests: XCTestCase {
 	func testRepeatOrThenEndOfLine() throws {
 		assertParseAll(
 			try Patterns(verify:
-				(OneOf.alphanumeric || OneOf(contentsOf: " ")).repeat(min: 0),
+				(alphanumeric || OneOf(contentsOf: " ")).repeat(min: 0),
 				Line.End()),
 			input: "FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S",
 			result: ["FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S"])
@@ -126,7 +126,7 @@ class PatternsTests: XCTestCase {
 			try Patterns(verify:
 				Literal(" "),
 				Bound(),
-				OneOf(letters),
+				letter,
 				Skip(),
 				Bound(),
 				Literal(" ")),
@@ -136,7 +136,7 @@ class PatternsTests: XCTestCase {
 				Literal(" "),
 				Bound(),
 				Skip(),
-				OneOf(letters),
+				letter,
 				Bound(),
 				Literal(" ")),
 			input: text, result: ["a"])
@@ -184,7 +184,7 @@ class PatternsTests: XCTestCase {
 		assertParseAll(
 			try Patterns(verify:
 				Literal("("),
-				Skip(whileRepeating: OneOf.newline.not),
+				Skip(whileRepeating: newline.not),
 				Literal(")")),
 			input: text, result: ["(a)", "(aaaaa)", "(aaabaa)", "()"])
 	}

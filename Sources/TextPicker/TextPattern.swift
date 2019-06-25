@@ -73,15 +73,16 @@ extension TextPattern {
 
 	public func parseAllLazy(_ input: Input, from startindex: Input.Index)
 		-> UnfoldSequence<ParsedRange, Input.Index> {
-			var previousRange: ParsedRange?
-			return sequence(state: startindex, next: { (index: inout Input.Index) in
-				guard let range = self.parse(input, from: index), range != previousRange else {
-					return nil }
-				previousRange = range
-				index = (range.isEmpty && range.upperBound != input.endIndex)
-					? input.index(after: range.upperBound) : range.upperBound
-				return range
-			})
+		var previousRange: ParsedRange?
+		return sequence(state: startindex, next: { (index: inout Input.Index) in
+			guard let range = self.parse(input, from: index), range != previousRange else {
+				return nil
+			}
+			previousRange = range
+			index = (range.isEmpty && range.upperBound != input.endIndex)
+				? input.index(after: range.upperBound) : range.upperBound
+			return range
+		})
 	}
 
 	public func parseAll(_ input: Input) -> [ParsedRange] {
@@ -103,7 +104,7 @@ extension TextPattern {
 		return nil
 	}
 
-	public func _prepForPatterns(remainingParsers: inout ArraySlice<TextPattern>) throws -> Patterns.Parserette {
+	public func _prepForPatterns(remainingParsers _: inout ArraySlice<TextPattern>) throws -> Patterns.Parserette {
 		return ({ (input: Input, index: Input.Index, _: inout ContiguousArray<Input.Index>) in
 			self.parse(input, at: index)
 		}, description)
@@ -156,7 +157,7 @@ public struct Literal: TextPattern {
 
 extension Literal: ExpressibleByStringLiteral {
 	public init(stringLiteral value: StaticString) {
-		self.init( String(describing: value))
+		self.init(String(describing: value))
 	}
 }
 
@@ -181,31 +182,10 @@ public struct OneOf: TextPattern {
 		return (index < input.endIndex && set.contains(input[index])) ? index ..< input.index(after: index) : nil
 	}
 
-	public static let alphanumeric = OneOf(Group(
-		description: "alphanumeric", regex: #"(?:\p{Alphabetic}|\p{Nd})"#,
-		contains: { $0.isWholeNumber || $0.isLetter }))
-	public static let wholeNumber = OneOf(Group(description: "wholeNumber", regex: #"\p{Nd}"#,
-		contains: (\Character.isWholeNumber).toFunc))
-	public static let letter = OneOf(Group(description: "letter", regex: #"\p{Alphabetic}"#,
-		contains: (\Character.isLetter).toFunc))
-	public static let lowercaseLetter = OneOf(Group(description: "lowercaseLetter", regex: #"\p{Ll}"#,
-		contains: (\Character.isLowercase).toFunc))
-	public static let newline = OneOf(Group(description: "newline", regex: #"\p{Zl}"#,
-		contains: (\Character.isNewline).toFunc))
-	public static let punctuationCharacter = OneOf(Group(
-		description: "punctuationCharacter", regex: #"\p{P}"#,
-		contains: (\Character.isPunctuation).toFunc))
-	public static let symbol = OneOf(Group(description: "symbol", regex: #"\p{S}"#,
-		contains: (\Character.isSymbol).toFunc))
-	public static let uppercaseLetter = OneOf(Group(description: "uppercaseLetter", regex: #"\p{Lu}"#,
-		contains: (\Character.isUppercase).toFunc))
-	public static let whitespaceOrNewline = OneOf(Group(
-		description: "whitespaceOrNewline", regex: #"\p{White_Space}"#,
-		contains: (\Character.isWhitespace).toFunc))
-
 	public static let baseParsers: [OneOf] = [
-		alphanumeric, wholeNumber, letter, lowercaseLetter, newline, punctuationCharacter, symbol,
-		uppercaseLetter, whitespaceOrNewline]
+		alphanumeric, digit, letter, lowercaseLetter, newline, punctuationCharacter, symbol,
+		uppercaseLetter, whitespace,
+	]
 
 	public static func parsers(for c: Character) -> [TextPattern] {
 		return OneOf.baseParsers.filter { $0.set.contains(c) }
@@ -277,6 +257,7 @@ public struct OrPattern: TextPattern {
 	public var description: String {
 		return "(\(parser1) OR \(parser2))"
 	}
+
 	public var regex: String {
 		return parser1.regex + "|" + parser2.regex
 	}
@@ -368,17 +349,19 @@ public struct NotPattern: TextPattern {
 	public var description: String {
 		return "!\(parser)"
 	}
+
 	public var regex: String {
 		assertionFailure()
 		return "NOT IMPLEMENTED"
 	}
+
 	public let length: Int? = 1
 
 	public func parse(_ input: Input, at index: Input.Index) -> ParsedRange? {
 		guard let nextIndex = input.index(index, offsetBy: 1, limitedBy: input.endIndex) else {
 			return nil
 		}
-		return parser.parse(input, at: index) == nil ? index..<nextIndex : nil
+		return parser.parse(input, at: index) == nil ? index ..< nextIndex : nil
 	}
 }
 
@@ -387,3 +370,22 @@ extension TextPattern {
 		return NotPattern(parser: self)
 	}
 }
+
+public let alphanumeric = OneOf(Group(description: "alphanumeric", regex: #"(?:\p{Alphabetic}|\p{Nd})"#,
+                                      contains: { $0.isWholeNumber || $0.isLetter }))
+public let digit = OneOf(Group(description: "digit", regex: #"\p{Nd}"#,
+                               contains: (\Character.isWholeNumber).toFunc))
+public let letter = OneOf(Group(description: "letter", regex: #"\p{Alphabetic}"#,
+                                contains: (\Character.isLetter).toFunc))
+public let lowercaseLetter = OneOf(Group(description: "lowercaseLetter", regex: #"\p{Ll}"#,
+                                         contains: (\Character.isLowercase).toFunc))
+public let newline = OneOf(Group(description: "newline", regex: #"\p{Zl}"#,
+                                 contains: (\Character.isNewline).toFunc))
+public let punctuationCharacter = OneOf(Group(description: "punctuationCharacter", regex: #"\p{P}"#,
+                                              contains: (\Character.isPunctuation).toFunc))
+public let symbol = OneOf(Group(description: "symbol", regex: #"\p{S}"#,
+                                contains: (\Character.isSymbol).toFunc))
+public let uppercaseLetter = OneOf(Group(description: "uppercaseLetter", regex: #"\p{Lu}"#,
+                                         contains: (\Character.isUppercase).toFunc))
+public let whitespace = OneOf(Group(description: "whitespace", regex: #"\p{White_Space}"#,
+                                    contains: (\Character.isWhitespace).toFunc))
