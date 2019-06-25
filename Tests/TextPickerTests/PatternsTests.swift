@@ -41,16 +41,16 @@ class PatternsTests: XCTestCase {
 		/*
 		 assertParseAll(
 		 try Patterns(verify:
-		 SubstringParser(" "),
+		 SubstringPattern(" "),
 		 Patterns.Skip(),
-		 SubstringParser("d")),
+		 SubstringPattern("d")),
 		 input: " ab cd", result: [" cd"])
 
 		 assertParseAll(
 		 try Patterns(verify:
-		 SubstringParser(" "),
-		 OneOfParser(Group(contentsOf: " ").inverted()).repeat(min: 1),
-		 SubstringParser("d")),
+		 SubstringPattern(" "),
+		 OneOfPattern(Group(contentsOf: " ").inverted()).repeat(min: 1),
+		 SubstringPattern("d")),
 		 input: " ab cd", result: [" cd"])
 		 */
 	}
@@ -140,7 +140,7 @@ class PatternsTests: XCTestCase {
 			input: text, result: ["is a test text."])
 	}
 
-	func testSkipWithRepeatingParser() throws {
+	func testSkipWithRepeatingPattern() throws {
 		let text = """
 		yes (a)
 		yes (aaaaa)
@@ -209,7 +209,7 @@ extension PatternsTests {
 		("testPatternsWithBounds", testPatternsWithBounds),
 		("testRepeatOrThenEndOfLine", testRepeatOrThenEndOfLine),
 		("testPatternsWithSkipAndBounds", testPatternsWithSkipAndBounds),
-		("testSkipWithRepeatingParser", testSkipWithRepeatingParser),
+		("testSkipWithRepeatingPattern", testSkipWithRepeatingPattern),
 		("testMatchBeginningOfLines", testMatchBeginningOfLines),
 		("testMatchEndOfLines", testMatchEndOfLines),
 	]

@@ -1,5 +1,5 @@
 //
-//  ParserTests.swift
+//  TextPatternTests.swift
 //  TextPicker
 //
 //  Created by Kåre Morstøl on 20/03/2017.
@@ -12,7 +12,7 @@ import XCTest
 
 let doublequote = Literal("\"")
 
-class ParserTests: XCTestCase {
+class TextPatternTests: XCTestCase {
 	func testLiteral() {
 		assertParseAll(Literal("a"), input: "abcd", result: "a", count: 1)
 		assertParseAll(Literal("b"), input: "abcdb", result: "b", count: 2)
@@ -39,7 +39,7 @@ class ParserTests: XCTestCase {
 		assertParseAll(digit.repeat(min: 1), input: "123abc09d4 8", count: 4)
 	}
 
-	func testOrParser() {
+	func testOrPattern() {
 		let parser: TextPattern = Literal("a") || Literal("b")
 		assertParseAll(parser, input: "bcbd", result: "b", count: 2)
 		assertParseAll(parser, input: "acdaa", result: "a", count: 3)
@@ -123,13 +123,13 @@ class ParserTests: XCTestCase {
 	}
 }
 
-extension ParserTests {
+extension TextPatternTests {
 	public static var allTests = [
 		("testLiteral", testLiteral),
 		("testOneOf", testOneOf),
 		("testOptional", testOptional),
 		("testRepeat", testRepeat),
-		("testOrParser", testOrParser),
+		("testOrPattern", testOrPattern),
 		("testLineStart", testLineStart),
 		("testLineEnd", testLineEnd),
 		("testParseFile", testParseFile),

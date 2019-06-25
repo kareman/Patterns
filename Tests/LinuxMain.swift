@@ -4,7 +4,7 @@ import XCTest
 @testable import TextPickerTests
 
 let tests: [XCTestCaseEntry] = [
-	testCase(ParserTests.allTests),
+	testCase(TextPatternTests.allTests),
 	testCase(PatternsTests.allTests),
 ]
 
