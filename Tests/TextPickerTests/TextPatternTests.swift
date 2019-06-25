@@ -40,10 +40,10 @@ class TextPatternTests: XCTestCase {
 	}
 
 	func testOrPattern() {
-		let parser: TextPattern = Literal("a") || Literal("b")
-		assertParseAll(parser, input: "bcbd", result: "b", count: 2)
-		assertParseAll(parser, input: "acdaa", result: "a", count: 3)
-		assertParseAll(parser, input: "abcdb", count: 3)
+		let pattern: TextPattern = Literal("a") || Literal("b")
+		assertParseAll(pattern, input: "bcbd", result: "b", count: 2)
+		assertParseAll(pattern, input: "acdaa", result: "a", count: 3)
+		assertParseAll(pattern, input: "abcdb", count: 3)
 	}
 
 	func testLineStart() throws {
@@ -53,10 +53,10 @@ class TextPatternTests: XCTestCase {
 		line 3
 		line 4
 		"""
-		let parser: TextPattern = Line.Start()
-		assertParseAll(parser, input: "", result: "", count: 1)
-		assertParseAll(parser, input: "\n", count: 2)
-		assertParseAll(parser, input: text, result: "", count: 4)
+		let pattern: TextPattern = Line.Start()
+		assertParseAll(pattern, input: "", result: "", count: 1)
+		assertParseAll(pattern, input: "\n", count: 2)
+		assertParseAll(pattern, input: text, result: "", count: 4)
 		assertParseAll(
 			try Patterns(Line.Start(), Bound(), Skip(), Bound(), Literal(" ")),
 			input: text, result: "line", count: 4)
@@ -76,10 +76,10 @@ class TextPatternTests: XCTestCase {
 	}
 
 	func testLineEnd() throws {
-		let parser: TextPattern = Line.End()
-		assertParseAll(parser, input: "", result: "", count: 1)
-		assertParseAll(parser, input: "\n", count: 2)
-		assertParseAll(parser, input: "\n\n", count: 3)
+		let pattern: TextPattern = Line.End()
+		assertParseAll(pattern, input: "", result: "", count: 1)
+		assertParseAll(pattern, input: "\n", count: 2)
+		assertParseAll(pattern, input: "\n\n", count: 3)
 
 		let text = """
 		line 1
@@ -87,7 +87,7 @@ class TextPatternTests: XCTestCase {
 		line 3
 		line 4
 		"""
-		assertParseAll(parser, input: text, count: 4)
+		assertParseAll(pattern, input: text, count: 4)
 		assertParseAll(
 			try Patterns(Literal(" "), Bound(), Skip(), Bound(), Line.End()),
 			input: text, result: ["1", "2", "3", "4"])
@@ -115,8 +115,8 @@ class TextPatternTests: XCTestCase {
 		let text = try! String(contentsOfFile: file, encoding: .utf8)
 		let startAt = text.range(of: "func testParseFile()")!.upperBound
 
-		let parser: TextPattern = try Patterns(Bound(), Literal("\tlet "), Skip(), Bound(), Literal("="))
-		let ranges = parser.parseAll(text, from: startAt)
+		let pattern: TextPattern = try Patterns(Bound(), Literal("\tlet "), Skip(), Bound(), Literal("="))
+		let ranges = pattern.parseAll(text, from: startAt)
 
 		XCTAssertEqual(ranges.count, 5)
 		XCTAssertEqual(text[ranges.first!], "\tlet file "[...])

@@ -87,8 +87,8 @@ public struct Patterns: TextPattern {
 
 		public var description: String {
 			switch self {
-			case let .invalid(parsers):
-				return "Invalid series of parsers: \(parsers)"
+			case let .invalid(patterns):
+				return "Invalid series of patterns: \(patterns)"
 			case let .message(string):
 				return string
 			}
@@ -106,14 +106,14 @@ public struct Patterns: TextPattern {
 	}
 
 	public typealias Patternette =
-		(parser: (Input, Input.Index, inout ContiguousArray<Input.Index>) -> ParsedRange?, description: String)
+		(pattern: (Input, Input.Index, inout ContiguousArray<Input.Index>) -> ParsedRange?, description: String)
 	private let patternettes: [Patternette]
-	private let parserFrom: TextPattern?
+	private let patternFrom: TextPattern?
 
 	public let description: String
 
-	private static func createPatternettes(_ parsers: Array<TextPattern>) throws -> [Patternette] {
-		var remainingPatterns = parsers[...]
+	private static func createPatternettes(_ patterns: Array<TextPattern>) throws -> [Patternette] {
+		var remainingPatterns = patterns[...]
 		var result = [Patternette]()
 		while let nextPattern = remainingPatterns.popFirst() {
 			if !(nextPattern is Bound), nextPattern.length == 0, let first = remainingPatterns.first {
@@ -138,11 +138,11 @@ public struct Patterns: TextPattern {
 
 		self.patternettes = try Patterns.createPatternettes(self.series)
 
-		// find first parseable parser 'parserFrom', if there is no Skip parser before it use it in Self.parse(_:from:):
-		let parserFromIndex = self.series.firstIndex(where: { !($0 is Skip || $0 is Bound) })!
-		let parserFrom = self.series[parserFromIndex]
+		// find first parseable pattern 'patternFrom', if there is no Skip pattern before it use it in Self.parse(_:from:):
+		let patternFromIndex = self.series.firstIndex(where: { !($0 is Skip || $0 is Bound) })!
+		let patternFrom = self.series[patternFromIndex]
 		let firstSkipIndex = self.series.firstIndex(where: { $0 is Skip })
-		self.parserFrom = (firstSkipIndex.map { $0 < parserFromIndex } ?? false) ? nil : (parserFrom as? Patterns)?.parserFrom ?? parserFrom
+		self.patternFrom = (firstSkipIndex.map { $0 < patternFromIndex } ?? false) ? nil : (patternFrom as? Patterns)?.patternFrom ?? patternFrom
 		self.description = self.series.map(String.init(describing:)).joined(separator: " ")
 	}
 
@@ -159,8 +159,8 @@ public struct Patterns: TextPattern {
 		var index = startindex
 		var boundIndices = ContiguousArray<TextPattern.Input.Index>()
 
-		for parserette in patternettes {
-			guard let range = parserette.parser(input, index, &boundIndices) else { return nil }
+		for patternette in patternettes {
+			guard let range = patternette.pattern(input, index, &boundIndices) else { return nil }
 			index = range.upperBound
 		}
 
@@ -176,10 +176,10 @@ public struct Patterns: TextPattern {
 	}
 
 	public func parse(_ input: Input, from startIndex: Input.Index, wholeRange: inout ParsedRange?) -> ParsedRange? {
-		guard let parserFrom = parserFrom else { return self.parse(input, at: startIndex, wholeRange: &wholeRange) }
+		guard let patternFrom = patternFrom else { return self.parse(input, at: startIndex, wholeRange: &wholeRange) }
 		var index = startIndex
 		while index <= input.endIndex {
-			guard let fromIndex = parserFrom.parse(input, from: index)?.lowerBound else { return nil }
+			guard let fromIndex = patternFrom.parse(input, from: index)?.lowerBound else { return nil }
 			if let range = self.parse(input, at: fromIndex, wholeRange: &wholeRange) {
 				return range
 			}
@@ -189,8 +189,8 @@ public struct Patterns: TextPattern {
 		return nil
 	}
 
-	public func appending(_ parser: TextPattern) throws -> Patterns {
-		return try Patterns(self.series + [parser])
+	public func appending(_ pattern: TextPattern) throws -> Patterns {
+		return try Patterns(self.series + [pattern])
 	}
 }
 
@@ -240,11 +240,11 @@ public extension Patterns {
 
 fileprivate extension Sequence where Element == TextPattern {
 	func flattenPatterns() -> [TextPattern] {
-		return self.flatMap { (parser: TextPattern) -> [TextPattern] in
-			if let series = parser as? Patterns, !series.series.contains(where: { $0 is Bound }) {
+		return self.flatMap { (pattern: TextPattern) -> [TextPattern] in
+			if let series = pattern as? Patterns, !series.series.contains(where: { $0 is Bound }) {
 				return series.series.array()
 			}
-			return [parser]
+			return [pattern]
 		}
 	}
 }

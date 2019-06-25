@@ -20,45 +20,45 @@ public protocol TextPattern: CustomStringConvertible {
 	func `repeat`(min: Int) -> TextPattern
 	func `repeat`(min: Int, max: Int?) -> TextPattern
 	func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>) throws -> Patterns.Patternette
-	/// The length this parser always parses, if it is constant
+	/// The length this pattern always parses, if it is constant
 	var length: Int? { get }
 	var regex: String { get }
 }
 
 public protocol TextPatternWrapper: TextPattern {
-	var parser: TextPattern { get }
+	var pattern: TextPattern { get }
 }
 
 public extension TextPatternWrapper {
 	func parse(_ input: Input, at index: Input.Index) -> ParsedRange? {
-		return parser.parse(input, at: index)
+		return pattern.parse(input, at: index)
 	}
 
 	func parse(_ input: Input, from index: Input.Index) -> ParsedRange? {
-		return parser.parse(input, from: index)
+		return pattern.parse(input, from: index)
 	}
 
 	func parseAllLazy(_ input: Input, from startindex: Input.Index)
 		-> UnfoldSequence<ParsedRange, Input.Index> {
-		return parser.parseAllLazy(input, from: startindex)
+		return pattern.parseAllLazy(input, from: startindex)
 	}
 
 	func `repeat`(min: Int) -> TextPattern {
-		return parser.repeat(min: min)
+		return pattern.repeat(min: min)
 	}
 
-	func `repeat`(min: Int, max: Int?) -> TextPattern { return parser.repeat(min: min, max: max) }
+	func `repeat`(min: Int, max: Int?) -> TextPattern { return pattern.repeat(min: min, max: max) }
 
 	func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>) throws -> Patterns.Patternette {
-		return try parser._prepForPatterns(remainingPatterns: &remainingPatterns)
+		return try pattern._prepForPatterns(remainingPatterns: &remainingPatterns)
 	}
 
-	/// The length this parser always parses, if it is constant
+	/// The length this pattern always parses, if it is constant
 	var length: Int? {
-		return parser.length
+		return pattern.length
 	}
 
-	var regex: String { return parser.regex }
+	var regex: String { return pattern.regex }
 }
 
 extension TextPattern {
@@ -187,11 +187,11 @@ public struct OneOf: TextPattern {
 		uppercaseLetter, whitespace,
 	]
 
-	public static func parsers(for c: Character) -> [TextPattern] {
+	public static func patterns(for c: Character) -> [TextPattern] {
 		return OneOf.basePatterns.filter { $0.set.contains(c) }
 	}
 
-	public static func parsers<S: Sequence>(for s: S) -> [TextPattern] where S.Element == Input.Element {
+	public static func patterns<S: Sequence>(for s: S) -> [TextPattern] where S.Element == Input.Element {
 		return OneOf.basePatterns.filter { $0.set.contains(contentsOf: s) }
 	}
 }
@@ -252,43 +252,43 @@ extension TextPattern {
 }
 
 public struct OrPattern: TextPattern {
-	let parser1, parser2: TextPattern
+	let pattern1, pattern2: TextPattern
 
 	public var description: String {
-		return "(\(parser1) OR \(parser2))"
+		return "(\(pattern1) OR \(pattern2))"
 	}
 
 	public var regex: String {
-		return parser1.regex + "|" + parser2.regex
+		return pattern1.regex + "|" + pattern2.regex
 	}
 
 	public var length: Int? {
-		return parser1.length == parser2.length ? parser1.length : nil
+		return pattern1.length == pattern2.length ? pattern1.length : nil
 	}
 
 	public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> ParsedRange? {
-		return parser1.parse(input, at: startindex) ?? parser2.parse(input, at: startindex)
+		return pattern1.parse(input, at: startindex) ?? pattern2.parse(input, at: startindex)
 	}
 
 	public func parse(_ input: TextPattern.Input, from startindex: TextPattern.Input.Index) -> ParsedRange? {
-		let result1 = parser1.parse(input, from: startindex)
-		let result2 = parser2.parse(input, from: startindex)
+		let result1 = pattern1.parse(input, from: startindex)
+		let result2 = pattern2.parse(input, from: startindex)
 		if result1?.lowerBound == result2?.lowerBound { return result1 }
 		return [result1, result2].compactMap { $0 }.sorted(by: <).first
 	}
 }
 
 public func || (p1: TextPattern, p2: TextPattern) -> OrPattern {
-	return OrPattern(parser1: p1, parser2: p2)
+	return OrPattern(pattern1: p1, pattern2: p2)
 }
 
 public struct Line: TextPatternWrapper {
 	public let description: String = "Line"
 	public let regex: String = "^.*$"
-	public let parser: TextPattern
+	public let pattern: TextPattern
 
 	init() {
-		parser = try! Patterns(Start(), Skip(), Line.End())
+		pattern = try! Patterns(Start(), Skip(), Line.End())
 	}
 
 	public struct Start: TextPattern {
@@ -345,9 +345,9 @@ public struct Line: TextPatternWrapper {
 }
 
 public struct NotPattern: TextPattern {
-	let parser: TextPattern
+	let pattern: TextPattern
 	public var description: String {
-		return "!\(parser)"
+		return "!\(pattern)"
 	}
 
 	public var regex: String {
@@ -361,13 +361,13 @@ public struct NotPattern: TextPattern {
 		guard let nextIndex = input.index(index, offsetBy: 1, limitedBy: input.endIndex) else {
 			return nil
 		}
-		return parser.parse(input, at: index) == nil ? index ..< nextIndex : nil
+		return pattern.parse(input, at: index) == nil ? index ..< nextIndex : nil
 	}
 }
 
 extension TextPattern {
 	public var not: NotPattern {
-		return NotPattern(parser: self)
+		return NotPattern(pattern: self)
 	}
 }
 

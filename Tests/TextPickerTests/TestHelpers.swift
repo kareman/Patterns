@@ -25,20 +25,20 @@ extension XCTestCase {
 		XCTAssertEqual(parsed, result, file: file, line: line)
 	}
 
-	func assertParseAll(_ parser: TextPattern, input: String, result: [String],
+	func assertParseAll(_ pattern: TextPattern, input: String, result: [String],
 	                    file: StaticString = #file, line: UInt = #line) {
-		let parsed = parser.parseAll(input).map { String(input[$0]) }
+		let parsed = pattern.parseAll(input).map { String(input[$0]) }
 		XCTAssertEqual(parsed, result, "\nThe differences are: \n" + parsed.difference(from: result).joined(separator: "\n"), file: file, line: line)
 		XCTAssertEqual(parsed, result, "\nThe differences are: \n" + parsed.difference(from: result).sorted().joined(separator: "\n"), file: file, line: line)
 	}
 
-	func assertParseAll(_ parser: TextPattern, input: String, result: String? = nil, count: Int,
+	func assertParseAll(_ pattern: TextPattern, input: String, result: String? = nil, count: Int,
 	                    file: StaticString = #file, line: UInt = #line) {
 		if let result = result {
-			assertParseAll(parser, input: input, result: Array(repeating: result, count: count), file: file, line: line)
+			assertParseAll(pattern, input: input, result: Array(repeating: result, count: count), file: file, line: line)
 			return
 		}
-		let parsed = parser.parseAll(input)
+		let parsed = pattern.parseAll(input)
 		XCTAssertEqual(parsed.count, count, "Incorrect count.", file: file, line: line)
 	}
 }

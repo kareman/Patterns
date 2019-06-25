@@ -176,11 +176,11 @@ class PatternsTests: XCTestCase {
 		cera user
 		dilled10 io
 		"""
-		let parser = try Patterns(Line.Start(), Bound())
-		let m = Array(parser.matches(in: text[...]))
+		let pattern = try Patterns(Line.Start(), Bound())
+		let m = Array(pattern.matches(in: text[...]))
 
 		XCTAssertEqual(m.map { text[$0.marks[0]] }, ["a", "b", "c", "d"].map(Character.init))
-		XCTAssertEqual(parser.matches(in: "\n\n").map { $0.marks[0] }.count, 3)
+		XCTAssertEqual(pattern.matches(in: "\n\n").map { $0.marks[0] }.count, 3)
 	}
 
 	func testMatchEndOfLines() throws {
@@ -191,12 +191,12 @@ class PatternsTests: XCTestCase {
 		dilled10 io
 
 		"""
-		var parser = try Patterns(Line.End(), Bound())
-		var m = Array(parser.matches(in: text[...]))
+		var pattern = try Patterns(Line.End(), Bound())
+		var m = Array(pattern.matches(in: text[...]))
 		XCTAssertEqual(m.dropLast().map { text[$0.marks[0]] }, Array(repeating: Character("\n"), count: 4))
 
-		parser = try Patterns(Bound(), Line.End())
-		m = Array(parser.matches(in: text[...]))
+		pattern = try Patterns(Bound(), Line.End())
+		m = Array(pattern.matches(in: text[...]))
 		XCTAssertEqual(m.dropLast().map { text[$0.marks[0]] }, Array(repeating: Character("\n"), count: 4))
 	}
 }
