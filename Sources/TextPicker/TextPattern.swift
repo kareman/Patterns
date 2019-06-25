@@ -292,59 +292,65 @@ public func || (p1: TextPattern, p2: TextPattern) -> OrPattern {
 	return OrPattern(parser1: p1, parser2: p2)
 }
 
-public struct BeginningOfLineParser: TextPattern {
-	public init() {}
+public struct Line: TextPatternWrapper {
+	public let description: String = "Line"
+	public let regex: String = "^.*$"
+	public let parser: TextPattern
 
-	public var description: String {
-		return "BeginningOfLine"
-	}
-	public var regex = "^"
-	public var length: Int? = 0
-
-	public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> ParsedRange? {
-		return startindex == input.startIndex || input[input.index(before: startindex)].isNewline
-			? startindex ..< startindex
-			: nil
+	init() {
+		parser = try! Patterns(verify: Start(), Skip(), Line.End())
 	}
 
-	public func parse(_ input: Input, from startIndex: Input.Index) -> ParsedRange? {
-		return parse(input, at: startIndex)
-			?? input[startIndex...].firstIndex(where: (\Character.isNewline).toFunc)
-			.map(input.index(after:))
-			.map { $0 ..< $0 }
-	}
-}
+	public struct Start: TextPattern {
+		public init() {}
 
-public struct EndOfLineParser: TextPattern {
-	public init() {}
+		public var description: String { return "Line.Start" }
+		public var regex = "^"
+		public var length: Int? = 0
 
-	public var description: String {
-		return "EndOfLine"
-	}
-	public let regex = "$"
-	public let length: Int? = 0
-
-	public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> ParsedRange? {
-		if startindex == input.endIndex || input[startindex].isNewline {
-			return startindex ..< startindex
+		public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> ParsedRange? {
+			return startindex == input.startIndex || input[input.index(before: startindex)].isNewline
+				? startindex ..< startindex
+				: nil
 		}
-		return nil
+
+		public func parse(_ input: Input, from startIndex: Input.Index) -> ParsedRange? {
+			return parse(input, at: startIndex)
+				?? input[startIndex...].firstIndex(where: (\Character.isNewline).toFunc)
+				.map(input.index(after:))
+				.map { $0 ..< $0 }
+		}
 	}
 
-	public func parse(_ input: Input, from startIndex: Input.Index) -> ParsedRange? {
-		return input[startIndex...].firstIndex(where: (\Character.isNewline).toFunc).map { $0 ..< $0 }
-			?? input.endIndex ..< input.endIndex
-	}
-	
-	public func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>) throws -> Patterns.Parserette {
-		if (remainingParsers.first.map { !($0 is Bound) } ?? false) {
+	public struct End: TextPattern {
+		public init() {}
+
+		public var description: String { return "End" }
+		public let regex = "$"
+		public let length: Int? = 0
+
+		public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> ParsedRange? {
+			if startindex == input.endIndex || input[startindex].isNewline {
+				return startindex ..< startindex
+			}
+			return nil
+		}
+
+		public func parse(_ input: Input, from startIndex: Input.Index) -> ParsedRange? {
+			return input[startIndex...].firstIndex(where: (\Character.isNewline).toFunc).map { $0 ..< $0 }
+				?? input.endIndex ..< input.endIndex
+		}
+
+		public func _prepForSeriesParser(remainingParsers: inout ArraySlice<TextPattern>) throws -> Patterns.Parserette {
+			if (remainingParsers.first.map { !($0 is Bound) } ?? false) {
+				return ({ (input: Input, index: Input.Index, _: inout ContiguousArray<Input.Index>) in
+					index == input.endIndex ? nil : self.parse(input, at: index)
+				}, "Line.End (test for end)")
+			}
 			return ({ (input: Input, index: Input.Index, _: inout ContiguousArray<Input.Index>) in
-				index == input.endIndex ? nil : self.parse(input, at: index)
-			}, "EndOfLineParser (test for end)")
+				self.parse(input, at: index)
+			}, "Line.End")
 		}
-		return ({ (input: Input, index: Input.Index, _: inout ContiguousArray<Input.Index>) in
-			self.parse(input, at: index)
-		}, "EndOfLineParser")
 	}
 }
 

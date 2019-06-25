@@ -116,7 +116,7 @@ class SeriesParserTests: XCTestCase {
 		assertParseAll(
 			try Patterns(verify:
 				(OneOf.alphanumeric || OneOf(contentsOf: " ")).repeat(min: 0),
-				EndOfLineParser()),
+				Line.End()),
 			input: "FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S",
 			result: ["FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S"])
 	}
@@ -197,7 +197,7 @@ class SeriesParserTests: XCTestCase {
 		cera user
 		dilled10 io
 		"""
-		let parser = try Patterns(verify: BeginningOfLineParser(), Bound())
+		let parser = try Patterns(verify: Line.Start(), Bound())
 		let m = Array(parser.matches(in: text[...]))
 
 		XCTAssertEqual(m.map { text[$0.marks[0]] }, ["a", "b", "c", "d"].map(Character.init))
@@ -212,11 +212,11 @@ class SeriesParserTests: XCTestCase {
 		dilled10 io
 
 		"""
-		var parser = try Patterns(verify: EndOfLineParser(), Bound())
+		var parser = try Patterns(verify: Line.End(), Bound())
 		var m = Array(parser.matches(in: text[...]))
 		XCTAssertEqual(m.dropLast().map { text[$0.marks[0]] }, Array(repeating: Character("\n"), count: 4))
 
-		parser = try Patterns(verify: Bound(), EndOfLineParser())
+		parser = try Patterns(verify: Bound(), Line.End())
 		m = Array(parser.matches(in: text[...]))
 		XCTAssertEqual(m.dropLast().map { text[$0.marks[0]] }, Array(repeating: Character("\n"), count: 4))
 	}
