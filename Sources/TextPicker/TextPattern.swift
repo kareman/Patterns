@@ -288,7 +288,7 @@ public struct Line: TextPatternWrapper {
 	public let parser: TextPattern
 
 	init() {
-		parser = try! Patterns(verify: Start(), Skip(), Line.End())
+		parser = try! Patterns(Start(), Skip(), Line.End())
 	}
 
 	public struct Start: TextPattern {

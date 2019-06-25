@@ -10,23 +10,19 @@ import XCTest
 class PatternsTests: XCTestCase {
 	func testPatternsSimple() throws {
 		assertParseAll(
-			try Patterns(verify:
-				Literal("a").repeat(min: 0, max: 1),
+			try Patterns(Literal("a").repeat(min: 0, max: 1),
 				Literal("b")),
 			input: "ibiiiiabiii", count: 2)
 		assertParseAll(
-			try Patterns(verify:
-				Literal("a").repeat(min: 0, max: 1),
+			try Patterns(Literal("a").repeat(min: 0, max: 1),
 				Literal("b")),
 			input: "ibiiaiiababiibi", count: 4)
 		assertParseAll(
-			try Patterns(verify:
-				Literal("b"),
+			try Patterns(Literal("b"),
 				Literal("a").repeat(min: 0, max: 1)),
 			input: "ibiiiibaiii", count: 2)
 
-		let p = try Patterns(verify:
-			Literal("ab"),
+		let p = try Patterns(Literal("ab"),
 			digit,
 			Literal("."))
 		assertParseAll(p, input: "$#%/ab8.lsgj", result: "ab8.", count: 1)
@@ -37,8 +33,7 @@ class PatternsTests: XCTestCase {
 	func testPatternsWithSkip() throws {
 		let text = "This is a test text."
 		assertParseAll(
-			try Patterns(verify:
-				Literal(" "),
+			try Patterns(Literal(" "),
 				Skip(),
 				Literal(" ")),
 			input: text, result: [" is ", " test "])
@@ -63,14 +58,12 @@ class PatternsTests: XCTestCase {
 	func testPatternsWithRepeat() throws {
 		let text = "This is 4 6 a test 123 text."
 		assertParseAll(
-			try Patterns(verify:
-				Literal(" "),
+			try Patterns(Literal(" "),
 				digit.repeat(min: 0),
 				Literal(" ")),
 			input: text, result: [" 4 ", " 123 "])
 		assertParseAll(
-			try Patterns(verify:
-				Literal(" "),
+			try Patterns(Literal(" "),
 				Bound(),
 				digit.repeat(min: 0),
 				Bound(),
@@ -80,31 +73,26 @@ class PatternsTests: XCTestCase {
 
 	func testPatternsWithBounds() throws {
 		assertParseAll(
-			try Patterns(verify:
-				Bound(), Literal("a")),
+			try Patterns(Bound(), Literal("a")),
 			input: "xaa xa", result: "", count: 3)
 		assertParseAll(
-			try Patterns(verify:
-				try Patterns(verify:
-					Literal("x"), Bound(), Literal("a")),
+			try Patterns(try Patterns(Literal("x"), Bound(), Literal("a")),
 				Literal("a")),
 			input: "xaxa xa", count: 3)
 
 		let text = "This is a test text."
 		assertParseAll(
-			try Patterns(verify:
-				Literal(" "),
+			try Patterns(Literal(" "),
 				Bound(),
 				letter.repeat(min: 1),
 				Bound(),
 				Literal(" ")),
 			input: text, result: ["is", "a", "test"])
 		assertParseAll(
-			try Patterns(verify: letter.repeat(min: 1)),
+			try Patterns(letter.repeat(min: 1)),
 			input: text, result: ["This", "is", "a", "test", "text"])
 		assertParseAll(
-			try Patterns(verify:
-				letter,
+			try Patterns(letter,
 				Bound(),
 				Bound(),
 				Literal(" ")),
@@ -113,8 +101,7 @@ class PatternsTests: XCTestCase {
 
 	func testRepeatOrThenEndOfLine() throws {
 		assertParseAll(
-			try Patterns(verify:
-				(alphanumeric || OneOf(contentsOf: " ")).repeat(min: 0),
+			try Patterns((alphanumeric || OneOf(contentsOf: " ")).repeat(min: 0),
 				Line.End()),
 			input: "FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S",
 			result: ["FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S"])
@@ -123,8 +110,7 @@ class PatternsTests: XCTestCase {
 	func testPatternsWithSkipAndBounds() throws {
 		let text = "This is a test text."
 		assertParseAll(
-			try Patterns(verify:
-				Literal(" "),
+			try Patterns(Literal(" "),
 				Bound(),
 				letter,
 				Skip(),
@@ -132,8 +118,7 @@ class PatternsTests: XCTestCase {
 				Literal(" ")),
 			input: text, result: ["is", "a", "test"])
 		assertParseAll(
-			try Patterns(verify:
-				Literal(" "),
+			try Patterns(Literal(" "),
 				Bound(),
 				Skip(),
 				letter,
@@ -141,16 +126,14 @@ class PatternsTests: XCTestCase {
 				Literal(" ")),
 			input: text, result: ["a"])
 		assertParseAll(
-			try Patterns(verify:
-				Literal(" "),
+			try Patterns(Literal(" "),
 				Bound(),
 				Skip(),
 				Bound(),
 				Literal(" ")),
 			input: text, result: ["is", "a", "test"])
 		assertParseAll(
-			try Patterns(verify:
-				Literal(" "),
+			try Patterns(Literal(" "),
 				Bound(),
 				Skip(),
 				Bound()),
@@ -168,22 +151,19 @@ class PatternsTests: XCTestCase {
 		"""
 
 		assertParseAll(
-			try Patterns(verify:
-				Literal("("),
+			try Patterns(Literal("("),
 				Skip(whileRepeating: Literal("a")),
 				Literal(")")),
 			input: text, result: ["(a)", "(aaaaa)", "()"])
 		assertParseAll(
-			try Patterns(verify:
-				Literal("("),
+			try Patterns(Literal("("),
 				Bound(),
 				Skip(whileRepeating: Literal("a")),
 				Bound(),
 				Literal(")")),
 			input: text, result: ["a", "aaaaa", ""])
 		assertParseAll(
-			try Patterns(verify:
-				Literal("("),
+			try Patterns(Literal("("),
 				Skip(whileRepeating: newline.not),
 				Literal(")")),
 			input: text, result: ["(a)", "(aaaaa)", "(aaabaa)", "()"])
@@ -196,7 +176,7 @@ class PatternsTests: XCTestCase {
 		cera user
 		dilled10 io
 		"""
-		let parser = try Patterns(verify: Line.Start(), Bound())
+		let parser = try Patterns(Line.Start(), Bound())
 		let m = Array(parser.matches(in: text[...]))
 
 		XCTAssertEqual(m.map { text[$0.marks[0]] }, ["a", "b", "c", "d"].map(Character.init))
@@ -211,11 +191,11 @@ class PatternsTests: XCTestCase {
 		dilled10 io
 
 		"""
-		var parser = try Patterns(verify: Line.End(), Bound())
+		var parser = try Patterns(Line.End(), Bound())
 		var m = Array(parser.matches(in: text[...]))
 		XCTAssertEqual(m.dropLast().map { text[$0.marks[0]] }, Array(repeating: Character("\n"), count: 4))
 
-		parser = try Patterns(verify: Bound(), Line.End())
+		parser = try Patterns(Bound(), Line.End())
 		m = Array(parser.matches(in: text[...]))
 		XCTAssertEqual(m.dropLast().map { text[$0.marks[0]] }, Array(repeating: Character("\n"), count: 4))
 	}
