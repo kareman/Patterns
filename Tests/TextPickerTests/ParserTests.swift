@@ -132,7 +132,6 @@ extension ParserTests {
 		("testOrParser", testOrParser),
 		("testLineStart", testLineStart),
 		("testLineEnd", testLineEnd),
-		// ("testLoadParser", testLoadParser),
 		("testParseFile", testParseFile),
 	]
 }

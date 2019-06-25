@@ -5,7 +5,7 @@ import XCTest
 
 let tests: [XCTestCaseEntry] = [
 	testCase(ParserTests.allTests),
-	testCase(SeriesParserTests.allTests),
+	testCase(PatternsTests.allTests),
 ]
 
 XCTMain(tests)
