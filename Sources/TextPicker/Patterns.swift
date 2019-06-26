@@ -17,36 +17,36 @@ public struct Skip: TextPattern {
 		self.regex = repeatedPattern.map { _ in "NOT IMPLEMENTED" } ?? ".*?"
 	}
 
-	public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> ParsedRange? {
+	public func parse(_: TextPattern.Input, at _: TextPattern.Input.Index) -> ParsedRange? {
 		assertionFailure("do not call this"); return nil
 	}
 
-	public func parse(_ input: TextPattern.Input, from startindex: TextPattern.Input.Index) -> ParsedRange? {
+	public func parse(_: TextPattern.Input, from _: TextPattern.Input.Index) -> ParsedRange? {
 		assertionFailure("do not call this"); return nil
 	}
 
 	public func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>)
 		throws -> Patterns.Patternette {
-			let maybeStoreBound = Bound.getBoundHandler(&remainingPatterns)
+		let maybeStoreBound = Bound.getBoundHandler(&remainingPatterns)
 
-			guard let next = remainingPatterns.first else {
-				return ({ (input, index, bounds: inout ContiguousArray<Input.Index>) in
-					maybeStoreBound(input.endIndex, &bounds)
-					return index ..< input.endIndex
-				}, description + " (to the end)")
-			}
-			guard !(next is Skip) else {
-				throw Patterns.InitError.message("Cannot have 2 Skip in a row.")
-			}
-
+		guard let next = remainingPatterns.first else {
 			return ({ (input, index, bounds: inout ContiguousArray<Input.Index>) in
-				guard let nextRange = next.parse(input, from: index) else { return nil }
-				if let repeatedPattern = self.repeatedPattern {
-					guard repeatedPattern.parse(input[index ..< nextRange.lowerBound], at: index)?.upperBound == nextRange.lowerBound else { return nil }
-				}
-				maybeStoreBound(nextRange.lowerBound, &bounds)
-				return index ..< nextRange.lowerBound
-			}, description)
+				maybeStoreBound(input.endIndex, &bounds)
+				return index ..< input.endIndex
+			}, description + " (to the end)")
+		}
+		guard !(next is Skip) else {
+			throw Patterns.InitError.message("Cannot have 2 Skip in a row.")
+		}
+
+		return ({ (input, index, bounds: inout ContiguousArray<Input.Index>) in
+			guard let nextRange = next.parse(input, from: index) else { return nil }
+			if let repeatedPattern = self.repeatedPattern {
+				guard repeatedPattern.parse(input[index ..< nextRange.lowerBound], at: index)?.upperBound == nextRange.lowerBound else { return nil }
+			}
+			maybeStoreBound(nextRange.lowerBound, &bounds)
+			return index ..< nextRange.lowerBound
+		}, description)
 	}
 }
 
@@ -55,17 +55,17 @@ public struct Bound: TextPattern {
 	public var regex = "()"
 	public let length: Int? = 0
 
-	public init() { }
+	public init() {}
 
-	public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> ParsedRange? {
+	public func parse(_: TextPattern.Input, at _: TextPattern.Input.Index) -> ParsedRange? {
 		assertionFailure("do not call this"); return nil
 	}
 
-	public func parse(_ input: TextPattern.Input, from startindex: TextPattern.Input.Index) -> ParsedRange? {
+	public func parse(_: TextPattern.Input, from _: TextPattern.Input.Index) -> ParsedRange? {
 		assertionFailure("do not call this"); return nil
 	}
 
-	public func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>) -> Patterns.Patternette {
+	public func _prepForPatterns(remainingPatterns _: inout ArraySlice<TextPattern>) -> Patterns.Patternette {
 		return ({ (_: Input, index: Input.Index, bounds: inout ContiguousArray<Input.Index>) in
 			bounds.append(index)
 			return index ..< index
@@ -74,9 +74,9 @@ public struct Bound: TextPattern {
 
 	static func getBoundHandler(_ remainingPatterns: inout ArraySlice<TextPattern>)
 		-> (Input.Index, inout ContiguousArray<Input.Index>) -> Void {
-			return remainingPatterns.first is Bound
-				? { remainingPatterns.removeFirst(); return { $1.append($0) } }()
-				: { _, _ in }
+		return remainingPatterns.first is Bound
+			? { remainingPatterns.removeFirst(); return { $1.append($0) } }()
+			: { _, _ in }
 	}
 }
 
@@ -95,7 +95,7 @@ public struct Patterns: TextPattern {
 		}
 	}
 
-	public let series: Array<TextPattern>
+	public let series: [TextPattern]
 	public var regex: String {
 		return series.map((\TextPattern.regex).toFunc).joined()
 	}
@@ -112,13 +112,14 @@ public struct Patterns: TextPattern {
 
 	public let description: String
 
-	private static func createPatternettes(_ patterns: Array<TextPattern>) throws -> [Patternette] {
+	private static func createPatternettes(_ patterns: [TextPattern]) throws -> [Patternette] {
 		var remainingPatterns = patterns[...]
 		var result = [Patternette]()
 		while let nextPattern = remainingPatterns.popFirst() {
 			if !(nextPattern is Bound), nextPattern.length == 0, let first = remainingPatterns.first {
 				if type(of: nextPattern) == type(of: first) {
-					throw Patterns.InitError.message("Cannot have 2 \(type(of: nextPattern)) in a row, as they will always parse the same position.") }
+					throw Patterns.InitError.message("Cannot have 2 \(type(of: nextPattern)) in a row, as they will always parse the same position.")
+				}
 				if let second = remainingPatterns.second,
 					type(of: nextPattern) == type(of: second),
 					first.length == 0 || (first as? Skip)?.repeatedPattern == nil {
@@ -132,7 +133,7 @@ public struct Patterns: TextPattern {
 
 	public init(_ series: [TextPattern?]) throws {
 		self.series = series.compactMap { $0 }.flattenPatterns()
-		if series.isEmpty || (series.filter({ $0 is Bound }).count > 2) {
+		if series.isEmpty || (series.filter { $0 is Bound }.count > 2) {
 			throw InitError.invalid(self.series.array())
 		}
 
@@ -238,7 +239,7 @@ public extension Patterns {
 	}
 }
 
-fileprivate extension Sequence where Element == TextPattern {
+private extension Sequence where Element == TextPattern {
 	func flattenPatterns() -> [TextPattern] {
 		return self.flatMap { (pattern: TextPattern) -> [TextPattern] in
 			if let series = pattern as? Patterns, !series.series.contains(where: { $0 is Bound }) {

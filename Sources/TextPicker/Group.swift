@@ -50,16 +50,16 @@ public extension Group where Element: Hashable {
 }
 
 /*
-import Foundation
+ import Foundation
 
-public extension Group where Element == Character {
-	init(description: String, characterSet: CharacterSet) {
-		self.description = description
-		regex = "[\(characterSet.map(String.init(describing:)).joined())]"
-		self.contains = { c in
-			guard c.unicodeScalars.count == 1 else { return false }
-			return c.unicodeScalars.first.map(characterSet.contains) ?? false
-		}
-	}
-}
-*/
+ public extension Group where Element == Character {
+ init(description: String, characterSet: CharacterSet) {
+ 	self.description = description
+ 	regex = "[\(characterSet.map(String.init(describing:)).joined())]"
+ 	self.contains = { c in
+ 		guard c.unicodeScalars.count == 1 else { return false }
+ 		return c.unicodeScalars.first.map(characterSet.contains) ?? false
+ 	}
+ }
+ }
+ */

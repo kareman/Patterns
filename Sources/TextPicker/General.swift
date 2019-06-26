@@ -8,12 +8,12 @@
 
 public struct SearchCache<Element: Hashable> {
 	let length: Int
-	let skipTable: Dictionary<Element, Int>
+	let skipTable: [Element: Int]
 
 	public init<Pattern: BidirectionalCollection>(pattern: Pattern)
 		where Pattern.SubSequence.Element == Element {
 		length = pattern.count
-		var skipTable = Dictionary<Element, Int>(minimumCapacity: length)
+		var skipTable = [Element: Int](minimumCapacity: length)
 		for (i, c) in pattern.dropLast().enumerated() {
 			skipTable[c] = length - i - 1
 		}
