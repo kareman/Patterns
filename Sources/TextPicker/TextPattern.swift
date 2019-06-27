@@ -112,7 +112,7 @@ extension TextPattern {
 }
 
 public struct Literal: TextPattern {
-	let substring: Input
+	public let substring: Input
 	let searchCache: SearchCache<Input.Element>
 
 	public var description: String {
