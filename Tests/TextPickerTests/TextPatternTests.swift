@@ -53,30 +53,30 @@ class TextPatternTests: XCTestCase {
 		line 3
 		line 4
 		"""
-		let pattern: TextPattern = Line.Start()
+		let pattern: TextPattern = line.start
 		assertParseAll(pattern, input: "", result: "", count: 1)
 		assertParseAll(pattern, input: "\n", count: 2)
 		assertParseAll(pattern, input: text, result: "", count: 4)
 		assertParseAll(
-			try Patterns(Line.Start(), Bound(), Skip(), Bound(), Literal(" ")),
+			try Patterns(line.start, Bound(), Skip(), Bound(), Literal(" ")),
 			input: text, result: "line", count: 4)
 		assertParseAll(
-			try Patterns(Line.Start(), Literal("line")),
+			try Patterns(line.start, Literal("line")),
 			input: text, result: "line", count: 4)
 		assertParseAll(
 			try Patterns(
-				digit, Skip(), Line.Start(), Literal("l")),
+				digit, Skip(), line.start, Literal("l")),
 			input: text, result: ["1\nl", "2\nl", "3\nl"])
 
-		XCTAssertThrowsError(try Patterns([Line.Start(), Line.Start()]))
-		XCTAssertThrowsError(try Patterns([Line.Start(), Bound(), Line.Start()]))
+		XCTAssertThrowsError(try Patterns([line.start, line.start]))
+		XCTAssertThrowsError(try Patterns([line.start, Bound(), line.start]))
 		XCTAssertThrowsError(
-			try Patterns([Line.Start(), Skip(), Line.Start()]))
-		XCTAssertNoThrow(try Patterns([Line.Start(), Skip(whileRepeating: alphanumeric || Literal("\n")), Line.Start()]))
+			try Patterns([line.start, Skip(), line.start]))
+		XCTAssertNoThrow(try Patterns([line.start, Skip(whileRepeating: alphanumeric || Literal("\n")), line.start]))
 	}
 
 	func testLineEnd() throws {
-		let pattern: TextPattern = Line.End()
+		let pattern: TextPattern = line.end
 		assertParseAll(pattern, input: "", result: "", count: 1)
 		assertParseAll(pattern, input: "\n", count: 2)
 		assertParseAll(pattern, input: "\n\n", count: 3)
@@ -89,24 +89,24 @@ class TextPatternTests: XCTestCase {
 		"""
 		assertParseAll(pattern, input: text, count: 4)
 		assertParseAll(
-			try Patterns(Literal(" "), Bound(), Skip(), Bound(), Line.End()),
+			try Patterns(Literal(" "), Bound(), Skip(), Bound(), line.end),
 			input: text, result: ["1", "2", "3", "4"])
 		assertParseAll(
-			try Patterns(digit, Line.End()),
+			try Patterns(digit, line.end),
 			input: text, result: ["1", "2", "3", "4"])
 		assertParseAll(
-			try Patterns(digit, Line.End(), Skip(), Literal("l")),
+			try Patterns(digit, line.end, Skip(), Literal("l")),
 			input: text, result: ["1\nl", "2\nl", "3\nl"])
 
-		XCTAssertThrowsError(try Patterns(Line.End(), Line.End()))
+		XCTAssertThrowsError(try Patterns(line.end, line.end))
 		XCTAssertThrowsError(
-			try Patterns(Line.End(), Bound(), Line.End()))
+			try Patterns(line.end, Bound(), line.end))
 		XCTAssertThrowsError(
-			try Patterns(Line.End(), Skip(), Line.End()))
-		XCTAssertNoThrow(try Patterns([Line.End(), Skip(whileRepeating: alphanumeric || Literal("\n")), Line.End()]))
+			try Patterns(line.end, Skip(), line.end))
+		XCTAssertNoThrow(try Patterns([line.end, Skip(whileRepeating: alphanumeric || Literal("\n")), line.end]))
 
 		assertParseAll(
-			try Patterns(Line.End()),
+			try Patterns(line.end),
 			input: "\n", count: 2)
 	}
 

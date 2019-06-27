@@ -283,18 +283,20 @@ public func || (p1: TextPattern, p2: TextPattern) -> OrPattern {
 }
 
 public struct Line: TextPatternWrapper {
-	public let description: String = "Line"
+	public let description: String = "line"
 	public let regex: String = "^.*$"
 	public let pattern: TextPattern
+	public let start = Start()
+	public let end = End()
 
 	init() {
-		pattern = try! Patterns(Start(), Skip(), Line.End())
+		pattern = try! Patterns(Start(), Skip(), End())
 	}
 
 	public struct Start: TextPattern {
 		public init() {}
 
-		public var description: String { return "Line.Start" }
+		public var description: String { return "line.start" }
 		public var regex = "^"
 		public var length: Int? = 0
 
@@ -315,7 +317,7 @@ public struct Line: TextPatternWrapper {
 	public struct End: TextPattern {
 		public init() {}
 
-		public var description: String { return "End" }
+		public var description: String { return "line.end" }
 		public let regex = "$"
 		public let length: Int? = 0
 
@@ -389,3 +391,5 @@ public let uppercaseLetter = OneOf(Group(description: "uppercaseLetter", regex: 
                                          contains: (\Character.isUppercase).toFunc))
 public let whitespace = OneOf(Group(description: "whitespace", regex: #"\p{White_Space}"#,
                                     contains: (\Character.isWhitespace).toFunc))
+
+public let line = Line()

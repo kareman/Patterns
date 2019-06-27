@@ -102,7 +102,7 @@ class PatternsTests: XCTestCase {
 	func testRepeatOrThenEndOfLine() throws {
 		assertParseAll(
 			try Patterns((alphanumeric || OneOf(contentsOf: " ")).repeat(min: 0),
-			             Line.End()),
+			             line.end),
 			input: "FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S",
 			result: ["FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S"])
 	}
@@ -176,7 +176,7 @@ class PatternsTests: XCTestCase {
 		cera user
 		dilled10 io
 		"""
-		let pattern = try Patterns(Line.Start(), Bound())
+		let pattern = try Patterns(line.start, Bound())
 		let m = Array(pattern.matches(in: text[...]))
 
 		XCTAssertEqual(m.map { text[$0.marks[0]] }, ["a", "b", "c", "d"].map(Character.init))
@@ -191,11 +191,11 @@ class PatternsTests: XCTestCase {
 		dilled10 io
 
 		"""
-		var pattern = try Patterns(Line.End(), Bound())
+		var pattern = try Patterns(line.end, Bound())
 		var m = Array(pattern.matches(in: text[...]))
 		XCTAssertEqual(m.dropLast().map { text[$0.marks[0]] }, Array(repeating: Character("\n"), count: 4))
 
-		pattern = try Patterns(Bound(), Line.End())
+		pattern = try Patterns(Bound(), line.end)
 		m = Array(pattern.matches(in: text[...]))
 		XCTAssertEqual(m.dropLast().map { text[$0.marks[0]] }, Array(repeating: Character("\n"), count: 4))
 	}
