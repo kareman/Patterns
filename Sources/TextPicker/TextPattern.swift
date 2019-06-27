@@ -197,9 +197,9 @@ public struct OneOf: TextPattern {
 }
 
 public struct RepeatPattern: TextPattern {
-	let repeatedPattern: TextPattern
-	let min: Int
-	let max: Int?
+	public let repeatedPattern: TextPattern
+	public let min: Int
+	public let max: Int?
 
 	public var description: String {
 		return "\(repeatedPattern){\(min)...\(max.map(String.init) ?? "")}"
@@ -252,7 +252,7 @@ extension TextPattern {
 }
 
 public struct OrPattern: TextPattern {
-	let pattern1, pattern2: TextPattern
+	public let pattern1, pattern2: TextPattern
 
 	public var description: String {
 		return "(\(pattern1) OR \(pattern2))"
@@ -347,7 +347,7 @@ public struct Line: TextPatternWrapper {
 }
 
 public struct NotPattern: TextPattern {
-	let pattern: TextPattern
+	public let pattern: TextPattern
 	public var description: String {
 		return "!\(pattern)"
 	}
