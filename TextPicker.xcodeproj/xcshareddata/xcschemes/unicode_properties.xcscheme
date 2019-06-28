@@ -55,7 +55,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "Scripts.txt"
+            argument = "WordBreakProperty.txt"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

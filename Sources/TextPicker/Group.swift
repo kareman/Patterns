@@ -10,6 +10,12 @@ public struct Group<Element>: CustomStringConvertible {
 	public var regex: String
 	public let contains: (Element) -> Bool
 
+	public init(description: String, regex: String? = nil, contains: @escaping (Element) -> Bool) {
+		self.description = description
+		self.regex = regex ?? "NOT IMPLEMENTED"
+		self.contains = contains
+	}
+
 	func contains<S: Sequence>(contentsOf s: S) -> Bool where S.Element == Element {
 		return s.allSatisfy(contains)
 	}
@@ -20,6 +26,10 @@ public extension Group {
 		return Group(description: "(\(self) || \(other))", regex: "(?:\(regex)|\(other.regex)") {
 			self.contains($0) || other.contains($0)
 		}
+	}
+
+	static func || (a: Group, b: Group) -> Group {
+		return a.union(b)
 	}
 
 	func intersection(_ other: Group) -> Group {

@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		BA37AC7222C69CD800EF7982 /* WordBoundaries.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA37AC7122C69CD800EF7982 /* WordBoundaries.swift */; };
 		OBJ_101 /* FootlessParser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "FootlessParser::FootlessParser::Product" /* FootlessParser.framework */; };
 		OBJ_48 /* Converters.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_26 /* Converters.swift */; };
 		OBJ_49 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_27 /* Error.swift */; };
@@ -67,6 +68,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		BA37AC7122C69CD800EF7982 /* WordBoundaries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordBoundaries.swift; sourceTree = "<group>"; };
 		BA9C5EF522C278600080AAA7 /* LinuxMain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LinuxMain.swift; path = Tests/LinuxMain.swift; sourceTree = "<group>"; };
 		"FootlessParser::FootlessParser::Product" /* FootlessParser.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FootlessParser.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_10 /* Group.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
@@ -234,10 +236,11 @@
 		OBJ_8 /* TextPicker */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_9 /* General.swift */,
-				OBJ_10 /* Group.swift */,
 				OBJ_11 /* TextPattern.swift */,
 				OBJ_12 /* Patterns.swift */,
+				OBJ_9 /* General.swift */,
+				OBJ_10 /* Group.swift */,
+				BA37AC7122C69CD800EF7982 /* WordBoundaries.swift */,
 			);
 			name = TextPicker;
 			path = Sources/TextPicker;
@@ -400,6 +403,7 @@
 			buildActionMask = 0;
 			files = (
 				OBJ_66 /* General.swift in Sources */,
+				BA37AC7222C69CD800EF7982 /* WordBoundaries.swift in Sources */,
 				OBJ_67 /* Group.swift in Sources */,
 				OBJ_68 /* TextPattern.swift in Sources */,
 				OBJ_69 /* Patterns.swift in Sources */,

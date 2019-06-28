@@ -110,6 +110,14 @@ class TextPatternTests: XCTestCase {
 			input: "\n", count: 2)
 	}
 
+	func testWordBoundary() throws {
+		let pattern = try Patterns(Word.boundary, OneOf(contentsOf: []).not, Skip(), Word.boundary)
+		assertParseAll(
+			pattern,
+			input: "this I 3,875.08 can't, you letter-like. And? then",
+			result: ["this", " ", "I", " ", "3,875.08", " ", "can't", ",", " ", "you", " ", "letter", "-", "like", ".", " ", "And", " ", "then"])
+	}
+
 	func testParseFile() throws {
 		let file = #file
 		let text = try! String(contentsOfFile: file, encoding: .utf8)
