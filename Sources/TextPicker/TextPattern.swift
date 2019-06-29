@@ -101,7 +101,7 @@ extension TextPattern {
 			}
 			input.formIndex(after: &index)
 		}
-		return nil
+		return parse(input, at: index)
 	}
 
 	public func _prepForPatterns(remainingPatterns _: inout ArraySlice<TextPattern>) throws -> Patterns.Patternette {

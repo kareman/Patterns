@@ -24,7 +24,7 @@ class TextPatternTests: XCTestCase {
 	}
 
 	func testOptional() throws {
-		assertParseAll(try Patterns(digit.repeat(min: 0)), input: "123abc123", count: 5)
+		assertParseAll(try Patterns(letter, digit.repeat(min: 0)), input: "123abc123d", count: 4)
 		assertParseAll(try Patterns(digit.repeat(min: 0, max: 1), letter),
 		               input: "123abc", result: ["3a", "b", "c"])
 	}
@@ -111,11 +111,9 @@ class TextPatternTests: XCTestCase {
 	}
 
 	func testWordBoundary() throws {
-		let pattern = try Patterns(Word.boundary, OneOf(contentsOf: []).not, Skip(), Word.boundary)
-		assertParseAll(
-			pattern,
-			input: "this I 3,875.08 can't, you letter-like. And? then",
-			result: ["this", " ", "I", " ", "3,875.08", " ", "can't", ",", " ", "you", " ", "letter", "-", "like", ".", " ", "And", " ", "then"])
+		let pattern = Word.boundary
+		assertParseMarkers(pattern, input: #"|I| |said| |"|hello|"|"#)
+		assertParseMarkers(pattern, input: "|this| |I| |-|3,875.08| |can't|,| |you| |letter|-|like|.| |And|?| |then|")
 	}
 
 	func testParseFile() throws {
