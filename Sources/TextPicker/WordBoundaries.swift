@@ -28,8 +28,10 @@ public struct Word {
 
 		public func parse(_ input: Input, at index: Input.Index) -> ParsedRange? {
 			let success = index ..< index
-			guard let char1Before = input.index(index, offsetBy: -1, limitedBy: input.startIndex).map({ input[$0] }),
-				index != input.endIndex else { return success }
+			guard index != input.endIndex,
+				let char1Before = input.validIndex(index, offsetBy: -1).map({ input[$0] }) else {
+				return success
+			}
 			let char1After = input[index]
 
 			func before(_ b1: Group<UInt32>) -> Bool {
@@ -39,16 +41,12 @@ public struct Word {
 				return a1.contains(char1After)
 			}
 
-			let char2After: Character? = {
-				let indexAfter = input.index(after: index)
-				return indexAfter == input.endIndex ? nil : input[indexAfter]
-			}()
-
+			let char2After = input.validIndex(index, offsetBy: +1).map { input[$0] }
 			func after(_ a1: Group<UInt32>, _ a2: Group<UInt32>) -> Bool {
 				return a1.contains(char1After) && char2After.map(a2.contains) ?? false
 			}
 
-			let char2Before = input.index(index, offsetBy: -2, limitedBy: input.startIndex).map { input[$0] }
+			let char2Before = input.validIndex(index, offsetBy: -2).map { input[$0] }
 			func before(_ b2: Group<UInt32>, _ b1: Group<UInt32>) -> Bool {
 				return b1.contains(char1Before) && (char2Before.map(b2.contains) ?? false)
 			}
