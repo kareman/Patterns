@@ -28,60 +28,53 @@ public struct Word {
 
 		public func parse(_ input: Input, at index: Input.Index) -> ParsedRange? {
 			let success = index ..< index
-			guard let before = input.index(index, offsetBy: -1, limitedBy: input.startIndex).map({ input[$0] }),
+			guard let char1Before = input.index(index, offsetBy: -1, limitedBy: input.startIndex).map({ input[$0] }),
 				index != input.endIndex else { return success }
-			let after = input[index]
+			let char1After = input[index]
 
-			if before.isNewline || after.isNewline { return success }
-			if wSegSpace.contains(before), wSegSpace.contains(after) { return nil }
-			if aHLetter.contains(before), aHLetter.contains(after) { return nil }
+			func before(_ b1: Group<UInt32>) -> Bool {
+				return b1.contains(char1Before)
+			}
+			func after(_ a1: Group<UInt32>) -> Bool {
+				return a1.contains(char1After)
+			}
 
-			let afterAfter: Character? = {
+			let char2After: Character? = {
 				let indexAfter = input.index(after: index)
 				return indexAfter == input.endIndex ? nil : input[indexAfter]
 			}()
-			if aHLetter.contains(before),
-				midLetter.contains(after) || midNumLetQ.contains(after),
-				afterAfter.map(aHLetter.contains) ?? false {
-				return nil
+
+			func after(_ a1: Group<UInt32>, _ a2: Group<UInt32>) -> Bool {
+				return a1.contains(char1After) && char2After.map(a2.contains) ?? false
 			}
 
-			let beforeBefore = input.index(index, offsetBy: -2, limitedBy: input.startIndex).map { input[$0] }
-			if beforeBefore.map(aHLetter.contains) ?? false,
-				midLetter.contains(before) || midNumLetQ.contains(before),
-				aHLetter.contains(after) {
-				return nil
-			}
-			if hebrewLetter.contains(before), singleQuote.contains(after) { return nil }
-			if hebrewLetter.contains(before), doubleQuote.contains(after),
-				afterAfter.map(hebrewLetter.contains) ?? false { return nil }
-			if beforeBefore.map(hebrewLetter.contains) ?? false,
-				doubleQuote.contains(before),
-				hebrewLetter.contains(after) {
-				return nil
+			let char2Before = input.index(index, offsetBy: -2, limitedBy: input.startIndex).map { input[$0] }
+			func before(_ b2: Group<UInt32>, _ b1: Group<UInt32>) -> Bool {
+				return b1.contains(char1Before) && (char2Before.map(b2.contains) ?? false)
 			}
 
-			if numeric.contains(before), numeric.contains(after) { return nil }
-			if aHLetter.contains(before), numeric.contains(after) { return nil }
-			if numeric.contains(before), aHLetter.contains(after) { return nil }
+			if char1Before.isNewline || char1After.isNewline { return success }
+			if before(wSegSpace), after(wSegSpace) { return nil }
+			if before(aHLetter), after(aHLetter) { return nil }
 
-			if beforeBefore.map(numeric.contains) ?? false,
-				midNum.contains(before) || midNumLetQ.contains(before),
-				numeric.contains(after) {
-				return nil
-			}
-			if numeric.contains(before),
-				midNum.contains(after) || midNumLetQ.contains(after),
-				afterAfter.map(numeric.contains) ?? false {
-				return nil
-			}
+			if before(aHLetter), after(midLetter || midNumLetQ, aHLetter) { return nil }
+			if before(aHLetter, midLetter || midNumLetQ), after(aHLetter) { return nil }
 
-			if katakana.contains(before), katakana.contains(after) { return nil }
+			if before(hebrewLetter), after(singleQuote) { return nil }
+			if before(hebrewLetter), after(doubleQuote, hebrewLetter) { return nil }
+			if before(hebrewLetter, doubleQuote), after(hebrewLetter) { return nil }
 
-			if (aHLetter || numeric || katakana || extendNumLet).contains(before),
-				extendNumLet.contains(after) { return nil }
-			if extendNumLet.contains(before),
-				(aHLetter || numeric || katakana).contains(after) { return nil }
+			if before(numeric), after(numeric) { return nil }
+			if before(aHLetter), after(numeric) { return nil }
+			if before(numeric), after(aHLetter) { return nil }
+
+			if before(numeric, midNum || midNumLetQ), after(numeric) { return nil }
+			if before(numeric), after(midNum || midNumLetQ, numeric) { return nil }
+
+			if before(katakana), after(katakana) { return nil }
+
+			if before(aHLetter || numeric || katakana || extendNumLet), after(extendNumLet) { return nil }
+			if before(extendNumLet), after(aHLetter || numeric || katakana) { return nil }
 
 			return success
 		}
