@@ -18,6 +18,7 @@ public struct Word {
 	private static let katakana = Group(.katakana)
 	private static let extendNumLet = Group(.extendNumLet)
 	private static let midNumLetQ = midNumLet || singleQuote
+	private static let ahLetterNumericKatakanaExtendNumLet = aHLetter || numeric || katakana || extendNumLet
 
 	public static let boundary = Boundary()
 
@@ -71,7 +72,7 @@ public struct Word {
 
 			if before(katakana), after(katakana) { return nil }
 
-			if before(aHLetter || numeric || katakana || extendNumLet), after(extendNumLet) { return nil }
+			if before(ahLetterNumericKatakanaExtendNumLet), after(extendNumLet) { return nil }
 			if before(extendNumLet), after(aHLetter || numeric || katakana) { return nil }
 
 			return success
