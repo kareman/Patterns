@@ -24,6 +24,9 @@ let package = Package(
 		.testTarget(
 			name: "TextPickerTests",
 			dependencies: ["TextPicker"]),
+		.testTarget(
+			name: "PerformanceTests",
+			dependencies: ["TextPicker"]),
 		.target(
 			name: "unicode_properties",
 			dependencies: ["FootlessParser"]),
