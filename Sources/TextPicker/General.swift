@@ -126,3 +126,13 @@ extension KeyPath {
 		return { $0[keyPath: self] }
 	}
 }
+
+extension BidirectionalCollection {
+	func validIndex(_ i: Index, offsetBy distance: Int) -> Index? {
+		if distance < 0 {
+			return index(i, offsetBy: distance, limitedBy: startIndex)
+		}
+		let newI = index(i, offsetBy: distance, limitedBy: endIndex)
+		return newI == endIndex ? nil : newI
+	}
+}

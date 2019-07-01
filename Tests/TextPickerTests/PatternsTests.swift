@@ -101,10 +101,14 @@ class PatternsTests: XCTestCase {
 
 	func testRepeatOrThenEndOfLine() throws {
 		assertParseAll(
-			try Patterns((alphanumeric || OneOf(contentsOf: " ")).repeat(min: 0),
+			try Patterns((alphanumeric || OneOf(contentsOf: " ")).repeat(min: 1),
 			             line.end),
 			input: "FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S",
 			result: ["FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S"])
+		assertParseAll(
+			try Patterns(digit, letter.repeat(min: 0, max: 2)),
+			input: "2a 35abz2",
+			result: ["2a", "3", "5ab", "2"])
 	}
 
 	func testPatternsWithSkipAndBounds() throws {
