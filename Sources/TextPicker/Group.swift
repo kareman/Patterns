@@ -5,14 +5,10 @@
 //  Created by Kåre Morstøl on 23/04/2019.
 //
 
-public struct Group<Element>: CustomStringConvertible {
-	public let description: String
-	public var regex: String
+public struct Group<Element> {
 	public let contains: (Element) -> Bool
 
-	public init(description: String, regex: String? = nil, contains: @escaping (Element) -> Bool) {
-		self.description = description
-		self.regex = regex ?? "NOT IMPLEMENTED"
+	public init(contains: @escaping (Element) -> Bool) {
 		self.contains = contains
 	}
 
@@ -23,7 +19,7 @@ public struct Group<Element>: CustomStringConvertible {
 
 public extension Group {
 	func union(_ other: Group) -> Group {
-		return Group(description: "(\(self) || \(other))", regex: "(?:\(regex)|\(other.regex)") {
+		return Group {
 			self.contains($0) || other.contains($0)
 		}
 	}
@@ -33,24 +29,20 @@ public extension Group {
 	}
 
 	func intersection(_ other: Group) -> Group {
-		return Group(description: "(\(self) && \(other))", regex: "(?=\(regex))\(other.regex)") {
+		return Group {
 			self.contains($0) && other.contains($0)
 		}
 	}
 
 	func inverted() -> Group<Element> {
-		return Group(description: "!\(self)", regex: "NOT IMPLEMENTED") {
+		return Group {
 			!self.contains($0)
 		}
 	}
 }
 
-import Foundation
-
 public extension Group where Element: Hashable {
 	init(contentsOf set: Set<Element>) {
-		description = "\"\(set)\""
-		regex = "[\(NSRegularExpression.escapedPattern(for: set.map(String.init(describing:)).joined()))]"
 		contains = set.contains
 	}
 

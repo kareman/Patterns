@@ -18,7 +18,6 @@ public struct Word {
 	private static let katakana = Group(.katakana)
 	private static let extendNumLet = Group(.extendNumLet)
 	private static let midNumLetQ = midNumLet || singleQuote
-	private static let ahLetterNumericKatakanaExtendNumLet = aHLetter || numeric || katakana || extendNumLet
 
 	public static let boundary = Boundary()
 
@@ -72,7 +71,7 @@ public struct Word {
 
 			if before(katakana), after(katakana) { return nil }
 
-			if before(ahLetterNumericKatakanaExtendNumLet), after(extendNumLet) { return nil }
+			if before(aHLetter || numeric || katakana || extendNumLet), after(extendNumLet) { return nil }
 			if before(extendNumLet), after(aHLetter || numeric || katakana) { return nil }
 
 			return success
@@ -81,15 +80,12 @@ public struct Word {
 }
 
 extension Group where Element == UInt32 {
-	init<C: Collection>(description: String, _ c: C) where C.Element == ClosedRange<Element> {
-		self.description = description
-		self.regex = "NOT IMPLEMENTED"
+	init<C: Collection>(_ c: C) where C.Element == ClosedRange<Element> {
 		self.contains = { element in c.contains(where: { $0.contains(element) }) }
 	}
 
 	fileprivate init(_ property: UnicodeProperty) {
-		let me = propertyRanges[property]!
-		self.init(description: property.rawValue, me)
+		self.init(propertyRanges[property]!)
 	}
 
 	func contains(_ c: Character) -> Bool {

@@ -165,17 +165,23 @@ public struct OneOf: TextPattern {
 	public let set: Group<Character>
 
 	public let description: String
-	public var regex: String { return set.regex }
+	public let regex: String
 	public let length: Int? = 1
 
-	public init(_ set: Group<Character>) {
+	public init(description: String, regex: String? = nil, set: Group<Character>) {
 		self.set = set
-		self.description = set.description
+		self.description = description
+		self.regex = regex ?? "NOT IMPLEMENTED"
+	}
+
+	public init(description: String, regex: String? = nil, contains: @escaping (Character) -> Bool) {
+		self.init(description: description, regex: regex, set: Group(contains: contains))
 	}
 
 	public init<S: Collection>(contentsOf characters: S) where S.Element == Input.Element {
 		set = Group(contentsOf: characters)
-		description = "OneOf(\(set.description))"
+		description = "\"\(set)\""
+		regex = "[\(NSRegularExpression.escapedPattern(for: characters.map(String.init(describing:)).joined()))]"
 	}
 
 	public func parse(_ input: TextPattern.Input, at index: TextPattern.Input.Index) -> ParsedRange? {
@@ -373,23 +379,23 @@ extension TextPattern {
 	}
 }
 
-public let alphanumeric = OneOf(Group(description: "alphanumeric", regex: #"(?:\p{Alphabetic}|\p{Nd})"#,
-                                      contains: { $0.isWholeNumber || $0.isLetter }))
-public let digit = OneOf(Group(description: "digit", regex: #"\p{Nd}"#,
-                               contains: (\Character.isWholeNumber).toFunc))
-public let letter = OneOf(Group(description: "letter", regex: #"\p{Alphabetic}"#,
-                                contains: (\Character.isLetter).toFunc))
-public let lowercaseLetter = OneOf(Group(description: "lowercaseLetter", regex: #"\p{Ll}"#,
-                                         contains: (\Character.isLowercase).toFunc))
-public let newline = OneOf(Group(description: "newline", regex: #"\p{Zl}"#,
-                                 contains: (\Character.isNewline).toFunc))
-public let punctuationCharacter = OneOf(Group(description: "punctuationCharacter", regex: #"\p{P}"#,
-                                              contains: (\Character.isPunctuation).toFunc))
-public let symbol = OneOf(Group(description: "symbol", regex: #"\p{S}"#,
-                                contains: (\Character.isSymbol).toFunc))
-public let uppercaseLetter = OneOf(Group(description: "uppercaseLetter", regex: #"\p{Lu}"#,
-                                         contains: (\Character.isUppercase).toFunc))
-public let whitespace = OneOf(Group(description: "whitespace", regex: #"\p{White_Space}"#,
-                                    contains: (\Character.isWhitespace).toFunc))
+public let alphanumeric = OneOf(description: "alphanumeric", regex: #"(?:\p{Alphabetic}|\p{Nd})"#,
+                                contains: { $0.isWholeNumber || $0.isLetter })
+public let digit = OneOf(description: "digit", regex: #"\p{Nd}"#,
+                         contains: (\Character.isWholeNumber).toFunc)
+public let letter = OneOf(description: "letter", regex: #"\p{Alphabetic}"#,
+                          contains: (\Character.isLetter).toFunc)
+public let lowercaseLetter = OneOf(description: "lowercaseLetter", regex: #"\p{Ll}"#,
+                                   contains: (\Character.isLowercase).toFunc)
+public let newline = OneOf(description: "newline", regex: #"\p{Zl}"#,
+                           contains: (\Character.isNewline).toFunc)
+public let punctuationCharacter = OneOf(description: "punctuationCharacter", regex: #"\p{P}"#,
+                                        contains: (\Character.isPunctuation).toFunc)
+public let symbol = OneOf(description: "symbol", regex: #"\p{S}"#,
+                          contains: (\Character.isSymbol).toFunc)
+public let uppercaseLetter = OneOf(description: "uppercaseLetter", regex: #"\p{Lu}"#,
+                                   contains: (\Character.isUppercase).toFunc)
+public let whitespace = OneOf(description: "whitespace", regex: #"\p{White_Space}"#,
+                              contains: (\Character.isWhitespace).toFunc)
 
 public let line = Line()
