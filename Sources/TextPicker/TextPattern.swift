@@ -313,8 +313,8 @@ public struct Line: TextPatternWrapper {
 		}
 
 		public func parse(_ input: Input, from startIndex: Input.Index) -> ParsedRange? {
-			return parse(input, at: startIndex)
-				?? input[startIndex...].firstIndex(where: (\Character.isNewline).toFunc)
+			guard startIndex != input.startIndex else { return startIndex ..< startIndex }
+			return input[input.index(before: startIndex)...].firstIndex(where: (\Character.isNewline).toFunc)
 				.map(input.index(after:))
 				.map { $0 ..< $0 }
 		}
