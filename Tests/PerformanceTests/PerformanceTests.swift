@@ -57,6 +57,11 @@ class PerformanceTests: XCTestCase {
 		let pattern = try Patterns(Literal("\n"), Skip(), Literal("DOESN'T EXIST"))
 		try speedTest(pattern, textFraction: 100, hits: 0)
 	}
+
+	func testOptionalStringFollowedByNonOptionalString() throws {
+		let pattern = try Patterns(Literal("\"").repeat(min: 0, max: 1), Literal("I"))
+		try speedTest(pattern, textFraction: 32, hits: 304)
+	}
 }
 
 extension PerformanceTests {

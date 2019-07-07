@@ -59,6 +59,16 @@
 					<string>7 Jul 2019 at 23:32:19</string>
 				</dict>
 			</dict>
+			<key>testOptionalStringFollowedByNonOptionalString()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.18536</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>8 Jul 2019 at 00:04:50</string>
+				</dict>
+			</dict>
 			<key>testWordBoundary()</key>
 			<dict>
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>

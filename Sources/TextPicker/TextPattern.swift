@@ -147,12 +147,6 @@ public struct Literal: TextPattern {
 	public func parse(_ input: Input, from index: Input.Index) -> ParsedRange? {
 		return input.range(of: substring, from: index, cache: searchCache)
 	}
-
-	/*
-	 public func parseAll(_ input: Input, from startindex: Input.Index) -> [ParsedRange] {
-	 return input.ranges(of: input, from: startindex, cache: searchCache)
-	 }
-	 */
 }
 
 extension Literal: ExpressibleByStringLiteral {
