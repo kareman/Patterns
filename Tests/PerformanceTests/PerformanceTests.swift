@@ -9,15 +9,18 @@ import TextPicker
 import XCTest
 
 class PerformanceTests: XCTestCase {
-	func testWordBoundary() throws {
-		let text = try String(contentsOf: getLocalURL(for: "Long.txt")).prefix(3_207_864 / 32)
-		let parser = Word.boundary
-
+	func speedTest<P: TextPattern>(_ pattern: P, textFraction: Int = 32, hits: Int, file: StaticString = #file, line: UInt = #line) throws {
+		let text = try String(contentsOf: getLocalURL(for: "Long.txt")).prefix(3_207_864 / textFraction)
 		var result = 0
-		measure {
-			result = parser.parseAllLazy(text, from: text.startIndex).reduce(into: 0) { c, _ in c += 1 }
+		self.measure {
+			result = pattern.parseAllLazy(text, from: text.startIndex).reduce(into: 0) { c, _ in c += 1 }
 		}
-		print("Found \(result) word boundaries")
+		XCTAssertEqual(result, hits, file: file, line: line)
+	}
+
+	func testWordBoundary() throws {
+		let pattern = Word.boundary
+		try speedTest(pattern, textFraction: 32, hits: 39270)
 	}
 
 	func testWordBoundaryRegex() throws {
@@ -34,26 +37,25 @@ class PerformanceTests: XCTestCase {
 	}
 
 	func testLine() throws {
-		let text = try String(contentsOf: getLocalURL(for: "Long.txt")).prefix(3_207_864 / 32)
 		let pattern = try! Patterns([line.start, Bound(), Skip(), Bound(), line.end])
-
-		var result = 0
-		self.measure {
-			result = pattern.parseAllLazy(text, from: text.startIndex).reduce(into: 0) { c, _ in c += 1 }
-		}
-		XCTAssertEqual(result, 494)
+		try speedTest(pattern, textFraction: 32, hits: 494)
 	}
 
 	func testNotNewLine() throws {
-		let text = try String(contentsOf: getLocalURL(for: "Long.txt")).prefix(3_207_864 / 32)
 		let pattern = try Patterns(Literal(","), Bound(),
 		                           Skip(whileRepeating: newline.not),
 		                           Bound(), Line.End())
-		var result = 0
-		self.measure {
-			result = pattern.parseAllLazy(text, from: text.startIndex).reduce(into: 0) { c, _ in c += 1 }
-		}
-		XCTAssertEqual(result, 352)
+		try speedTest(pattern, textFraction: 32, hits: 352)
+	}
+
+	func testLiteralSearch() throws {
+		let pattern = try Patterns(Literal("Prince"))
+		try speedTest(pattern, textFraction: 32, hits: 125)
+	}
+
+	func testNonExistentLiteralSearch() throws {
+		let pattern = try Patterns(Literal("\n"), Skip(), Literal("DOESN'T EXIST"))
+		try speedTest(pattern, textFraction: 100, hits: 0)
 	}
 }
 

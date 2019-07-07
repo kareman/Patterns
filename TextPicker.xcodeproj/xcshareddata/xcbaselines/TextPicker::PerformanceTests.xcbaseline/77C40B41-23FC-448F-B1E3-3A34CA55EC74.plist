@@ -24,9 +24,29 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.082455</real>
+					<real>0.081054</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>7 Jul 2019 at 18:50:10</string>
+					<string>7 Jul 2019 at 23:32:19</string>
+				</dict>
+			</dict>
+			<key>testLiteralSearch()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.021652</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>7 Jul 2019 at 23:32:19</string>
+				</dict>
+			</dict>
+			<key>testNonExistentLiteralSearch()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.25767</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>7 Jul 2019 at 23:32:19</string>
 				</dict>
 			</dict>
 			<key>testNotNewLine()</key>
@@ -34,9 +54,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.15016</real>
+					<real>0.15079</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>7 Jul 2019 at 18:50:16</string>
+					<string>7 Jul 2019 at 23:32:19</string>
 				</dict>
 			</dict>
 			<key>testWordBoundary()</key>
@@ -44,9 +64,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.252</real>
+					<real>0.25564</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>Local Baseline</string>
+					<string>7 Jul 2019 at 23:32:19</string>
 				</dict>
 			</dict>
 			<key>testWordBoundaryRegex()</key>
@@ -54,9 +74,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.00706</real>
+					<real>0.0073468</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>Local Baseline</string>
+					<string>7 Jul 2019 at 23:32:19</string>
 				</dict>
 			</dict>
 		</dict>
