@@ -32,6 +32,29 @@ class PerformanceTests: XCTestCase {
 		}
 		print("Found \(result) word boundaries")
 	}
+
+	func testLine() throws {
+		let text = try String(contentsOf: getLocalURL(for: "Long.txt")).prefix(3_207_864 / 32)
+		let pattern = try! Patterns([line.start, Bound(), Skip(), Bound(), line.end])
+
+		var result = 0
+		self.measure {
+			result = pattern.parseAllLazy(text, from: text.startIndex).reduce(into: 0) { c, _ in c += 1 }
+		}
+		XCTAssertEqual(result, 494)
+	}
+
+	func testNotNewLine() throws {
+		let text = try String(contentsOf: getLocalURL(for: "Long.txt")).prefix(3_207_864 / 32)
+		let pattern = try Patterns(Literal(","), Bound(),
+		                           Skip(whileRepeating: newline.not),
+		                           Bound(), Line.End())
+		var result = 0
+		self.measure {
+			result = pattern.parseAllLazy(text, from: text.startIndex).reduce(into: 0) { c, _ in c += 1 }
+		}
+		XCTAssertEqual(result, 352)
+	}
 }
 
 extension PerformanceTests {

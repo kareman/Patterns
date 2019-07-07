@@ -19,6 +19,26 @@
 		</dict>
 		<key>PerformanceTests</key>
 		<dict>
+			<key>testLine()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.082455</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>7 Jul 2019 at 18:50:10</string>
+				</dict>
+			</dict>
+			<key>testNotNewLine()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.15016</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>7 Jul 2019 at 18:50:16</string>
+				</dict>
+			</dict>
 			<key>testWordBoundary()</key>
 			<dict>
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
