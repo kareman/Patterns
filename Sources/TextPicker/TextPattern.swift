@@ -105,7 +105,7 @@ extension TextPattern {
 	}
 
 	public func _prepForPatterns(remainingPatterns _: inout ArraySlice<TextPattern>) throws -> Patterns.Patternette {
-		return ({ (input: Input, index: Input.Index, _: inout ContiguousArray<Input.Index>) in
+		return ({ (input: Input, index: Input.Index, _: inout Patterns.ParseData) in
 			self.parse(input, at: index)
 		}, description)
 	}
@@ -334,12 +334,13 @@ public struct Line: TextPatternWrapper {
 		}
 
 		public func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>) throws -> Patterns.Patternette {
-			if (remainingPatterns.first.map { !($0 is Bound) } ?? false) {
-				return ({ (input: Input, index: Input.Index, _: inout ContiguousArray<Input.Index>) in
+			if (remainingPatterns.first.map { !($0 is Capture.Begin || $0 is Capture.End)
+			} ?? false) {
+				return ({ (input: Input, index: Input.Index, _: inout Patterns.ParseData) in
 					index == input.endIndex ? nil : self.parse(input, at: index)
 				}, "Line.End (test for end)")
 			}
-			return ({ (input: Input, index: Input.Index, _: inout ContiguousArray<Input.Index>) in
+			return ({ (input: Input, index: Input.Index, _: inout Patterns.ParseData) in
 				self.parse(input, at: index)
 			}, "Line.End")
 		}
