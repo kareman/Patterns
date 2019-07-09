@@ -178,8 +178,8 @@ class PatternsTests: XCTestCase {
 		let pattern = try Patterns(line.start, Capture())
 		let m = Array(pattern.matches(in: text[...]))
 
-		XCTAssertEqual(m.map { text[$0.marks[0]] }, ["a", "b", "c", "d"].map(Character.init))
-		XCTAssertEqual(pattern.matches(in: "\n\n").map { $0.marks[0] }.count, 3)
+		XCTAssertEqual(m.map { text[$0.captures[0].lowerBound] }, ["a", "b", "c", "d"].map(Character.init))
+		XCTAssertEqual(pattern.matches(in: "\n\n").map { $0.captures[0] }.count, 3)
 	}
 
 	func testMatchEndOfLines() throws {
@@ -192,11 +192,11 @@ class PatternsTests: XCTestCase {
 		"""
 		var pattern = try Patterns(line.end, Capture())
 		var m = Array(pattern.matches(in: text[...]))
-		XCTAssertEqual(m.dropLast().map { text[$0.marks[0]] }, Array(repeating: Character("\n"), count: 4))
+		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].lowerBound] }, Array(repeating: Character("\n"), count: 4))
 
 		pattern = try Patterns(Capture(), line.end)
 		m = Array(pattern.matches(in: text[...]))
-		XCTAssertEqual(m.dropLast().map { text[$0.marks[0]] }, Array(repeating: Character("\n"), count: 4))
+		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].lowerBound] }, Array(repeating: Character("\n"), count: 4))
 	}
 }
 
