@@ -144,6 +144,7 @@ public struct Patterns: TextPattern {
 		let patternFrom = self.series[patternFromIndex]
 		let firstSkipIndex = self.series.firstIndex(where: { $0 is Skip })
 		self.patternFrom = (firstSkipIndex.map { $0 < patternFromIndex } ?? false) ? nil : (patternFrom as? Patterns)?.patternFrom ?? patternFrom
+		
 		self.description = self.series.map(String.init(describing:)).joined(separator: " ")
 	}
 
