@@ -58,7 +58,7 @@ class TextPatternTests: XCTestCase {
 		assertParseAll(pattern, input: "\n", count: 2)
 		assertParseAll(pattern, input: text, result: "", count: 4)
 		assertParseAll(
-			try Patterns(line.start, Bound(), Skip(), Bound(), Literal(" ")),
+			try Patterns(line.start, Capture(Skip()), Literal(" ")),
 			input: text, result: "line", count: 4)
 		assertParseAll(
 			try Patterns(line.start, Literal("line")),
@@ -68,8 +68,8 @@ class TextPatternTests: XCTestCase {
 				digit, Skip(), line.start, Literal("l")),
 			input: text, result: ["1\nl", "2\nl", "3\nl"])
 
-		XCTAssertThrowsError(try Patterns([line.start, line.start]))
-		XCTAssertThrowsError(try Patterns([line.start, Bound(), line.start]))
+		XCTAssertThrowsError(try Patterns(line.start, line.start))
+		XCTAssertThrowsError(try Patterns(line.start, Capture(line.start)))
 		XCTAssertThrowsError(
 			try Patterns([line.start, Skip(), line.start]))
 		XCTAssertNoThrow(try Patterns([line.start, Skip(whileRepeating: alphanumeric || Literal("\n")), line.start]))
@@ -89,7 +89,7 @@ class TextPatternTests: XCTestCase {
 		"""
 		assertParseAll(pattern, input: text, count: 4)
 		assertParseAll(
-			try Patterns(Literal(" "), Bound(), Skip(), Bound(), line.end),
+			try Patterns(Literal(" "), Capture(Skip()), line.end),
 			input: text, result: ["1", "2", "3", "4"])
 		assertParseAll(
 			try Patterns(digit, line.end),
@@ -100,7 +100,7 @@ class TextPatternTests: XCTestCase {
 
 		XCTAssertThrowsError(try Patterns(line.end, line.end))
 		XCTAssertThrowsError(
-			try Patterns(line.end, Bound(), line.end))
+			try Patterns(line.end, Capture(line.end)))
 		XCTAssertThrowsError(
 			try Patterns(line.end, Skip(), line.end))
 		XCTAssertNoThrow(try Patterns([line.end, Skip(whileRepeating: alphanumeric || Literal("\n")), line.end]))
@@ -121,7 +121,7 @@ class TextPatternTests: XCTestCase {
 		let text = try! String(contentsOfFile: file, encoding: .utf8)
 		let startAt = text.range(of: "func testParseFile()")!.upperBound
 
-		let pattern: TextPattern = try Patterns(Bound(), Literal("\tlet "), Skip(), Bound(), Literal("="))
+		let pattern: TextPattern = try Patterns(Capture(Literal("\tlet "), Skip()), Literal("="))
 		let ranges = pattern.parseAll(text, from: startAt)
 
 		XCTAssertEqual(ranges.count, 5)

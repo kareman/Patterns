@@ -33,14 +33,14 @@ class PerformanceTests: XCTestCase {
 	}
 
 	func testLine() throws {
-		let pattern = try! Patterns([line.start, Bound(), Skip(), Bound(), line.end])
+		let pattern = try! Patterns([line.start, Capture(Skip()), line.end])
 		try speedTest(pattern, textFraction: 32, hits: 494)
 	}
 
 	func testNotNewLine() throws {
-		let pattern = try Patterns(Literal(","), Bound(),
-		                           Skip(whileRepeating: newline.not),
-		                           Bound(), Line.End())
+		let pattern = try Patterns(Literal(","),
+		                           Capture(Skip(whileRepeating: newline.not)),
+		                           Line.End())
 		try speedTest(pattern, textFraction: 32, hits: 352)
 	}
 
