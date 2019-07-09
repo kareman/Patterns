@@ -237,6 +237,13 @@ public extension Patterns {
 			self.fullRange = fullRange
 			self.captures = (data.captureBeginnings.map { $0 ..< $0 } + data.captures).sorted()
 		}
+
+		public func description(using text: String) -> String {
+			return """
+			fullRange: \(text[fullRange])
+			captures: \( captures.map {text [$0]})
+			"""
+		}
 	}
 
 	func match(in input: Input, at startindex: Input.Index) -> Match? {

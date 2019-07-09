@@ -198,6 +198,21 @@ class PatternsTests: XCTestCase {
 		m = Array(pattern.matches(in: text[...]))
 		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].lowerBound] }, Array(repeating: Character("\n"), count: 4))
 	}
+
+	func testMultipleCaptures() throws {
+		let text = """
+		There was a young woman named Bright,
+		Whose speed was much faster than light.
+		She set out one day,
+		In a relative way,
+		And returned on the previous night.
+		"""
+		let pattern = try Patterns(
+			line.start, Capture(letter.repeat(min: 1)), Literal(" "), Capture(letter.repeat(min: 1)))
+		let matches = Array(pattern.matches(in: text))
+		XCTAssertEqual(matches.map { $0.captures.map { range in text[range] } },
+		               [["There", "was"], ["Whose", "speed"], ["She", "set"], ["In", "a"], ["And", "returned"]])
+	}
 }
 
 extension PatternsTests {
