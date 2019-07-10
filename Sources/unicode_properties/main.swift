@@ -1,11 +1,12 @@
+/// Converts Unicode property data files to Swift code.
 
 import Foundation
 import TextPicker
 
 func unicodeProperty(fromDataFile text: String) -> [(range: ClosedRange<UInt32>, property: String)] {
-	let hexDigit = OneOf(description: "hex") {
+	let hexDigit = OneOf(description: "hexDigit", contains: {
 		$0.unicodeScalars.first!.properties.isHexDigit
-	}
+	})
 	let hexNumber = hexDigit.repeat(1...)
 	let hexRange = try! Patterns(hexNumber, Literal(".."), hexNumber) || hexNumber
 	let rangeAndProperty = try! Patterns(line.start, Capture(hexRange), Skip(), Literal("; "), Capture(Skip()), Literal(" "))
@@ -18,6 +19,8 @@ func unicodeProperty(fromDataFile text: String) -> [(range: ClosedRange<UInt32>,
 }
 
 extension Sequence {
+	/// Passes the 2 first elements to the “transform” closure. Then passes the last element returned from transform,
+	/// together with the next element in the source sequence, to “transform” again. And so on.
 	func flatMapPairs(_ transform: (Element, Element) -> [Element]) -> [Element] {
 		var result = ContiguousArray<Element>()
 		result.reserveCapacity(underestimatedCount)
@@ -35,6 +38,9 @@ extension Sequence {
 	}
 }
 
+/// Turns string into a proper Swift enum case name.
+///
+/// Removes all underscores. Unless string is all caps, lowercases the first letter.
 func caseName(_ string: String) -> String {
 	var caseName = string.replacingOccurrences(of: "_", with: "")
 	let firstLetter = caseName.allSatisfy { $0.isUppercase } ? "" : caseName.removeFirst().lowercased()
