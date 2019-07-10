@@ -15,6 +15,8 @@ public protocol TextPattern: CustomStringConvertible {
 
 	func parse(_ input: Input, at index: Input.Index) -> ParsedRange?
 	func parse(_ input: Input, from index: Input.Index) -> ParsedRange?
+	func parse(_ input: Input, at index: Input.Index, using: inout Patterns.ParseData) -> ParsedRange?
+	func parse(_ input: Input, from index: Input.Index, using: inout Patterns.ParseData) -> ParsedRange?
 	func parseAllLazy(_ input: Input, from startindex: Input.Index)
 		-> UnfoldSequence<ParsedRange, Input.Index>
 	func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>) throws -> Patterns.Patternette
@@ -34,6 +36,14 @@ public extension TextPatternWrapper {
 
 	func parse(_ input: Input, from index: Input.Index) -> ParsedRange? {
 		return pattern.parse(input, from: index)
+	}
+
+	func parse(_ input: Input, at index: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
+		return self.parse(input, at: index, using: &data)
+	}
+
+	func parse(_ input: Input, from index: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
+		return self.parse(input, from: index, using: &data)
 	}
 
 	func parseAllLazy(_ input: Input, from startindex: Input.Index)
@@ -96,9 +106,17 @@ extension TextPattern {
 		return parse(input, at: index)
 	}
 
+	public func parse(_ input: Input, at index: Input.Index, using _: inout Patterns.ParseData) -> ParsedRange? {
+		return self.parse(input, at: index)
+	}
+
+	public func parse(_ input: Input, from index: Input.Index, using _: inout Patterns.ParseData) -> ParsedRange? {
+		return self.parse(input, from: index)
+	}
+
 	public func _prepForPatterns(remainingPatterns _: inout ArraySlice<TextPattern>) throws -> Patterns.Patternette {
-		return ({ (input: Input, index: Input.Index, _: inout Patterns.ParseData) in
-			self.parse(input, at: index)
+		return ({ (input: Input, index: Input.Index, data: inout Patterns.ParseData) in
+			self.parse(input, at: index, using: &data)
 		}, description)
 	}
 }

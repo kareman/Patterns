@@ -55,9 +55,9 @@ public struct Skip: TextPattern {
 		}
 
 		return ({ (input, index, bounds: inout Patterns.ParseData) in
-			guard let nextRange = next.parse(input, from: index) else { return nil }
+			guard let nextRange = next.parse(input, from: index, using: &bounds) else { return nil }
 			if let repeatedPattern = self.repeatedPattern {
-				guard repeatedPattern.parse(input[index ..< nextRange.lowerBound], at: index)?.upperBound == nextRange.lowerBound else { return nil }
+				guard repeatedPattern.parse(input[index ..< nextRange.lowerBound], at: index, using: &bounds)?.upperBound == nextRange.lowerBound else { return nil }
 			}
 			maybeStoreBound(input, nextRange.lowerBound, &bounds)
 			return index ..< nextRange.lowerBound
@@ -98,11 +98,9 @@ public struct Capture: TextPattern {
 			assertionFailure("do not call this"); return nil
 		}
 
-		public func _prepForPatterns(remainingPatterns _: inout ArraySlice<TextPattern>) -> Patterns.Patternette {
-			return ({ (_: Input, index: Input.Index, bounds: inout Patterns.ParseData) in
-				bounds.captureBeginnings.append(index)
-				return index ..< index
-			}, description)
+		public func parse(_: Input, at index: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
+			data.captureBeginnings.append(index)
+			return index ..< index
 		}
 	}
 
@@ -121,15 +119,13 @@ public struct Capture: TextPattern {
 			assertionFailure("do not call this"); return nil
 		}
 
-		public func _prepForPatterns(remainingPatterns _: inout ArraySlice<TextPattern>) -> Patterns.Patternette {
-			return ({ (_: Input, index: Input.Index, bounds: inout Patterns.ParseData) in
-				if let capture = bounds.captureBeginnings.popLast() {
-					bounds.captures.append(capture ..< index)
-				} else {
-					bounds.captures.append(index ..< index)
-				}
-				return index ..< index
-			}, description)
+		public func parse(_: Input, at index: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
+			if let capture = data.captureBeginnings.popLast() {
+				data.captures.append(capture ..< index)
+			} else {
+				data.captures.append(index ..< index)
+			}
+			return index ..< index
 		}
 	}
 }
@@ -241,7 +237,7 @@ public extension Patterns {
 		public func description(using text: String) -> String {
 			return """
 			fullRange: \(text[fullRange])
-			captures: \( captures.map {text [$0]})
+			captures: \(captures.map { text[$0] })
 			"""
 		}
 	}
