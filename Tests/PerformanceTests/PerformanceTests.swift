@@ -55,7 +55,7 @@ class PerformanceTests: XCTestCase {
 	}
 
 	func testOptionalStringFollowedByNonOptionalString() throws {
-		let pattern = try Patterns(Literal("\"").repeat(min: 0, max: 1), Literal("I"))
+		let pattern = try Patterns(Literal("\"").repeat(0 ... 1), Literal("I"))
 		try speedTest(pattern, textFraction: 32, hits: 304)
 	}
 }

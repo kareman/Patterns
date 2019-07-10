@@ -12,7 +12,7 @@ public struct Skip: TextPattern {
 	public let length: Int? = nil
 
 	public init(whileRepeating repeatedPattern: TextPattern? = nil) {
-		self.repeatedPattern = repeatedPattern?.repeat(min: 0)
+		self.repeatedPattern = repeatedPattern?.repeat(0...)
 		self.description = "\(repeatedPattern.map(String.init(describing:)) ?? "")*"
 		self.regex = repeatedPattern.map { _ in "NOT IMPLEMENTED" } ?? ".*?"
 	}

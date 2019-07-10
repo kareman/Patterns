@@ -17,8 +17,6 @@ public protocol TextPattern: CustomStringConvertible {
 	func parse(_ input: Input, from index: Input.Index) -> ParsedRange?
 	func parseAllLazy(_ input: Input, from startindex: Input.Index)
 		-> UnfoldSequence<ParsedRange, Input.Index>
-	func `repeat`(min: Int) -> TextPattern
-	func `repeat`(min: Int, max: Int?) -> TextPattern
 	func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>) throws -> Patterns.Patternette
 	/// The length this pattern always parses, if it is constant
 	var length: Int? { get }
@@ -42,12 +40,6 @@ public extension TextPatternWrapper {
 		-> UnfoldSequence<ParsedRange, Input.Index> {
 		return pattern.parseAllLazy(input, from: startindex)
 	}
-
-	func `repeat`(min: Int) -> TextPattern {
-		return pattern.repeat(min: min)
-	}
-
-	func `repeat`(min: Int, max: Int?) -> TextPattern { return pattern.repeat(min: min, max: max) }
 
 	func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>) throws -> Patterns.Patternette {
 		return try pattern._prepForPatterns(remainingPatterns: &remainingPatterns)
@@ -201,6 +193,13 @@ public struct RepeatPattern: TextPattern {
 	public let min: Int
 	public let max: Int?
 
+	init<R: RangeExpression>(repeatedPattern: TextPattern, range: R) where R.Bound == Int {
+		let actualRange = range.relative(to: 0 ..< Int.max)
+		self.repeatedPattern = repeatedPattern
+		self.min = actualRange.lowerBound
+		self.max = actualRange.upperBound - 1
+	}
+
 	public var description: String {
 		return "\(repeatedPattern){\(min)...\(max.map(String.init) ?? "")}"
 	}
@@ -241,13 +240,8 @@ public struct RepeatPattern: TextPattern {
 }
 
 extension TextPattern {
-	public func `repeat`(min: Int, max: Int?) -> TextPattern {
-		assert(min >= 0 && max.map { $0 >= min } ?? true)
-		return RepeatPattern(repeatedPattern: self, min: min, max: max)
-	}
-
-	public func `repeat`(min: Int) -> TextPattern {
-		return self.repeat(min: min, max: nil)
+	public func `repeat`<R: RangeExpression>(_ range: R) -> TextPattern where R.Bound == Int {
+		return RepeatPattern(repeatedPattern: self, range: range)
 	}
 }
 

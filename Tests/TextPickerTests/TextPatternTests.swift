@@ -24,19 +24,20 @@ class TextPatternTests: XCTestCase {
 	}
 
 	func testOptional() throws {
-		assertParseAll(try Patterns(letter, digit.repeat(min: 0)), input: "123abc123d", count: 4)
-		assertParseAll(try Patterns(digit.repeat(min: 0, max: 1), letter),
+		assertParseAll(try Patterns(letter, digit.repeat(0...)), input: "123abc123d", count: 4)
+		assertParseAll(try Patterns(digit.repeat(0 ... 1), letter),
 		               input: "123abc", result: ["3a", "b", "c"])
 	}
 
 	func testRepeat() {
-		assertParseAll(digit.repeat(min: 2), input: "123abc123", count: 2)
-		assertParseAll(digit.repeat(min: 1), input: "123abc", result: "123", count: 1)
-		assertParseAll(digit.repeat(min: 3), input: "123abc", result: "123", count: 1)
-		assertParseAll(digit.repeat(min: 4), input: "123abc", count: 0)
+		assertParseAll(digit.repeat(2...), input: "123abc123", count: 2)
+		assertParseAll(digit.repeat(1...), input: "123abc", result: "123", count: 1)
+		assertParseAll(digit.repeat(3...), input: "123abc", result: "123", count: 1)
+		assertParseAll(digit.repeat(4...), input: "123abc", count: 0)
 
-		assertParseAll(digit.repeat(min: 1), input: "a123abc123d", result: "123", count: 2)
-		assertParseAll(digit.repeat(min: 1), input: "123abc09d4 8", count: 4)
+		assertParseAll(digit.repeat(1...), input: "a123abc123d", result: "123", count: 2)
+		assertParseAll(digit.repeat(1...), input: "123abc09d4 8", count: 4)
+		assertParseAll(digit.repeat(1 ... 2), input: "123abc09d48", result: ["12", "3", "09", "48"])
 	}
 
 	func testOrPattern() {
