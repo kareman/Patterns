@@ -249,7 +249,7 @@ public struct OrPattern: TextPattern {
 	public let pattern1, pattern2: TextPattern
 
 	public var description: String {
-		return "(\(pattern1) OR \(pattern2))"
+		return "(\(pattern1) || \(pattern2))"
 	}
 
 	public var regex: String {
