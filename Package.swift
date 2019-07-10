@@ -29,6 +29,6 @@ let package = Package(
 			dependencies: ["TextPicker"]),
 		.target(
 			name: "unicode_properties",
-			dependencies: ["FootlessParser"]),
+			dependencies: ["TextPicker"]),
 	]
 )

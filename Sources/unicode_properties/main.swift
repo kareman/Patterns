@@ -1,26 +1,19 @@
 
-import FootlessParser
 import Foundation
+import TextPicker
 
-func getLocalURL(for path: String, file: String = #file) -> URL {
-	return URL(fileURLWithPath: file)
-		.deletingLastPathComponent().appendingPathComponent(path)
-}
+func unicodeProperty(fromDataFile text: String) -> [(range: ClosedRange<UInt32>, property: String)] {
+	let hexDigit = OneOf(description: "hex") {
+		$0.unicodeScalars.first!.properties.isHexDigit
+	}
+	let hexNumber = hexDigit.repeat(1...)
+	let hexRange = try! Patterns(hexNumber, Literal(".."), hexNumber) || hexNumber
+	let rangeAndProperty = try! Patterns(line.start, Capture(hexRange), Skip(), Literal("; "), Capture(Skip()), Literal(" "))
 
-public func parse<A, S: StringProtocol>(_ p: Parser<Character, A>, _ s: S) throws -> A {
-	return try (p <* eof()).parse(AnyCollection(s)).output
-}
-
-func unicodeProperty<S: StringProtocol>(fromDataFile text: S)
-	-> [(range: ClosedRange<UInt32>, property: String)] {
-	let hex = char(CharacterSet(charactersIn: "0" ... "9").union(CharacterSet(charactersIn: "A" ... "F")), name: "hex")
-	let hex4 = { UInt32($0, radix: 16)! } <^> count(4 ... 5, hex)
-	let rhex4 = curry { $0 ... $1 } <^> hex4 <* string("..") <*> hex4
-	let rorhex4 = rhex4 <|> { $0 ... $0 } <^> hex4
-	let v = tuple <^> rorhex4 <* oneOrMore(whitespace) <* string("; ") <*> oneOrMore(not(" "))
-	let l = v <* oneOrMore(any())
-	return text.split(separator: "\n").compactMap {
-		try? parse(l, $0)
+	return rangeAndProperty.matches(in: text).map { match in
+		let oneOrTwoNumbers = text[match.captures[0]].components(separatedBy: "..")
+		let range = UInt32(oneOrTwoNumbers.first!, radix: 16)! ... UInt32(oneOrTwoNumbers.last!, radix: 16)!
+		return (range, String(text[match.captures[1]]))
 	}
 }
 
@@ -43,7 +36,7 @@ extension Sequence {
 }
 
 func caseName(_ string: String) -> String {
-	var caseName = string.replacingOccurrences(of:  "_", with: "")
+	var caseName = string.replacingOccurrences(of: "_", with: "")
 	let firstLetter = caseName.allSatisfy { $0.isUppercase } ? "" : caseName.removeFirst().lowercased()
 	return firstLetter + caseName
 }
@@ -52,11 +45,11 @@ do {
 	guard CommandLine.arguments.count == 2 else {
 		print("""
 
-			Converts Unicode property data files to Swift code.
+		Converts Unicode property data files to Swift code.
 
-			    Usage: unicode_properties <filepath>
+		    Usage: unicode_properties <filepath>
 
-			""")
+		""")
 		exit(1)
 	}
 	let unicodeData = try String(contentsOfFile: CommandLine.arguments[1])
@@ -67,8 +60,8 @@ do {
 				// compact the list of ranges by joining together adjacent ranges
 				.flatMapPairs { a, b in
 					a.upperBound + 1 == b.lowerBound ? [a.lowerBound ... b.upperBound] : [a, b]
-			}
-	}
+				}
+		}
 
 	print()
 	print("enum UnicodeProperty: String {")
@@ -78,7 +71,7 @@ do {
 	print()
 	print("let propertyRanges: [UnicodeProperty : ContiguousArray<ClosedRange<UInt32>>] = [")
 	properties.forEach { propertyName, ranges in
-		print("  .\(caseName(propertyName)): [", ranges.map {"\($0)"}.joined(separator: ", "), "],", separator: "")
+		print("  .\(caseName(propertyName)): [", ranges.map { "\($0)" }.joined(separator: ", "), "],", separator: "")
 	}
 	print("]")
 	print()
