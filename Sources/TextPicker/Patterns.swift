@@ -68,7 +68,7 @@ public struct Skip: TextPattern {
 public struct Capture: TextPattern {
 	public var length: Int?
 	public var regex: String = ""
-	public var description: String = ""
+	public var description: String = "CAPTURE"// TODO: proper description
 	public let patterns: [TextPattern]
 
 	public init(_ patterns: TextPattern...) {
@@ -82,7 +82,13 @@ public struct Capture: TextPattern {
 	public func parse(_: TextPattern.Input, from _: TextPattern.Input.Index) -> ParsedRange? {
 		assertionFailure("do not call this"); return nil
 	}
-
+	
+	/*
+	public func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>) throws -> Patterns.Patternette {
+		remainingPatterns.insert(contentsOf: patterns + [Capture.End()], at: remainingPatterns.startIndex)
+		return try Capture.Begin()._prepForPatterns(remainingPatterns: &remainingPatterns)
+	}
+*/
 	public struct Begin: TextPattern {
 		public var description: String { return "[" }
 		public var regex = "("
@@ -195,7 +201,7 @@ public struct Patterns: TextPattern {
 		self.patternettes = try Patterns.createPatternettes(self.series)
 
 		// find first parseable pattern 'patternFrom', if there is no Skip pattern before it use it in Self.parse(_:from:):
-		let patternFromIndex = self.series.firstIndex(where: { !($0 is Skip || $0 is Capture.Begin || $0 is Capture.End) })!
+		let patternFromIndex = self.series.firstIndex(where: { !($0 is Skip || $0 is Capture || $0 is Capture.Begin || $0 is Capture.End) })!
 		let patternFrom = self.series[patternFromIndex]
 		let firstSkipIndex = self.series.firstIndex(where: { $0 is Skip })
 		self.patternFrom = (firstSkipIndex.map { $0 < patternFromIndex } ?? false) ? nil : (patternFrom as? Patterns)?.patternFrom ?? patternFrom
@@ -213,6 +219,15 @@ public struct Patterns: TextPattern {
 
 	public func parse(_ input: Input, from startIndex: Input.Index) -> ParsedRange? {
 		return match(in: input, from: startIndex)?.range
+	}
+
+	public func parse(_ input: Input, at startindex: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
+		var index = startindex
+		for patternette in patternettes {
+			guard let range = patternette.pattern(input, index, &data) else { return nil }
+			index = range.upperBound
+		}
+		return startindex ..< index
 	}
 
 	public func appending(_ pattern: TextPattern) throws -> Patterns {
@@ -243,8 +258,8 @@ public extension Patterns {
 	}
 
 	func match(in input: Input, at startindex: Input.Index) -> Match? {
-		var index = startindex
 		var data = ParseData()
+		var index = startindex
 		for patternette in patternettes {
 			guard let range = patternette.pattern(input, index, &data) else { return nil }
 			index = range.upperBound

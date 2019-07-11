@@ -266,6 +266,11 @@ extension TextPattern {
 public struct OrPattern: TextPattern {
 	public let pattern1, pattern2: TextPattern
 
+	init(pattern1: TextPattern, pattern2: TextPattern) {
+		self.pattern1 = pattern1 is Capture ? try! Patterns(pattern1) : pattern1
+		self.pattern2 = pattern2 is Capture ? try! Patterns(pattern2) : pattern2
+	}
+
 	public var description: String {
 		return "(\(pattern1) || \(pattern2))"
 	}
@@ -287,6 +292,17 @@ public struct OrPattern: TextPattern {
 		let result2 = pattern2.parse(input, from: startindex)
 		if result1?.lowerBound == result2?.lowerBound { return result1 }
 		return [result1, result2].compactMap { $0 }.sorted(by: <).first
+	}
+
+	public func parse(_ input: Input, at index: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
+		// TODO: Is this the only place where changes to `data` may have to be undone?
+		// Should all patterns be required to not change `data` if failing?
+		let backup = data
+		if let result1 = pattern1.parse(input, at: index, using: &data) {
+			return result1
+		}
+		data = backup
+		return pattern2.parse(input, at: index, using: &data)
 	}
 }
 
