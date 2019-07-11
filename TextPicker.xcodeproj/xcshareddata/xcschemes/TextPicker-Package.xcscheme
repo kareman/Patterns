@@ -20,20 +20,6 @@
                ReferencedContainer = "container:TextPicker.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "TextPicker::unicode_properties"
-               BuildableName = "unicode_properties"
-               BlueprintName = "unicode_properties"
-               ReferencedContainer = "container:TextPicker.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
