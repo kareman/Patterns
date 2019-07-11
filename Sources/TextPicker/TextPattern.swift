@@ -15,6 +15,8 @@ public protocol TextPattern: CustomStringConvertible {
 
 	func parse(_ input: Input, at index: Input.Index) -> ParsedRange?
 	func parse(_ input: Input, from index: Input.Index) -> ParsedRange?
+	func parse(_ input: Input, at index: Input.Index, using: inout Patterns.ParseData) -> ParsedRange?
+	func parse(_ input: Input, from index: Input.Index, using: inout Patterns.ParseData) -> ParsedRange?
 	func parseAllLazy(_ input: Input, from startindex: Input.Index)
 		-> UnfoldSequence<ParsedRange, Input.Index>
 	func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>) throws -> Patterns.Patternette
@@ -34,6 +36,14 @@ public extension TextPatternWrapper {
 
 	func parse(_ input: Input, from index: Input.Index) -> ParsedRange? {
 		return pattern.parse(input, from: index)
+	}
+
+	func parse(_ input: Input, at index: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
+		return self.parse(input, at: index, using: &data)
+	}
+
+	func parse(_ input: Input, from index: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
+		return self.parse(input, from: index, using: &data)
 	}
 
 	func parseAllLazy(_ input: Input, from startindex: Input.Index)
@@ -96,9 +106,17 @@ extension TextPattern {
 		return parse(input, at: index)
 	}
 
+	public func parse(_ input: Input, at index: Input.Index, using _: inout Patterns.ParseData) -> ParsedRange? {
+		return self.parse(input, at: index)
+	}
+
+	public func parse(_ input: Input, from index: Input.Index, using _: inout Patterns.ParseData) -> ParsedRange? {
+		return self.parse(input, from: index)
+	}
+
 	public func _prepForPatterns(remainingPatterns _: inout ArraySlice<TextPattern>) throws -> Patterns.Patternette {
-		return ({ (input: Input, index: Input.Index, _: inout Patterns.ParseData) in
-			self.parse(input, at: index)
+		return ({ (input: Input, index: Input.Index, data: inout Patterns.ParseData) in
+			self.parse(input, at: index, using: &data)
 		}, description)
 	}
 }
@@ -248,8 +266,13 @@ extension TextPattern {
 public struct OrPattern: TextPattern {
 	public let pattern1, pattern2: TextPattern
 
+	init(pattern1: TextPattern, pattern2: TextPattern) {
+		self.pattern1 = pattern1 is Capture ? try! Patterns(pattern1) : pattern1
+		self.pattern2 = pattern2 is Capture ? try! Patterns(pattern2) : pattern2
+	}
+
 	public var description: String {
-		return "(\(pattern1) OR \(pattern2))"
+		return "(\(pattern1) || \(pattern2))"
 	}
 
 	public var regex: String {
@@ -269,6 +292,17 @@ public struct OrPattern: TextPattern {
 		let result2 = pattern2.parse(input, from: startindex)
 		if result1?.lowerBound == result2?.lowerBound { return result1 }
 		return [result1, result2].compactMap { $0 }.sorted(by: <).first
+	}
+
+	public func parse(_ input: Input, at index: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
+		// TODO: Is this the only place where changes to `data` may have to be undone?
+		// Should all patterns be required to not change `data` if failing?
+		let backup = data
+		if let result1 = pattern1.parse(input, at: index, using: &data) {
+			return result1
+		}
+		data = backup
+		return pattern2.parse(input, at: index, using: &data)
 	}
 }
 
@@ -325,18 +359,6 @@ public struct Line: TextPatternWrapper {
 		public func parse(_ input: Input, from startIndex: Input.Index) -> ParsedRange? {
 			return input[startIndex...].firstIndex(where: (\Character.isNewline).toFunc).map { $0 ..< $0 }
 				?? input.endIndex ..< input.endIndex
-		}
-
-		public func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>) throws -> Patterns.Patternette {
-			if (remainingPatterns.first.map { !($0 is Capture.Begin || $0 is Capture.End)
-			} ?? false) {
-				return ({ (input: Input, index: Input.Index, _: inout Patterns.ParseData) in
-					index == input.endIndex ? nil : self.parse(input, at: index)
-				}, "Line.End (test for end)")
-			}
-			return ({ (input: Input, index: Input.Index, _: inout Patterns.ParseData) in
-				self.parse(input, at: index)
-			}, "Line.End")
 		}
 	}
 }

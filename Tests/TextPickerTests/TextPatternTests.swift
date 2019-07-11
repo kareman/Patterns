@@ -47,6 +47,28 @@ class TextPatternTests: XCTestCase {
 		assertParseAll(pattern, input: "abcdb", count: 3)
 	}
 
+	func testOrWithCapture() throws {
+		let text = """
+		# Total code points: 88
+
+		# ================================================
+
+		0780..07A5    ; Thaana # Lo  [38] THAANA LETTER HAA..THAANA LETTER WAAVU
+		07B1          ; Thaana # Lo       THAANA LETTER NAA
+
+		"""
+
+		let hexDigit = OneOf(description: "hexDigit", contains: {
+			$0.unicodeScalars.first!.properties.isHexDigit
+		})
+		let hexNumber = Capture(hexDigit.repeat(1...))
+		let hexRange = try Patterns(hexNumber, Literal(".."), hexNumber) || hexNumber
+		let rangeAndProperty = try Patterns(line.start, hexRange, Skip(), Literal("; "), Capture(Skip()), Literal(" "))
+
+		assertCaptures(rangeAndProperty, input: text,
+		               result: [["0780", "07A5", "Thaana"], ["07B1", "Thaana"]])
+	}
+
 	func testLineStart() throws {
 		let text = """
 		line 1
