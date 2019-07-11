@@ -56,6 +56,10 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "Scripts.txt"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "WordBreakProperty.txt"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

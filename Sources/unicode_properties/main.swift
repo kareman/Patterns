@@ -7,14 +7,17 @@ func unicodeProperty(fromDataFile text: String) -> [(range: ClosedRange<UInt32>,
 	let hexDigit = OneOf(description: "hexDigit", contains: {
 		$0.unicodeScalars.first!.properties.isHexDigit
 	})
-	let hexNumber = hexDigit.repeat(1...)
+	let hexNumber = Capture(hexDigit.repeat(1...))
 	let hexRange = try! Patterns(hexNumber, Literal(".."), hexNumber) || hexNumber
-	let rangeAndProperty = try! Patterns(line.start, Capture(hexRange), Skip(), Literal("; "), Capture(Skip()), Literal(" "))
+	let rangeAndProperty = try! Patterns(line.start, hexRange, Skip(), Literal("; "), Capture(Skip()), Literal(" "))
 
 	return rangeAndProperty.matches(in: text).map { match in
-		let oneOrTwoNumbers = text[match.captures[0]].components(separatedBy: "..")
-		let range = UInt32(oneOrTwoNumbers.first!, radix: 16)! ... UInt32(oneOrTwoNumbers.last!, radix: 16)!
-		return (range, String(text[match.captures[1]]))
+		// `captures` is either [hexNumber, propertyName] or [hexNumber, hexNumber, propertyName]
+		var captures = match.captures.map { text[$0] }
+		let propertyName = String(captures.popLast()!)
+		let oneOrTwoNumbers = captures.map { UInt32($0, radix: 16)! }
+		let range = oneOrTwoNumbers.first! ... oneOrTwoNumbers.last!
+		return (range, propertyName)
 	}
 }
 
