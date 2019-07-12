@@ -38,6 +38,8 @@ class TextPatternTests: XCTestCase {
 		assertParseAll(digit.repeat(1...), input: "a123abc123d", result: "123", count: 2)
 		assertParseAll(digit.repeat(1...), input: "123abc09d4 8", count: 4)
 		assertParseAll(digit.repeat(1 ... 2), input: "123abc09d48", result: ["12", "3", "09", "48"])
+
+		XCTAssertEqual(digit.repeat(1...).description, "digit{1...}")
 	}
 
 	func testOrPattern() {

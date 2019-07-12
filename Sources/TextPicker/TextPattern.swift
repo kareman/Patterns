@@ -194,7 +194,7 @@ public struct OneOf: TextPattern {
 
 	public static let basePatterns: [OneOf] = [
 		alphanumeric, letter, lowercase, uppercase, punctuation, whitespace, newline, hexDigit, digit, ascii,
-		symbol, mathSymbol, currencySymbol
+		symbol, mathSymbol, currencySymbol,
 	]
 
 	public static func patterns(for c: Input.Element) -> [TextPattern] {
@@ -215,7 +215,7 @@ public struct RepeatPattern: TextPattern {
 		let actualRange = range.relative(to: 0 ..< Int.max)
 		self.repeatedPattern = repeatedPattern
 		self.min = actualRange.lowerBound
-		self.max = actualRange.upperBound - 1
+		self.max = actualRange.upperBound == Int.max ? nil : actualRange.upperBound - 1
 	}
 
 	public var description: String {
@@ -283,11 +283,11 @@ public struct OrPattern: TextPattern {
 		return pattern1.length == pattern2.length ? pattern1.length : nil
 	}
 
-	public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> ParsedRange? {
+	public func parse(_ input: Input, at startindex: Input.Index) -> ParsedRange? {
 		return pattern1.parse(input, at: startindex) ?? pattern2.parse(input, at: startindex)
 	}
 
-	public func parse(_ input: TextPattern.Input, from startindex: TextPattern.Input.Index) -> ParsedRange? {
+	public func parse(_ input: Input, from startindex: Input.Index) -> ParsedRange? {
 		// TODO: should pattern1 always win if it succeeds, even if pattern2 succeeds earlier?
 		let result1 = pattern1.parse(input, from: startindex)
 		let result2 = pattern2.parse(input, from: startindex)
