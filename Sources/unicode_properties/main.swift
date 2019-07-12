@@ -4,9 +4,6 @@ import Foundation
 import TextPicker
 
 func unicodeProperty(fromDataFile text: String) -> [(range: ClosedRange<UInt32>, property: String)] {
-	let hexDigit = OneOf(description: "hexDigit", contains: {
-		$0.unicodeScalars.first!.properties.isHexDigit
-	})
 	let hexNumber = Capture(hexDigit.repeat(1...))
 	let hexRange = try! Patterns(hexNumber, Literal(".."), hexNumber) || hexNumber
 	let rangeAndProperty = try! Patterns(line.start, hexRange, Skip(), Literal("; "), Capture(Skip()), Literal(" "))

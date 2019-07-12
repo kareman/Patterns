@@ -166,19 +166,19 @@ extension Literal: ExpressibleByStringLiteral {
 }
 
 public struct OneOf: TextPattern {
-	public let set: Group<Character>
+	public let set: Group<Input.Element>
 
 	public let description: String
 	public let regex: String
 	public let length: Int? = 1
 
-	public init(description: String, regex: String? = nil, set: Group<Character>) {
+	public init(description: String, regex: String? = nil, set: Group<Input.Element>) {
 		self.set = set
 		self.description = description
 		self.regex = regex ?? "NOT IMPLEMENTED"
 	}
 
-	public init(description: String, regex: String? = nil, contains: @escaping (Character) -> Bool) {
+	public init(description: String, regex: String? = nil, contains: @escaping (Input.Element) -> Bool) {
 		self.init(description: description, regex: regex, set: Group(contains: contains))
 	}
 
@@ -188,16 +188,16 @@ public struct OneOf: TextPattern {
 		regex = "[\(NSRegularExpression.escapedPattern(for: characters.map(String.init(describing:)).joined()))]"
 	}
 
-	public func parse(_ input: TextPattern.Input, at index: TextPattern.Input.Index) -> ParsedRange? {
+	public func parse(_ input: Input, at index: Input.Index) -> ParsedRange? {
 		return (index < input.endIndex && set.contains(input[index])) ? index ..< input.index(after: index) : nil
 	}
 
 	public static let basePatterns: [OneOf] = [
-		alphanumeric, digit, letter, lowercaseLetter, newline, punctuationCharacter, symbol,
-		uppercaseLetter, whitespace,
+		alphanumeric, letter, lowercase, uppercase, punctuation, whitespace, newline, hexDigit, digit, ascii,
+		symbol, mathSymbol, currencySymbol
 	]
 
-	public static func patterns(for c: Character) -> [TextPattern] {
+	public static func patterns(for c: Input.Element) -> [TextPattern] {
 		return OneOf.basePatterns.filter { $0.set.contains(c) }
 	}
 
@@ -230,7 +230,7 @@ public struct RepeatPattern: TextPattern {
 		return min == max ? repeatedPattern.length.map { $0 * min } : nil
 	}
 
-	public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> ParsedRange? {
+	public func parse(_ input: Input, at startindex: Input.Index) -> ParsedRange? {
 		var index = startindex
 		for _ in 0 ..< min {
 			guard let nextindex = repeatedPattern.parse(input, at: index)?.upperBound else { return nil }
@@ -288,6 +288,7 @@ public struct OrPattern: TextPattern {
 	}
 
 	public func parse(_ input: TextPattern.Input, from startindex: TextPattern.Input.Index) -> ParsedRange? {
+		// TODO: should pattern1 always win if it succeeds, even if pattern2 succeeds earlier?
 		let result1 = pattern1.parse(input, from: startindex)
 		let result2 = pattern2.parse(input, from: startindex)
 		if result1?.lowerBound == result2?.lowerBound { return result1 }
@@ -396,17 +397,29 @@ public let digit = OneOf(description: "digit", regex: #"\p{Nd}"#,
                          contains: (\Character.isWholeNumber).toFunc)
 public let letter = OneOf(description: "letter", regex: #"\p{Alphabetic}"#,
                           contains: (\Character.isLetter).toFunc)
-public let lowercaseLetter = OneOf(description: "lowercaseLetter", regex: #"\p{Ll}"#,
-                                   contains: (\Character.isLowercase).toFunc)
+public let lowercase = OneOf(description: "lowercase", regex: #"\p{Ll}"#,
+                             contains: (\Character.isLowercase).toFunc)
 public let newline = OneOf(description: "newline", regex: #"\p{Zl}"#,
                            contains: (\Character.isNewline).toFunc)
-public let punctuationCharacter = OneOf(description: "punctuationCharacter", regex: #"\p{P}"#,
-                                        contains: (\Character.isPunctuation).toFunc)
+public let punctuation = OneOf(description: "punctuation", regex: #"\p{P}"#,
+                               contains: (\Character.isPunctuation).toFunc)
 public let symbol = OneOf(description: "symbol", regex: #"\p{S}"#,
                           contains: (\Character.isSymbol).toFunc)
-public let uppercaseLetter = OneOf(description: "uppercaseLetter", regex: #"\p{Lu}"#,
-                                   contains: (\Character.isUppercase).toFunc)
+public let uppercase = OneOf(description: "uppercase", regex: #"\p{Lu}"#,
+                             contains: (\Character.isUppercase).toFunc)
 public let whitespace = OneOf(description: "whitespace", regex: #"\p{White_Space}"#,
                               contains: (\Character.isWhitespace).toFunc)
+
+public let hexDigit = OneOf(description: "hexDigit", regex: #"\p{Hex_Digit}"#,
+                            contains: (\Character.isHexDigit).toFunc)
+
+public let ascii = OneOf(description: "ascii", regex: #"[[:ascii:]]"#,
+                         contains: (\Character.isASCII).toFunc) // regex might also be [ -~] or [\x00-\x7F]
+
+public let mathSymbol = OneOf(description: "mathSymbol", regex: #"\p{Sm}"#,
+                              contains: (\Character.isMathSymbol).toFunc)
+
+public let currencySymbol = OneOf(description: "currencySymbol", regex: #"\p{Sc}"#,
+                                  contains: (\Character.isCurrencySymbol).toFunc)
 
 public let line = Line()
