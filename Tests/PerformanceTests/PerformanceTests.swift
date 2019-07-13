@@ -8,18 +8,13 @@
 import TextPicker
 import XCTest
 
-class PerformanceTests: XCTestCase {
-	func speedTest<P: TextPattern>(_ pattern: P, textFraction: Int = 32, hits: Int, file: StaticString = #file, line: UInt = #line) throws {
-		let text = try String(contentsOf: getLocalURL(for: "Long.txt")).prefix(3_207_864 / textFraction)
-		var result = 0
-		self.measure {
-			result = pattern.parseAllLazy(text, from: text.startIndex).reduce(into: 0) { c, _ in c += 1 }
-		}
-		XCTAssertEqual(result, hits, file: file, line: line)
-	}
+// Note: the hits parameter to speedTest doesn't necessarily mean the _correct_ number of hits.
+// It's just there to notify us when the number of hits changes.
 
-	func speedTest(_ pattern: Patterns, textFraction: Int = 32, hits: Int, file: StaticString = #file, line: UInt = #line) throws {
-		let text = try String(contentsOf: getLocalURL(for: "Long.txt")).prefix(3_207_864 / textFraction)
+class PerformanceTests: XCTestCase {
+	func speedTest(_ pattern: Patterns, testFile: String = "Long.txt", textFraction: Int = 1, hits: Int, file: StaticString = #file, line: UInt = #line) throws {
+		let fulltext = try String(contentsOf: getLocalURL(for: testFile))
+		let text = fulltext.prefix(fulltext.count / textFraction)
 		var result = 0
 		self.measure {
 			result = pattern.matches(in: text).reduce(into: 0) { c, _ in c += 1 }
@@ -30,6 +25,11 @@ class PerformanceTests: XCTestCase {
 	func testWordBoundary() throws {
 		let pattern = try Patterns(Word.boundary)
 		try speedTest(pattern, textFraction: 32, hits: 39270)
+	}
+
+	func testWordBoundaryManyLanguages() throws {
+		let pattern = try Patterns(Word.boundary)
+		try speedTest(pattern, testFile: "Multi-language-short.txt", hits: 9960)
 	}
 
 	func testLine() throws {
