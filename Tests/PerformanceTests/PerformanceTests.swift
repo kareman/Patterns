@@ -28,12 +28,12 @@ class PerformanceTests: XCTestCase {
 	}
 
 	func testWordBoundary() throws {
-		let pattern = Word.boundary
+		let pattern = try Patterns(Word.boundary)
 		try speedTest(pattern, textFraction: 32, hits: 39270)
 	}
 
 	func testLine() throws {
-		let pattern = try! Patterns([line.start, Capture(Skip()), line.end])
+		let pattern = try Patterns([line.start, Capture(Skip()), line.end])
 		try speedTest(pattern, textFraction: 32, hits: 494)
 	}
 
