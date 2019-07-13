@@ -29,7 +29,7 @@ class TextPatternTests: XCTestCase {
 		               input: "123abc", result: ["3a", "b", "c"])
 	}
 
-	func testRepeat() {
+	func testRepeat() throws {
 		assertParseAll(digit.repeat(2...), input: "123abc123", count: 2)
 		assertParseAll(digit.repeat(1...), input: "123abc", result: "123", count: 1)
 		assertParseAll(digit.repeat(3...), input: "123abc", result: "123", count: 1)
@@ -37,7 +37,7 @@ class TextPatternTests: XCTestCase {
 
 		assertParseAll(digit.repeat(1...), input: "a123abc123d", result: "123", count: 2)
 		assertParseAll(digit.repeat(1...), input: "123abc09d4 8", count: 4)
-		assertParseAll(digit.repeat(1 ... 2), input: "123abc09d48", result: ["12", "3", "09", "48"])
+		assertParseAll(try Patterns(digit.repeat(1 ... 2)), input: "123abc09d48", result: ["12", "3", "09", "48"])
 
 		XCTAssertEqual(digit.repeat(1...).description, "digit{1...}")
 	}
@@ -136,7 +136,7 @@ class TextPatternTests: XCTestCase {
 	}
 
 	func testWordBoundary() throws {
-		let pattern = Word.boundary
+		let pattern = try Patterns(Word.boundary)
 		assertParseMarkers(pattern, input: #"|I| |said| |"|hello|"|"#)
 		assertParseMarkers(pattern, input: "|this| |I| |-|3,875.08| |can't|,| |you| |letter|-|like|.| |And|?| |then|")
 	}
@@ -146,7 +146,7 @@ class TextPatternTests: XCTestCase {
 		let text = try! String(contentsOfFile: file, encoding: .utf8)
 		let startAt = text.range(of: "func testParseFile()")!.upperBound
 
-		let pattern: TextPattern = try Patterns(Capture(Literal("\tlet "), Skip()), Literal("="))
+		let pattern = try Patterns(Capture(Literal("\tlet "), Skip()), Literal("="))
 		let ranges = pattern.parseAll(text, from: startAt)
 
 		XCTAssertEqual(ranges.count, 5)

@@ -18,14 +18,7 @@ extension Array where Element: Hashable {
 }
 
 extension XCTestCase {
-	func assertParses(_ range: ParsedRange?, input: String, result: String?,
-	                  file: StaticString = #file, line: UInt = #line) {
-		guard let range = range else { XCTAssertNil(result, file: file, line: line); return }
-		let parsed = String(input[range])
-		XCTAssertEqual(parsed, result, file: file, line: line)
-	}
-
-	func assertParseAll(_ pattern: TextPattern, input: String, result: [String],
+	func assertParseAll(_ pattern: Patterns, input: String, result: [String],
 	                    file: StaticString = #file, line: UInt = #line) {
 		let parsed = pattern.parseAll(input).map { String(input[$0]) }
 		XCTAssertEqual(parsed, result, "\nThe differences are: \n" + parsed.difference(from: result).joined(separator: "\n"), file: file, line: line)
@@ -34,12 +27,17 @@ extension XCTestCase {
 
 	func assertParseAll(_ pattern: TextPattern, input: String, result: String? = nil, count: Int,
 	                    file: StaticString = #file, line: UInt = #line) {
-		if let result = result {
-			assertParseAll(pattern, input: input, result: Array(repeating: result, count: count), file: file, line: line)
-			return
+		do {
+			let pattern = try (pattern as? Patterns) ?? Patterns(pattern)
+			if let result = result {
+				assertParseAll(pattern, input: input, result: Array(repeating: result, count: count), file: file, line: line)
+				return
+			}
+			let parsed = pattern.parseAll(input)
+			XCTAssertEqual(parsed.count, count, "Incorrect count.", file: file, line: line)
+		} catch {
+			XCTFail("\(error)", file: file, line: line)
 		}
-		let parsed = pattern.parseAll(input)
-		XCTAssertEqual(parsed.count, count, "Incorrect count.", file: file, line: line)
 	}
 
 	fileprivate func processMarkers(_ string: String, marker: Character = "|") -> (String, [String.Index]) {
@@ -53,7 +51,7 @@ extension XCTestCase {
 		return (string, indices)
 	}
 
-	func assertParseMarkers(_ pattern: TextPattern, input: String,
+	func assertParseMarkers(_ pattern: Patterns, input: String,
 	                        file: StaticString = #file, line: UInt = #line) {
 		let (string, correct) = processMarkers(input)
 		let parsedRanges = pattern.parseAll(string)
