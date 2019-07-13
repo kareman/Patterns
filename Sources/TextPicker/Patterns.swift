@@ -17,11 +17,11 @@ public struct Skip: TextPattern {
 		self.regex = repeatedPattern.map { _ in "NOT IMPLEMENTED" } ?? ".*?"
 	}
 
-	public func parse(_: TextPattern.Input, at _: TextPattern.Input.Index) -> ParsedRange? {
+	public func parse(_: TextPattern.Input, at _: TextPattern.Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
 		assertionFailure("do not call this"); return nil
 	}
 
-	public func parse(_: TextPattern.Input, from _: TextPattern.Input.Index) -> ParsedRange? {
+	public func parse(_: TextPattern.Input, from _: TextPattern.Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
 		assertionFailure("do not call this"); return nil
 	}
 
@@ -75,11 +75,11 @@ public struct Capture: TextPattern {
 		self.patterns = patterns
 	}
 
-	public func parse(_: TextPattern.Input, at _: TextPattern.Input.Index) -> ParsedRange? {
+	public func parse(_: TextPattern.Input, at _: TextPattern.Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
 		assertionFailure("do not call this"); return nil
 	}
 
-	public func parse(_: TextPattern.Input, from _: TextPattern.Input.Index) -> ParsedRange? {
+	public func parse(_: TextPattern.Input, from _: TextPattern.Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
 		assertionFailure("do not call this"); return nil
 	}
 	
@@ -96,11 +96,7 @@ public struct Capture: TextPattern {
 
 		public init() {}
 
-		public func parse(_: TextPattern.Input, at _: TextPattern.Input.Index) -> ParsedRange? {
-			assertionFailure("do not call this"); return nil
-		}
-
-		public func parse(_: TextPattern.Input, from _: TextPattern.Input.Index) -> ParsedRange? {
+		public func parse(_: TextPattern.Input, from _: TextPattern.Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
 			assertionFailure("do not call this"); return nil
 		}
 
@@ -230,6 +226,11 @@ public struct Patterns: TextPattern {
 		return startindex ..< index
 	}
 
+	public func parseAllLazy(_ input: Input, from startindex: Input.Index)
+		-> LazyMapSequence<UnfoldSequence<Patterns.Match, Patterns.Input.Index>, ParsedRange> {
+			return matches(in:  input, from: startindex).lazy.map {$0.range}
+	}
+
 	public func appending(_ pattern: TextPattern) throws -> Patterns {
 		return try Patterns(self.series + [pattern])
 	}
@@ -271,8 +272,9 @@ public extension Patterns {
 	func match(in input: Input, from startIndex: Input.Index) -> Match? {
 		guard let patternFrom = patternFrom else { return self.match(in: input, at: startIndex) }
 		var index = startIndex
+		var data = ParseData()
 		while index <= input.endIndex {
-			guard let fromIndex = patternFrom.parse(input, from: index)?.lowerBound else { return nil }
+			guard let fromIndex = patternFrom.parse(input, from: index, using: &data)?.lowerBound else { return nil }
 			if let match = self.match(in: input, at: fromIndex) {
 				return match
 			}

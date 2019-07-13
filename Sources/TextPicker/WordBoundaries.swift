@@ -26,7 +26,7 @@ public struct Word {
 		public let regex: String = #"\b"#
 		public let description: String = "word.boundary"
 
-		public func parse(_ input: Input, at index: Input.Index) -> ParsedRange? {
+		public func parse(_ input: Input, at index: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
 			let success = index ..< index
 			guard index != input.endIndex,
 				let char1Before = input.validIndex(index, offsetBy: -1).map({ input[$0] }) else {
