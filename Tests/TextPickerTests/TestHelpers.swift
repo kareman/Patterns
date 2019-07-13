@@ -20,7 +20,7 @@ extension Array where Element: Hashable {
 extension XCTestCase {
 	func assertParseAll(_ pattern: Patterns, input: String, result: [String],
 	                    file: StaticString = #file, line: UInt = #line) {
-		let parsed = pattern.parseAll(input).map { String(input[$0]) }
+		let parsed = pattern.parseAllLazy(input).map { String(input[$0]) }
 		XCTAssertEqual(parsed, result, "\nThe differences are: \n" + parsed.difference(from: result).joined(separator: "\n"), file: file, line: line)
 		XCTAssertEqual(parsed, result, "\nThe differences are: \n" + parsed.difference(from: result).sorted().joined(separator: "\n"), file: file, line: line)
 	}
@@ -33,7 +33,7 @@ extension XCTestCase {
 				assertParseAll(pattern, input: input, result: Array(repeating: result, count: count), file: file, line: line)
 				return
 			}
-			let parsed = pattern.parseAll(input)
+			let parsed = pattern.parseAllLazy(input).array()
 			XCTAssertEqual(parsed.count, count, "Incorrect count.", file: file, line: line)
 		} catch {
 			XCTFail("\(error)", file: file, line: line)
@@ -54,7 +54,7 @@ extension XCTestCase {
 	func assertParseMarkers(_ pattern: Patterns, input: String,
 	                        file: StaticString = #file, line: UInt = #line) {
 		let (string, correct) = processMarkers(input)
-		let parsedRanges = pattern.parseAll(string)
+		let parsedRanges = pattern.parseAllLazy(string).array()
 		XCTAssert(parsedRanges.allSatisfy { $0.isEmpty }, "Not all results are empty ranges",
 		          file: file, line: line)
 		let parsed = parsedRanges.map { $0.lowerBound }

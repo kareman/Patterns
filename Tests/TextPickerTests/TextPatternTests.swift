@@ -140,18 +140,6 @@ class TextPatternTests: XCTestCase {
 		assertParseMarkers(pattern, input: #"|I| |said| |"|hello|"|"#)
 		assertParseMarkers(pattern, input: "|this| |I| |-|3,875.08| |can't|,| |you| |letter|-|like|.| |And|?| |then|")
 	}
-
-	func testParseFile() throws {
-		let file = #file
-		let text = try! String(contentsOfFile: file, encoding: .utf8)
-		let startAt = text.range(of: "func testParseFile()")!.upperBound
-
-		let pattern = try Patterns(Capture(Literal("\tlet "), Skip()), Literal("="))
-		let ranges = pattern.parseAll(text, from: startAt)
-
-		XCTAssertEqual(ranges.count, 5)
-		XCTAssertEqual(text[ranges.first!], "\tlet file "[...])
-	}
 }
 
 extension TextPatternTests {
@@ -163,6 +151,5 @@ extension TextPatternTests {
 		("testOrPattern", testOrPattern),
 		("testLineStart", testLineStart),
 		("testLineEnd", testLineEnd),
-		("testParseFile", testParseFile),
 	]
 }

@@ -47,32 +47,14 @@ public extension TextPatternWrapper {
 }
 
 extension TextPattern {
-	public func parseAll(_ input: Input, from startindex: Input.Index) -> [ParsedRange] {
-		return Array(parseAllLazy(input, from: startindex))
-	}
-
-	public func parseAll(_ input: String, from startindex: String.Index)
-		-> [ParsedRange] {
-		return parseAll(input[...], from: startindex)
-	}
-
-	public func parseAllLazy(_ input: Input, from startindex: Input.Index)
-		-> LazyMapSequence<UnfoldSequence<Patterns.Match, Patterns.Input.Index>, ParsedRange> {
-		let pattern = try! (self as? Patterns) ?? Patterns(self)
-		return pattern.parseAllLazy(input, from: startindex)
-	}
-
-	public func parseAll(_ input: Input) -> [ParsedRange] {
-		return parseAll(input, from: input.startIndex)
-	}
-
-	public func parseAll(_ input: String) -> [ParsedRange] {
-		return parseAll(input[...])
-	}
-
 	public func parse(_ input: Input, at startIndex: Input.Index) -> ParsedRange? {
 		var data = Patterns.ParseData()
 		return parse(input, at: startIndex, using: &data)
+	}
+
+	public func parse(_ input: Input, from startIndex: Input.Index) -> ParsedRange? {
+		var data = Patterns.ParseData()
+		return parse(input, from: startIndex, using: &data)
 	}
 
 	public func parse(_ input: Input, from startIndex: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
