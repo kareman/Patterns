@@ -226,7 +226,7 @@ public struct Patterns: TextPattern {
 		return startindex ..< index
 	}
 
-	public func parseAllLazy<S: StringProtocol>(_ input: S, from startindex: Input.Index? = nil)
+	public func ranges<S: StringProtocol>(in input: S, from startindex: Input.Index? = nil)
 		-> AnySequence<ParsedRange> where S.SubSequence == Input {
 		return AnySequence(matches(in: input[...], from: startindex).lazy.map { $0.range })
 	}
