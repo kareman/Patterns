@@ -68,7 +68,7 @@ public struct Skip: TextPattern {
 public struct Capture: TextPattern {
 	public var length: Int?
 	public var regex: String = ""
-	public var description: String = "CAPTURE"// TODO: proper description
+	public var description: String = "CAPTURE" // TODO: proper description
 	public let patterns: [TextPattern]
 
 	public init(_ patterns: TextPattern...) {
@@ -82,13 +82,13 @@ public struct Capture: TextPattern {
 	public func parse(_: TextPattern.Input, from _: TextPattern.Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
 		assertionFailure("do not call this"); return nil
 	}
-	
+
 	/*
-	public func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>) throws -> Patterns.Patternette {
-		remainingPatterns.insert(contentsOf: patterns + [Capture.End()], at: remainingPatterns.startIndex)
-		return try Capture.Begin()._prepForPatterns(remainingPatterns: &remainingPatterns)
-	}
-*/
+	 public func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>) throws -> Patterns.Patternette {
+	 	remainingPatterns.insert(contentsOf: patterns + [Capture.End()], at: remainingPatterns.startIndex)
+	 	return try Capture.Begin()._prepForPatterns(remainingPatterns: &remainingPatterns)
+	 }
+	 */
 	public struct Begin: TextPattern {
 		public var description: String { return "[" }
 		public var regex = "("
@@ -228,7 +228,7 @@ public struct Patterns: TextPattern {
 
 	public func parseAllLazy(_ input: Input, from startindex: Input.Index)
 		-> LazyMapSequence<UnfoldSequence<Patterns.Match, Patterns.Input.Index>, ParsedRange> {
-			return matches(in:  input, from: startindex).lazy.map {$0.range}
+		return matches(in: input, from: startindex).lazy.map { $0.range }
 	}
 
 	public func appending(_ pattern: TextPattern) throws -> Patterns {
