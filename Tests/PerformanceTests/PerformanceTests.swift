@@ -58,6 +58,17 @@ class PerformanceTests: XCTestCase {
 		let pattern = try Patterns(Literal("\"").repeat(0 ... 1), Literal("I"))
 		try speedTest(pattern, textFraction: 32, hits: 304)
 	}
+
+	func testOneOrMore() throws {
+		let pattern = try Patterns(Capture(ascii.repeat(1...)))
+		try speedTest(pattern, textFraction: 100, hits: 407)
+	}
+
+	func testSkipping1() throws {
+		// [ word.boundary ] * " " * ":" * " " * " " * " " * "{" * line.end
+		let pattern = try Patterns(Skip(), Literal("."), Skip(), Literal(" "), Skip(), Literal(" "))
+		try speedTest(pattern, textFraction: 50, hits: 569)
+	}
 }
 
 extension PerformanceTests {
