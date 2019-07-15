@@ -30,7 +30,7 @@ public struct Skip: TextPattern {
 		func getBoundHandler(_ remainingPatterns: inout ArraySlice<TextPattern>)
 			-> (Input, Input.Index, inout Patterns.ParseData) -> Void {
 			switch remainingPatterns.first {
-			case is Capture.Begin, is Capture.End:
+			case is Capture.Start, is Capture.End:
 				let me = remainingPatterns.removeFirst()
 				return {
 					var forgetAboutIt = ArraySlice<TextPattern>()
@@ -86,10 +86,10 @@ public struct Capture: TextPattern {
 	/*
 	 public func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>) throws -> Patterns.Patternette {
 	 	remainingPatterns.insert(contentsOf: patterns + [Capture.End()], at: remainingPatterns.startIndex)
-	 	return try Capture.Begin()._prepForPatterns(remainingPatterns: &remainingPatterns)
+	 	return try Capture.Start()._prepForPatterns(remainingPatterns: &remainingPatterns)
 	 }
 	 */
-	public struct Begin: TextPattern {
+	public struct Start: TextPattern {
 		public var description: String { return "[" }
 		public var regex = "("
 		public let length: Int? = 0
@@ -173,7 +173,7 @@ public struct Patterns: TextPattern {
 		var remainingPatterns = patterns[...]
 		var result = [Patternette]()
 		while let nextPattern = remainingPatterns.popFirst() {
-			if !(nextPattern is Capture.Begin || nextPattern is Capture.End), nextPattern.length == 0, let first = remainingPatterns.first {
+			if !(nextPattern is Capture.Start || nextPattern is Capture.End), nextPattern.length == 0, let first = remainingPatterns.first {
 				if type(of: nextPattern) == type(of: first) {
 					throw Patterns.InitError.message("Cannot have 2 \(type(of: nextPattern)) in a row, as they will always parse the same position.")
 				}
@@ -190,14 +190,14 @@ public struct Patterns: TextPattern {
 
 	public init(_ series: [TextPattern?]) throws {
 		self.series = series.compactMap { $0 }.flattenPatterns()
-		if series.isEmpty || (series.filter { $0 is Capture.Begin || $0 is Capture.End }.count > 2) {
+		if series.isEmpty || (series.filter { $0 is Capture.Start || $0 is Capture.End }.count > 2) {
 			throw InitError.invalid(self.series.array())
 		}
 
 		self.patternettes = try Patterns.createPatternettes(self.series)
 
 		// find first parseable pattern 'patternFrom', if there is no Skip pattern before it use it in Self.parse(_:from:):
-		let patternFromIndex = self.series.firstIndex(where: { !($0 is Skip || $0 is Capture || $0 is Capture.Begin || $0 is Capture.End) })!
+		let patternFromIndex = self.series.firstIndex(where: { !($0 is Skip || $0 is Capture || $0 is Capture.Start || $0 is Capture.End) })!
 		let patternFrom = self.series[patternFromIndex]
 		let firstSkipIndex = self.series.firstIndex(where: { $0 is Skip })
 		self.patternFrom = (firstSkipIndex.map { $0 < patternFromIndex } ?? false) ? nil : (patternFrom as? Patterns)?.patternFrom ?? patternFrom
@@ -308,10 +308,10 @@ private extension Sequence where Element == TextPattern {
 	func flattenPatterns() -> [TextPattern] {
 		return self.flatMap { (pattern: TextPattern) -> [TextPattern] in
 			if let series = (pattern as? Patterns)?.series,
-				!series.contains(where: { $0 is Capture.Begin || $0 is Capture.End }) {
+				!series.contains(where: { $0 is Capture.Start || $0 is Capture.End }) {
 				return series
 			} else if let captured = (pattern as? Capture)?.patterns {
-				return [Capture.Begin()] + captured + [Capture.End()]
+				return [Capture.Start()] + captured + [Capture.End()]
 			}
 			return [pattern]
 		}
