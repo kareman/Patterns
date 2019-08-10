@@ -69,10 +69,12 @@ public struct Capture: TextPattern {
 	public var length: Int?
 	public var regex: String = ""
 	public var description: String = "CAPTURE" // TODO: proper description
+	public let name: String?
 	public let patterns: [TextPattern]
 
-	public init(_ patterns: TextPattern...) {
+	public init(name: String? = nil, _ patterns: TextPattern...) {
 		self.patterns = patterns
+		self.name = name
 	}
 
 	public func parse(_: TextPattern.Input, at _: TextPattern.Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
@@ -93,15 +95,18 @@ public struct Capture: TextPattern {
 		public var description: String { return "[" }
 		public var regex = "("
 		public let length: Int? = 0
+		public let name: String?
 
-		public init() {}
+		public init(name: String? = nil) {
+			self.name = name
+		}
 
 		public func parse(_: TextPattern.Input, from _: TextPattern.Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
 			assertionFailure("do not call this"); return nil
 		}
 
 		public func parse(_: Input, at index: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
-			data.captureBeginnings.append(index)
+			data.captureBeginnings.append((name, index))
 			return index ..< index
 		}
 	}
@@ -122,10 +127,10 @@ public struct Capture: TextPattern {
 		}
 
 		public func parse(_: Input, at index: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
-			if let capture = data.captureBeginnings.popLast() {
-				data.captures.append(capture ..< index)
+			if let (name, begin) = data.captureBeginnings.popLast() {
+				data.captures.append((name, begin ..< index))
 			} else {
-				data.captures.append(index ..< index)
+				data.captures.append((nil, index ..< index))
 			}
 			return index ..< index
 		}
@@ -148,8 +153,8 @@ public struct Patterns: TextPattern {
 	}
 
 	public struct ParseData {
-		var captureBeginnings = ContiguousArray<Input.Index>()
-		var captures = ContiguousArray<ParsedRange>()
+		var captureBeginnings = ContiguousArray<(name: String?, begin: Input.Index)>()
+		var captures = ContiguousArray<(name: String?, range: ParsedRange)>()
 	}
 
 	public let series: [TextPattern]
@@ -239,22 +244,30 @@ public struct Patterns: TextPattern {
 public extension Patterns {
 	struct Match {
 		public let fullRange: ParsedRange
-		public let captures: [ParsedRange]
+		public let captures: [(name: String?, range: ParsedRange)]
 
 		public var range: ParsedRange {
-			return captures.isEmpty ? fullRange : captures.first!.lowerBound ..< captures.last!.upperBound
+			return captures.isEmpty ? fullRange : captures.first!.range.lowerBound ..< captures.last!.range.upperBound
 		}
 
-		fileprivate init(fullRange: ParsedRange, data: ParseData) {
+		init(fullRange: ParsedRange, data: ParseData) {
 			self.fullRange = fullRange
-			self.captures = (data.captureBeginnings.map { $0 ..< $0 } + data.captures).sorted()
+			self.captures = (data.captureBeginnings.map { ($0, $1 ..< $1) } + data.captures).sorted(by: { $0.range < $1.range })
 		}
 
 		public func description(using text: String) -> String {
 			return """
 			fullRange: \(text[fullRange])
-			captures: \(captures.map { text[$0] })
+			captures: \(captures.map { "\($0.name ?? "")\t\t\(text[$0.range])\n" })
 			"""
+		}
+
+		public subscript(one name: String) -> ParsedRange? {
+			return captures.first(where: { $0.name == name })?.range
+		}
+
+		public subscript(multiple name: String) -> [ParsedRange] {
+			return captures.filter { $0.name == name }.map { $0.range }
 		}
 	}
 
@@ -310,8 +323,8 @@ private extension Sequence where Element == TextPattern {
 			if let series = (pattern as? Patterns)?.series,
 				!series.contains(where: { $0 is Capture.Start || $0 is Capture.End }) {
 				return series
-			} else if let captured = (pattern as? Capture)?.patterns {
-				return [Capture.Start()] + captured + [Capture.End()]
+			} else if let capture = pattern as? Capture {
+				return [Capture.Start(name: capture.name)] + capture.patterns + [Capture.End()]
 			}
 			return [pattern]
 		}

@@ -73,7 +73,7 @@ extension XCTestCase {
 	func assertCaptures(_ pattern: Patterns, input: String, result: [[String]],
 	                    file: StaticString = #file, line: UInt = #line) {
 		let matches = Array(pattern.matches(in: input))
-		let output = matches.map { match in match.captures.map { String(input[$0]) } }
+		let output = matches.map { match in match.captures.map { String(input[$0.range]) } }
 		XCTAssertEqual(output, result, file: file, line: line)
 	}
 }

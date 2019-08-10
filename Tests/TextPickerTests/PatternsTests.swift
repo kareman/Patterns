@@ -178,7 +178,7 @@ class PatternsTests: XCTestCase {
 		let pattern = try Patterns(line.start, Capture())
 		let m = Array(pattern.matches(in: text[...]))
 
-		XCTAssertEqual(m.map { text[$0.captures[0].lowerBound] }, ["a", "b", "c", "d"].map(Character.init))
+		XCTAssertEqual(m.map { text[$0.captures[0].range.lowerBound] }, ["a", "b", "c", "d"].map(Character.init))
 		XCTAssertEqual(pattern.matches(in: "\n\n").map { $0.captures[0] }.count, 3)
 	}
 
@@ -192,11 +192,11 @@ class PatternsTests: XCTestCase {
 		"""
 		var pattern = try Patterns(line.end, Capture())
 		var m = Array(pattern.matches(in: text[...]))
-		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].lowerBound] }, Array(repeating: Character("\n"), count: 4))
+		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].range.lowerBound] }, Array(repeating: Character("\n"), count: 4))
 
 		pattern = try Patterns(Capture(), line.end)
 		m = Array(pattern.matches(in: text[...]))
-		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].lowerBound] }, Array(repeating: Character("\n"), count: 4))
+		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].range.lowerBound] }, Array(repeating: Character("\n"), count: 4))
 	}
 
 	func testMultipleCaptures() throws {
@@ -207,11 +207,18 @@ class PatternsTests: XCTestCase {
 		In a relative way,
 		And returned on the previous night.
 		"""
+		let twoFirstWords = [["There", "was"], ["Whose", "speed"], ["She", "set"], ["In", "a"], ["And", "returned"]]
+
 		let pattern = try Patterns(
-			line.start, Capture(letter.repeat(1...)), Literal(" "), Capture(letter.repeat(1...)))
+			line.start, Capture(name: "word", letter.repeat(1...)),
+			Literal(" "), Capture(name: "word", letter.repeat(1...)))
+
+		assertCaptures(pattern, input: text, result: twoFirstWords)
+
 		let matches = Array(pattern.matches(in: text))
-		XCTAssertEqual(matches.map { $0.captures.map { range in text[range] } },
-		               [["There", "was"], ["Whose", "speed"], ["She", "set"], ["In", "a"], ["And", "returned"]])
+		XCTAssertEqual(matches.map { text[$0[one: "word"]!] }, ["There", "Whose", "She", "In", "And"])
+		XCTAssertEqual(matches.map { $0[multiple: "word"].map { String(text[$0]) } }, twoFirstWords)
+		XCTAssertNil(matches.first![one: "not a name"])
 	}
 }
 
