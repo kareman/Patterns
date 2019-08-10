@@ -3,16 +3,15 @@
 import Foundation
 import TextPicker
 
-func unicodeProperty(fromDataFile text: String) -> [(range: ClosedRange<UInt32>, property: String)] {
-	let hexNumber = Capture(hexDigit.repeat(1...))
+func unicodeProperty(fromDataFile text: String) -> [(range: ClosedRange<UInt32>, property: Substring)] {
+	let hexNumber = Capture(name: "hexNumber", hexDigit.repeat(1...))
 	let hexRange = try! Patterns(hexNumber, Literal(".."), hexNumber) || hexNumber
-	let rangeAndProperty = try! Patterns(line.start, hexRange, Skip(), Literal("; "), Capture(Skip()), Literal(" "))
+	let rangeAndProperty = try! Patterns(line.start, hexRange, Skip(), Literal("; "), Capture(name: "property", Skip()), Literal(" "))
 
 	return rangeAndProperty.matches(in: text).map { match in
 		// `captures` is either [hexNumber, propertyName] or [hexNumber, hexNumber, propertyName]
-		var captures = match.captures.map { text[$0] }
-		let propertyName = String(captures.popLast()!)
-		let oneOrTwoNumbers = captures.map { UInt32($0, radix: 16)! }
+		let propertyName = text[match[one: "property"]!]
+		let oneOrTwoNumbers = match[multiple: "hexNumber"].map { UInt32(text[$0], radix: 16)! }
 		let range = oneOrTwoNumbers.first! ... oneOrTwoNumbers.last!
 		return (range, propertyName)
 	}
@@ -41,7 +40,7 @@ extension Sequence {
 /// Turns string into a proper Swift enum case name.
 ///
 /// Removes all underscores. Unless string is all caps, lowercases the first letter.
-func caseName(_ string: String) -> String {
+func caseName(_ string: Substring) -> String {
 	var caseName = string.replacingOccurrences(of: "_", with: "")
 	let firstLetter = caseName.allSatisfy { $0.isUppercase } ? "" : caseName.removeFirst().lowercased()
 	return firstLetter + caseName
