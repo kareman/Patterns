@@ -95,10 +95,6 @@ public struct Literal: TextPattern {
 		assert(!self.substring.isEmpty, "Cannot have an empty Literal.")
 	}
 
-	public init(_ substring: String) {
-		self.init(substring[...])
-	}
-
 	public init(_ character: Character) {
 		self.init(String(character))
 	}
