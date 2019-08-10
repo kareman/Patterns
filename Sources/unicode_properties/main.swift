@@ -19,8 +19,8 @@ func unicodeProperty(fromDataFile text: String) -> [(range: ClosedRange<UInt32>,
 }
 
 extension Sequence {
-	/// Passes the 2 first elements to the “transform” closure. Then passes the last element returned from transform,
-	/// together with the next element in the source sequence, to “transform” again. And so on.
+	/// Passes the 2 first elements to the `transform` closure. Then passes the last element returned from `transform`,
+	/// together with the next element in the source sequence, to `transform` again. And so on.
 	func flatMapPairs(_ transform: (Element, Element) -> [Element]) -> [Element] {
 		var result = ContiguousArray<Element>()
 		result.reserveCapacity(underestimatedCount)
