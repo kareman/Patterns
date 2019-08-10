@@ -233,7 +233,7 @@ public struct Patterns: TextPattern {
 
 	public func ranges<S: StringProtocol>(in input: S, from startindex: Input.Index? = nil)
 		-> AnySequence<ParsedRange> where S.SubSequence == Input {
-		return AnySequence(matches(in: input[...], from: startindex).lazy.map { $0.range })
+		return AnySequence(matches(in: input, from: startindex).lazy.map { $0.range })
 	}
 
 	public func appending(_ pattern: TextPattern) throws -> Patterns {
@@ -241,8 +241,8 @@ public struct Patterns: TextPattern {
 	}
 }
 
-public extension Patterns {
-	struct Match {
+extension Patterns {
+	public struct Match {
 		public let fullRange: ParsedRange
 		public let captures: [(name: String?, range: ParsedRange)]
 
@@ -271,7 +271,7 @@ public extension Patterns {
 		}
 	}
 
-	func match(in input: Input, at startindex: Input.Index) -> Match? {
+	internal func match(in input: Input, at startindex: Input.Index) -> Match? {
 		var data = ParseData()
 		var index = startindex
 		for patternette in patternettes {
@@ -282,7 +282,7 @@ public extension Patterns {
 		return Match(fullRange: startindex ..< index, data: data)
 	}
 
-	func match(in input: Input, from startIndex: Input.Index) -> Match? {
+	internal func match(in input: Input, from startIndex: Input.Index) -> Match? {
 		guard let patternFrom = patternFrom else { return self.match(in: input, at: startIndex) }
 		var index = startIndex
 		var data = ParseData()
@@ -297,8 +297,9 @@ public extension Patterns {
 		return nil
 	}
 
-	func matches(in input: Input, from startindex: Input.Index? = nil)
-		-> UnfoldSequence<Match, Input.Index> {
+	public func matches<S: StringProtocol>(in input: S, from startindex: Input.Index? = nil)
+		-> UnfoldSequence<Match, Input.Index> where S.SubSequence == Substring {
+		let input = input[...]
 		var previousRange: ParsedRange?
 		return sequence(state: startindex ?? input.startIndex, next: { (index: inout Input.Index) in
 			guard let match = self.match(in: input, from: index),
@@ -309,11 +310,6 @@ public extension Patterns {
 				? input.index(after: range.upperBound) : range.upperBound
 			return match
 		})
-	}
-
-	func matches(in input: String, from startindex: Input.Index? = nil)
-		-> UnfoldSequence<Match, Input.Index> {
-		return matches(in: input[...], from: startindex)
 	}
 }
 

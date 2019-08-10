@@ -176,7 +176,7 @@ class PatternsTests: XCTestCase {
 		dilled10 io
 		"""
 		let pattern = try Patterns(line.start, Capture())
-		let m = Array(pattern.matches(in: text[...]))
+		let m = Array(pattern.matches(in: text))
 
 		XCTAssertEqual(m.map { text[$0.captures[0].range.lowerBound] }, ["a", "b", "c", "d"].map(Character.init))
 		XCTAssertEqual(pattern.matches(in: "\n\n").map { $0.captures[0] }.count, 3)
@@ -191,11 +191,11 @@ class PatternsTests: XCTestCase {
 
 		"""
 		var pattern = try Patterns(line.end, Capture())
-		var m = Array(pattern.matches(in: text[...]))
+		var m = Array(pattern.matches(in: text))
 		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].range.lowerBound] }, Array(repeating: Character("\n"), count: 4))
 
 		pattern = try Patterns(Capture(), line.end)
-		m = Array(pattern.matches(in: text[...]))
+		m = Array(pattern.matches(in: text))
 		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].range.lowerBound] }, Array(repeating: Character("\n"), count: 4))
 	}
 
