@@ -13,12 +13,8 @@ public typealias ParsedRange = Range<TextPattern.Input.Index>
 public protocol TextPattern: CustomStringConvertible {
 	typealias Input = Substring
 
-	func parse(_ input: Input, at index: Input.Index) -> ParsedRange?
-	func parse(_ input: Input, from index: Input.Index) -> ParsedRange?
 	func parse(_ input: Input, at index: Input.Index, using: inout Patterns.ParseData) -> ParsedRange?
 	func parse(_ input: Input, from index: Input.Index, using: inout Patterns.ParseData) -> ParsedRange?
-	func parseAllLazy(_ input: Input, from startindex: Input.Index)
-		-> UnfoldSequence<ParsedRange, Input.Index>
 	func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>) throws -> Patterns.Patternette
 	/// The length this pattern always parses, if it is constant
 	var length: Int? { get }
@@ -30,25 +26,12 @@ public protocol TextPatternWrapper: TextPattern {
 }
 
 public extension TextPatternWrapper {
-	func parse(_ input: Input, at index: Input.Index) -> ParsedRange? {
-		return pattern.parse(input, at: index)
-	}
-
-	func parse(_ input: Input, from index: Input.Index) -> ParsedRange? {
-		return pattern.parse(input, from: index)
-	}
-
 	func parse(_ input: Input, at index: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
 		return self.parse(input, at: index, using: &data)
 	}
 
 	func parse(_ input: Input, from index: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
 		return self.parse(input, from: index, using: &data)
-	}
-
-	func parseAllLazy(_ input: Input, from startindex: Input.Index)
-		-> UnfoldSequence<ParsedRange, Input.Index> {
-		return pattern.parseAllLazy(input, from: startindex)
 	}
 
 	func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>) throws -> Patterns.Patternette {
@@ -64,54 +47,25 @@ public extension TextPatternWrapper {
 }
 
 extension TextPattern {
-	public func parseAll(_ input: Input, from startindex: Input.Index) -> [ParsedRange] {
-		return Array(parseAllLazy(input, from: startindex))
-	}
-
-	public func parseAll(_ input: String, from startindex: String.Index)
-		-> [ParsedRange] {
-		return parseAll(input[...], from: startindex)
-	}
-
-	public func parseAllLazy(_ input: Input, from startindex: Input.Index)
-		-> UnfoldSequence<ParsedRange, Input.Index> {
-		var previousRange: ParsedRange?
-		return sequence(state: startindex, next: { (index: inout Input.Index) in
-			guard let range = self.parse(input, from: index), range != previousRange else {
-				return nil
-			}
-			previousRange = range
-			index = (range.isEmpty && range.upperBound != input.endIndex)
-				? input.index(after: range.upperBound) : range.upperBound
-			return range
-		})
-	}
-
-	public func parseAll(_ input: Input) -> [ParsedRange] {
-		return parseAll(input, from: input.startIndex)
-	}
-
-	public func parseAll(_ input: String) -> [ParsedRange] {
-		return parseAll(input[...])
+	public func parse(_ input: Input, at startIndex: Input.Index) -> ParsedRange? {
+		var data = Patterns.ParseData()
+		return parse(input, at: startIndex, using: &data)
 	}
 
 	public func parse(_ input: Input, from startIndex: Input.Index) -> ParsedRange? {
+		var data = Patterns.ParseData()
+		return parse(input, from: startIndex, using: &data)
+	}
+
+	public func parse(_ input: Input, from startIndex: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
 		var index = startIndex
 		while index < input.endIndex {
-			if let range = parse(input, at: index) {
+			if let range = parse(input, at: index, using: &data) {
 				return range
 			}
 			input.formIndex(after: &index)
 		}
-		return parse(input, at: index)
-	}
-
-	public func parse(_ input: Input, at index: Input.Index, using _: inout Patterns.ParseData) -> ParsedRange? {
-		return self.parse(input, at: index)
-	}
-
-	public func parse(_ input: Input, from index: Input.Index, using _: inout Patterns.ParseData) -> ParsedRange? {
-		return self.parse(input, from: index)
+		return parse(input, at: index, using: &data)
 	}
 
 	public func _prepForPatterns(remainingPatterns _: inout ArraySlice<TextPattern>) throws -> Patterns.Patternette {
@@ -141,20 +95,16 @@ public struct Literal: TextPattern {
 		assert(!self.substring.isEmpty, "Cannot have an empty Literal.")
 	}
 
-	public init(_ substring: String) {
-		self.init(substring[...])
-	}
-
 	public init(_ character: Character) {
 		self.init(String(character))
 	}
 
-	public func parse(_ input: TextPattern.Input, at index: TextPattern.Input.Index) -> ParsedRange? {
+	public func parse(_ input: TextPattern.Input, at index: TextPattern.Input.Index, using _: inout Patterns.ParseData) -> ParsedRange? {
 		return input[index ..< input.endIndex].starts(with: substring)
 			? index ..< input.index(index, offsetBy: substring.count) : nil
 	}
 
-	public func parse(_ input: Input, from index: Input.Index) -> ParsedRange? {
+	public func parse(_ input: Input, from index: Input.Index, using _: inout Patterns.ParseData) -> ParsedRange? {
 		return input.range(of: substring, from: index, cache: searchCache)
 	}
 }
@@ -188,7 +138,7 @@ public struct OneOf: TextPattern {
 		regex = "[\(NSRegularExpression.escapedPattern(for: characters.map(String.init(describing:)).joined()))]"
 	}
 
-	public func parse(_ input: Input, at index: Input.Index) -> ParsedRange? {
+	public func parse(_ input: Input, at index: Input.Index, using _: inout Patterns.ParseData) -> ParsedRange? {
 		return (index < input.endIndex && set.contains(input[index])) ? index ..< input.index(after: index) : nil
 	}
 
@@ -230,15 +180,15 @@ public struct RepeatPattern: TextPattern {
 		return min == max ? repeatedPattern.length.map { $0 * min } : nil
 	}
 
-	public func parse(_ input: Input, at startindex: Input.Index) -> ParsedRange? {
+	public func parse(_ input: Input, at startindex: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
 		var index = startindex
 		for _ in 0 ..< min {
-			guard let nextindex = repeatedPattern.parse(input, at: index)?.upperBound else { return nil }
+			guard let nextindex = repeatedPattern.parse(input, at: index, using: &data)?.upperBound else { return nil }
 			index = nextindex
 		}
 		for _ in min ..< (max ?? Int.max) {
 			guard index < input.endIndex else { return startindex ..< index }
-			guard let nextindex = repeatedPattern.parse(input, at: index)?.upperBound else {
+			guard let nextindex = repeatedPattern.parse(input, at: index, using: &data)?.upperBound else {
 				return startindex ..< index
 			}
 			index = nextindex
@@ -283,14 +233,10 @@ public struct OrPattern: TextPattern {
 		return pattern1.length == pattern2.length ? pattern1.length : nil
 	}
 
-	public func parse(_ input: Input, at startindex: Input.Index) -> ParsedRange? {
-		return pattern1.parse(input, at: startindex) ?? pattern2.parse(input, at: startindex)
-	}
-
-	public func parse(_ input: Input, from startindex: Input.Index) -> ParsedRange? {
+	public func parse(_ input: Input, from startindex: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
 		// TODO: should pattern1 always win if it succeeds, even if pattern2 succeeds earlier?
-		let result1 = pattern1.parse(input, from: startindex)
-		let result2 = pattern2.parse(input, from: startindex)
+		let result1 = pattern1.parse(input, from: startindex, using: &data)
+		let result2 = pattern2.parse(input, from: startindex, using: &data)
 		if result1?.lowerBound == result2?.lowerBound { return result1 }
 		return [result1, result2].compactMap { $0 }.sorted(by: <).first
 	}
@@ -329,13 +275,13 @@ public struct Line: TextPatternWrapper {
 		public var regex = "^"
 		public var length: Int? = 0
 
-		public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> ParsedRange? {
+		public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index, using _: inout Patterns.ParseData) -> ParsedRange? {
 			return startindex == input.startIndex || input[input.index(before: startindex)].isNewline
 				? startindex ..< startindex
 				: nil
 		}
 
-		public func parse(_ input: Input, from startIndex: Input.Index) -> ParsedRange? {
+		public func parse(_ input: Input, from startIndex: Input.Index, using _: inout Patterns.ParseData) -> ParsedRange? {
 			guard startIndex != input.startIndex else { return startIndex ..< startIndex }
 			return input[input.index(before: startIndex)...].firstIndex(where: (\Character.isNewline).toFunc)
 				.map(input.index(after:))
@@ -350,14 +296,14 @@ public struct Line: TextPatternWrapper {
 		public let regex = "$"
 		public let length: Int? = 0
 
-		public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> ParsedRange? {
+		public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index, using _: inout Patterns.ParseData) -> ParsedRange? {
 			if startindex == input.endIndex || input[startindex].isNewline {
 				return startindex ..< startindex
 			}
 			return nil
 		}
 
-		public func parse(_ input: Input, from startIndex: Input.Index) -> ParsedRange? {
+		public func parse(_ input: Input, from startIndex: Input.Index, using _: inout Patterns.ParseData) -> ParsedRange? {
 			return input[startIndex...].firstIndex(where: (\Character.isNewline).toFunc).map { $0 ..< $0 }
 				?? input.endIndex ..< input.endIndex
 		}
@@ -377,11 +323,11 @@ public struct NotPattern: TextPattern {
 
 	public let length: Int? = 1
 
-	public func parse(_ input: Input, at index: Input.Index) -> ParsedRange? {
+	public func parse(_ input: Input, at index: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
 		guard let nextIndex = input.index(index, offsetBy: 1, limitedBy: input.endIndex) else {
 			return nil
 		}
-		return pattern.parse(input, at: index) == nil ? index ..< nextIndex : nil
+		return pattern.parse(input, at: index, using: &data) == nil ? index ..< nextIndex : nil
 	}
 }
 
