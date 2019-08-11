@@ -409,11 +409,11 @@
 			};
 			buildConfigurationList = OBJ_2 /* Build configuration list for PBXProject "TextPicker" */;
 			compatibilityVersion = "Xcode 9.3";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
+				Base,
 			);
 			mainGroup = OBJ_5;
 			productRefGroup = OBJ_36 /* Products */;
