@@ -24,8 +24,8 @@ class TextPatternTests: XCTestCase {
 	}
 
 	func testOptional() throws {
-		assertParseAll(try Patterns(letter, digit.repeat(0...)), input: "123abc123d", count: 4)
-		assertParseAll(try Patterns(digit.repeat(0 ... 1), letter),
+		assertParseAll(try Patterns(verify: letter, digit.repeat(0...)), input: "123abc123d", count: 4)
+		assertParseAll(try Patterns(verify: digit.repeat(0 ... 1), letter),
 		               input: "123abc", result: ["3a", "b", "c"])
 	}
 
@@ -37,7 +37,7 @@ class TextPatternTests: XCTestCase {
 
 		assertParseAll(digit.repeat(1...), input: "a123abc123d", result: "123", count: 2)
 		assertParseAll(digit.repeat(1...), input: "123abc09d4 8", count: 4)
-		assertParseAll(try Patterns(digit.repeat(1 ... 2)), input: "123abc09d48", result: ["12", "3", "09", "48"])
+		assertParseAll(try Patterns(verify: digit.repeat(1 ... 2)), input: "123abc09d48", result: ["12", "3", "09", "48"])
 
 		XCTAssertEqual(digit.repeat(1...).description, "digit{1...}")
 	}
@@ -64,8 +64,8 @@ class TextPatternTests: XCTestCase {
 			$0.unicodeScalars.first!.properties.isHexDigit
 		})
 		let hexNumber = Capture(hexDigit.repeat(1...))
-		let hexRange = try Patterns(hexNumber, Literal(".."), hexNumber) || hexNumber
-		let rangeAndProperty = try Patterns(line.start, hexRange, Skip(), Literal("; "), Capture(Skip()), Literal(" "))
+		let hexRange = try Patterns(verify: hexNumber, Literal(".."), hexNumber) || hexNumber
+		let rangeAndProperty = try Patterns(verify: line.start, hexRange, Skip(), Literal("; "), Capture(Skip()), Literal(" "))
 
 		assertCaptures(rangeAndProperty, input: text,
 		               result: [["0780", "07A5", "Thaana"], ["07B1", "Thaana"]])
@@ -83,21 +83,21 @@ class TextPatternTests: XCTestCase {
 		assertParseAll(pattern, input: "\n", count: 2)
 		assertParseAll(pattern, input: text, result: "", count: 4)
 		assertParseAll(
-			try Patterns(line.start, Capture(Skip()), Literal(" ")),
+			try Patterns(verify: line.start, Capture(Skip()), Literal(" ")),
 			input: text, result: "line", count: 4)
 		assertParseAll(
-			try Patterns(line.start, Literal("line")),
+			try Patterns(verify: line.start, Literal("line")),
 			input: text, result: "line", count: 4)
 		assertParseAll(
 			try Patterns(
-				digit, Skip(), line.start, Literal("l")),
+				verify: digit, Skip(), line.start, Literal("l")),
 			input: text, result: ["1\nl", "2\nl", "3\nl"])
 
-		XCTAssertThrowsError(try Patterns(line.start, line.start))
-		XCTAssertThrowsError(try Patterns(line.start, Capture(line.start)))
+		XCTAssertThrowsError(try Patterns(verify: line.start, line.start))
+		XCTAssertThrowsError(try Patterns(verify: line.start, Capture(line.start)))
 		XCTAssertThrowsError(
-			try Patterns([line.start, Skip(), line.start]))
-		XCTAssertNoThrow(try Patterns([line.start, Skip(whileRepeating: alphanumeric || Literal("\n")), line.start]))
+			try Patterns(verify: [line.start, Skip(), line.start]))
+		XCTAssertNoThrow(try Patterns(verify: [line.start, Skip(whileRepeating: alphanumeric || Literal("\n")), line.start]))
 	}
 
 	func testLineEnd() throws {
@@ -114,29 +114,29 @@ class TextPatternTests: XCTestCase {
 		"""
 		assertParseAll(pattern, input: text, count: 4)
 		assertParseAll(
-			try Patterns(Literal(" "), Capture(Skip()), line.end),
+			try Patterns(verify: Literal(" "), Capture(Skip()), line.end),
 			input: text, result: ["1", "2", "3", "4"])
 		assertParseAll(
-			try Patterns(digit, line.end),
+			try Patterns(verify: digit, line.end),
 			input: text, result: ["1", "2", "3", "4"])
 		assertParseAll(
-			try Patterns(digit, line.end, Skip(), Literal("l")),
+			try Patterns(verify: digit, line.end, Skip(), Literal("l")),
 			input: text, result: ["1\nl", "2\nl", "3\nl"])
 
-		XCTAssertThrowsError(try Patterns(line.end, line.end))
+		XCTAssertThrowsError(try Patterns(verify: line.end, line.end))
 		XCTAssertThrowsError(
-			try Patterns(line.end, Capture(line.end)))
+			try Patterns(verify: line.end, Capture(line.end)))
 		XCTAssertThrowsError(
-			try Patterns(line.end, Skip(), line.end))
-		XCTAssertNoThrow(try Patterns([line.end, Skip(whileRepeating: alphanumeric || Literal("\n")), line.end]))
+			try Patterns(verify: line.end, Skip(), line.end))
+		XCTAssertNoThrow(try Patterns(verify: [line.end, Skip(whileRepeating: alphanumeric || Literal("\n")), line.end]))
 
 		assertParseAll(
-			try Patterns(line.end),
+			try Patterns(verify: line.end),
 			input: "\n", count: 2)
 	}
 
 	func testWordBoundary() throws {
-		let pattern = try Patterns(Word.boundary)
+		let pattern = try Patterns(verify: Word.boundary)
 		assertParseMarkers(pattern, input: #"|I| |said| |"|hello|"|"#)
 		assertParseMarkers(pattern, input: "|this| |I| |-|3,875.08| |can't|,| |you| |letter|-|like|.| |And|?| |then|")
 	}

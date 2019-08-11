@@ -5,11 +5,10 @@ import TextPicker
 
 func unicodeProperty(fromDataFile text: String) -> [(range: ClosedRange<UInt32>, property: Substring)] {
 	let hexNumber = Capture(name: "hexNumber", hexDigit.repeat(1...))
-	let hexRange = try! Patterns(hexNumber, Literal(".."), hexNumber) || hexNumber
-	let rangeAndProperty = try! Patterns(line.start, hexRange, Skip(), Literal("; "), Capture(name: "property", Skip()), Literal(" "))
+	let hexRange = Patterns(hexNumber, Literal(".."), hexNumber) || hexNumber
+	let rangeAndProperty = Patterns(line.start, hexRange, Skip(), Literal("; "), Capture(name: "property", Skip()), Literal(" "))
 
 	return rangeAndProperty.matches(in: text).map { match in
-		// `captures` is either [hexNumber, propertyName] or [hexNumber, hexNumber, propertyName]
 		let propertyName = text[match[one: "property"]!]
 		let oneOrTwoNumbers = match[multiple: "hexNumber"].map { UInt32(text[$0], radix: 16)! }
 		let range = oneOrTwoNumbers.first! ... oneOrTwoNumbers.last!

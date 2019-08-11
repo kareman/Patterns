@@ -28,7 +28,7 @@ extension XCTestCase {
 	func assertParseAll(_ pattern: TextPattern, input: String, result: String? = nil, count: Int,
 	                    file: StaticString = #file, line: UInt = #line) {
 		do {
-			let pattern = try (pattern as? Patterns) ?? Patterns(pattern)
+			let pattern = try (pattern as? Patterns) ?? Patterns(verify: pattern)
 			if let result = result {
 				assertParseAll(pattern, input: input, result: Array(repeating: result, count: count), file: file, line: line)
 				return

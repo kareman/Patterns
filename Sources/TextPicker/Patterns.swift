@@ -193,7 +193,7 @@ public struct Patterns: TextPattern {
 		return result
 	}
 
-	public init(_ series: [TextPattern?]) throws {
+	public init(verify series: [TextPattern?]) throws {
 		self.series = series.compactMap { $0 }.flattenPatterns()
 		if series.isEmpty || (series.filter { $0 is Capture.Start || $0 is Capture.End }.count > 2) {
 			throw InitError.invalid(self.series.array())
@@ -210,8 +210,16 @@ public struct Patterns: TextPattern {
 		self.description = self.series.map(String.init(describing:)).joined(separator: " ")
 	}
 
-	public init(_ series: TextPattern?...) throws {
-		try self.init(series)
+	public init(verify series: TextPattern?...) throws {
+		try self.init(verify: series)
+	}
+
+	public init(_ series: [TextPattern?]) {
+		try! self.init(verify: series)
+	}
+
+	public init(_ series: TextPattern?...) {
+		self.init(series)
 	}
 
 	public func parse(_ input: Input, at startindex: Input.Index) -> ParsedRange? {
@@ -237,7 +245,7 @@ public struct Patterns: TextPattern {
 	}
 
 	public func appending(_ pattern: TextPattern) throws -> Patterns {
-		return try Patterns(self.series + [pattern])
+		return try Patterns(verify: self.series + [pattern])
 	}
 }
 

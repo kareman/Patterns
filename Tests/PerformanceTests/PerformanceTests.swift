@@ -23,50 +23,50 @@ class PerformanceTests: XCTestCase {
 	}
 
 	func testWordBoundary() throws {
-		let pattern = try Patterns(Word.boundary)
+		let pattern = try Patterns(verify: Word.boundary)
 		try speedTest(pattern, textFraction: 32, hits: 39270)
 	}
 
 	func testWordBoundaryManyLanguages() throws {
-		let pattern = try Patterns(Word.boundary)
+		let pattern = try Patterns(verify: Word.boundary)
 		try speedTest(pattern, testFile: "Multi-language-short.txt", hits: 9960)
 	}
 
 	func testLine() throws {
-		let pattern = try Patterns([line.start, Capture(Skip()), line.end])
+		let pattern = try Patterns(verify: [line.start, Capture(Skip()), line.end])
 		try speedTest(pattern, textFraction: 32, hits: 494)
 	}
 
 	func testNotNewLine() throws {
-		let pattern = try Patterns(Literal(","),
+		let pattern = try Patterns(verify: Literal(","),
 		                           Capture(Skip(whileRepeating: newline.not)),
 		                           Line.End())
 		try speedTest(pattern, textFraction: 32, hits: 352)
 	}
 
 	func testLiteralSearch() throws {
-		let pattern = try Patterns(Literal("Prince"))
+		let pattern = try Patterns(verify: Literal("Prince"))
 		try speedTest(pattern, textFraction: 32, hits: 125)
 	}
 
 	func testNonExistentLiteralSearch() throws {
-		let pattern = try Patterns(Literal("\n"), Skip(), Literal("DOESN'T EXIST"))
+		let pattern = try Patterns(verify: Literal("\n"), Skip(), Literal("DOESN'T EXIST"))
 		try speedTest(pattern, textFraction: 100, hits: 0)
 	}
 
 	func testOptionalStringFollowedByNonOptionalString() throws {
-		let pattern = try Patterns(Literal("\"").repeat(0 ... 1), Literal("I"))
+		let pattern = try Patterns(verify: Literal("\"").repeat(0 ... 1), Literal("I"))
 		try speedTest(pattern, textFraction: 32, hits: 304)
 	}
 
 	func testOneOrMore() throws {
-		let pattern = try Patterns(Capture(ascii.repeat(1...)))
+		let pattern = try Patterns(verify: Capture(ascii.repeat(1...)))
 		try speedTest(pattern, textFraction: 100, hits: 407)
 	}
 
 	func testSkipping1() throws {
 		// [ word.boundary ] * " " * ":" * " " * " " * " " * "{" * line.end
-		let pattern = try Patterns(Skip(), Literal("."), Skip(), Literal(" "), Skip(), Literal(" "))
+		let pattern = try Patterns(verify: Skip(), Literal("."), Skip(), Literal(" "), Skip(), Literal(" "))
 		try speedTest(pattern, textFraction: 50, hits: 569)
 	}
 }

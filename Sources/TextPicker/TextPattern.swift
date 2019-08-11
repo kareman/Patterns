@@ -217,8 +217,8 @@ public struct OrPattern: TextPattern {
 	public let pattern1, pattern2: TextPattern
 
 	init(pattern1: TextPattern, pattern2: TextPattern) {
-		self.pattern1 = pattern1 is Capture ? try! Patterns(pattern1) : pattern1
-		self.pattern2 = pattern2 is Capture ? try! Patterns(pattern2) : pattern2
+		self.pattern1 = pattern1 is Capture ? Patterns(pattern1) : pattern1
+		self.pattern2 = pattern2 is Capture ? Patterns(pattern2) : pattern2
 	}
 
 	public var description: String {
@@ -265,7 +265,7 @@ public struct Line: TextPatternWrapper {
 	public let end = End()
 
 	init() {
-		pattern = try! Patterns(Start(), Skip(), End())
+		pattern = Patterns(Start(), Skip(), End())
 	}
 
 	public struct Start: TextPattern {
