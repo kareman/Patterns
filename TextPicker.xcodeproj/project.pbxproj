@@ -83,6 +83,13 @@
 			remoteGlobalIDString = "TextPicker::PerformanceTests";
 			remoteInfo = PerformanceTests;
 		};
+		BAF9AB4223007F0C0040D0AB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = OBJ_1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = "TextPicker::TextPicker";
+			remoteInfo = TextPicker;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -394,6 +401,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				BAF9AB4323007F0C0040D0AB /* PBXTargetDependency */,
 				OBJ_117 /* PBXTargetDependency */,
 			);
 			name = unicode_properties;
@@ -508,6 +516,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		BAF9AB4323007F0C0040D0AB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = "TextPicker::TextPicker" /* TextPicker */;
+			targetProxy = BAF9AB4223007F0C0040D0AB /* PBXContainerItemProxy */;
+		};
 		OBJ_108 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = "TextPicker::TextPicker" /* TextPicker */;
