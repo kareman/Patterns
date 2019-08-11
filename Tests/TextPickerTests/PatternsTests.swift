@@ -207,10 +207,10 @@ class PatternsTests: XCTestCase {
 		In a relative way,
 		And returned on the previous night.
 		"""
-		let twoFirstWords = [["There", "was"], ["Whose", "speed"], ["She", "set"], ["In", "a"], ["And", "returned"]]
 
-		let pattern = try Patterns(
-			verify: line.start, Capture(name: "word", letter.repeat(1...)),
+		let twoFirstWords = [["There", "was"], ["Whose", "speed"], ["She", "set"], ["In", "a"], ["And", "returned"]]
+		let pattern = Patterns(
+			line.start, Capture(name: "word", letter.repeat(1...)),
 			Literal(" "), Capture(name: "word", letter.repeat(1...)))
 
 		assertCaptures(pattern, input: text, result: twoFirstWords)
@@ -219,6 +219,21 @@ class PatternsTests: XCTestCase {
 		XCTAssertEqual(matches.map { text[$0[one: "word"]!] }, ["There", "Whose", "She", "In", "And"])
 		XCTAssertEqual(matches.map { $0[multiple: "word"].map { String(text[$0]) } }, twoFirstWords)
 		XCTAssertNil(matches.first![one: "not a name"])
+	}
+
+	func testStringInterpolation() throws {
+		let text = """
+		# ================================================
+
+		0000..001F    ; Common # Cc  [32] <control-0000>..<control-001F>
+		0020          ; Common # Zs       SPACE
+		"""
+
+		let hexNumber = Capture(name: "hexNumber", hexDigit.repeat(1...))
+		let hexRange = Patterns("\(hexNumber)..\(hexNumber)") || hexNumber
+		let rangeAndProperty: Patterns = "\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) "
+
+		assertCaptures(rangeAndProperty, input: text, result: [["0000", "001F", "Common"], ["0020", "Common"]])
 	}
 }
 

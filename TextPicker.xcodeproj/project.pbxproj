@@ -22,6 +22,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		BAF9AB4123006E7D0040D0AB /* StringInterpolation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAF9AB4023006E7D0040D0AB /* StringInterpolation.swift */; };
 		OBJ_102 /* GeneralTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_22 /* GeneralTests.swift */; };
 		OBJ_103 /* PatternsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_23 /* PatternsTests.swift */; };
 		OBJ_104 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_24 /* TestHelpers.swift */; };
@@ -86,6 +87,7 @@
 
 /* Begin PBXFileReference section */
 		BA3E6E5622C95FFC00A8DEF5 /* Long.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Long.txt; sourceTree = "<group>"; };
+		BAF9AB4023006E7D0040D0AB /* StringInterpolation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringInterpolation.swift; sourceTree = "<group>"; };
 		"FootlessParser::FootlessParser::Product" /* FootlessParser.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FootlessParser.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_10 /* Group.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
 		OBJ_11 /* Patterns.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Patterns.swift; sourceTree = "<group>"; };
@@ -279,6 +281,7 @@
 				OBJ_11 /* Patterns.swift */,
 				OBJ_12 /* TextPattern.swift */,
 				OBJ_13 /* WordBoundaries.swift */,
+				BAF9AB4023006E7D0040D0AB /* StringInterpolation.swift */,
 			);
 			name = TextPicker;
 			path = Sources/TextPicker;
@@ -488,6 +491,7 @@
 				OBJ_79 /* General.swift in Sources */,
 				OBJ_80 /* Group.swift in Sources */,
 				OBJ_81 /* Patterns.swift in Sources */,
+				BAF9AB4123006E7D0040D0AB /* StringInterpolation.swift in Sources */,
 				OBJ_82 /* TextPattern.swift in Sources */,
 				OBJ_83 /* WordBoundaries.swift in Sources */,
 			);
