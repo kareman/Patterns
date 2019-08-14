@@ -1,11 +1,11 @@
 //
 //  GeneralTests.swift
-//  TextPickerTests
+//  PatternsTests
 //
 //  Created by Kåre Morstøl on 31/05/2019.
 //
 
-import TextPicker
+import Patterns
 import XCTest
 
 // Note: the hits parameter to speedTest doesn't necessarily mean the _correct_ number of hits.

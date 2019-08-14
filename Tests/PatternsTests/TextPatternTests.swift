@@ -1,13 +1,13 @@
 //
 //  TextPatternTests.swift
-//  TextPicker
+//  Patterns
 //
 //  Created by Kåre Morstøl on 20/03/2017.
 //
 //
 
 import Foundation
-import TextPicker
+import Patterns
 import XCTest
 
 let doublequote = Literal("\"")

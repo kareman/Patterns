@@ -4,7 +4,7 @@ default_platform :ios
 
 platform :ios do
 
-  desc "Release a new version of TextPicker"
+  desc "Release a new version of Patterns"
   lane :release do |options|
     # Ensure Git status is clean
     ensure_git_status_clean
@@ -34,18 +34,18 @@ platform :ios do
     version = options[:version]
     # Set Podspec version
     version_bump_podspec(
-      path: "TextPicker.podspec", 
+      path: "Patterns.podspec", 
       version_number: version
     )
     # Set Framework plist version
     set_info_plist_value(
-      path: "Configs/TextPicker.plist", 
+      path: "Configs/Patterns.plist", 
       key: "CFBundleShortVersionString", 
       value: version
     )
     # Set Framework Tests plist version
     set_info_plist_value(
-      path: "Configs/TextPickerTests.plist", 
+      path: "Configs/PatternsTests.plist", 
       key: "CFBundleShortVersionString", 
       value: version
     )
@@ -58,12 +58,12 @@ platform :ios do
     # Commit modified files
     git_commit(
         path: [
-          "TextPicker.podspec", 
-          "Configs/TextPicker.plist", 
-          "Configs/TextPickerTests.plist", 
+          "Patterns.podspec", 
+          "Configs/Patterns.plist", 
+          "Configs/PatternsTests.plist", 
           "Example/Resources/Info.plist"
         ],
-        message: "TextPicker Version #{version} 🚀"
+        message: "Patterns Version #{version} 🚀"
     )
   end
 
@@ -71,14 +71,14 @@ platform :ios do
   lane :tests do
     # Perform iOS Tests
     scan(
-      project: "TextPicker.xcodeproj",
-      scheme: "TextPicker-iOS",
+      project: "Patterns.xcodeproj",
+      scheme: "Patterns-iOS",
       clean: true
     )
     # Perform tvOS Tests
     scan(
-      project: "TextPicker.xcodeproj",
-      scheme: "TextPicker-tvOS",
+      project: "Patterns.xcodeproj",
+      scheme: "Patterns-tvOS",
       clean: true
     )
     # Perform macOS Tests

@@ -1,7 +1,7 @@
 /// Converts Unicode property data files to Swift code.
 
 import Foundation
-import TextPicker
+import Patterns
 
 func unicodeProperty(fromDataFile text: String) -> [(range: ClosedRange<UInt32>, property: Substring)] {
 	let hexNumber = Capture(name: "hexNumber", hexDigit.repeat(1...))

@@ -1,6 +1,6 @@
 //
 //  GeneralTests.swift
-//  TextPickerTests
+//  PatternsTests
 //
 //  Created by Kåre Morstøl on 31/05/2019.
 //
