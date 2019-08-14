@@ -94,8 +94,9 @@
 
 /* Begin PBXFileReference section */
 		BA3E6E5622C95FFC00A8DEF5 /* Long.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Long.txt; sourceTree = "<group>"; };
+		BAED895723046B040068D0B3 /* LinuxMain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LinuxMain.swift; path = Tests/LinuxMain.swift; sourceTree = "<group>"; };
 		BAF9AB4023006E7D0040D0AB /* StringInterpolation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringInterpolation.swift; sourceTree = "<group>"; };
-		"FootlessParser::FootlessParser::Product" /* FootlessParser.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FootlessParser.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		"FootlessParser::FootlessParser::Product" /* FootlessParser.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FootlessParser.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_10 /* Group.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
 		OBJ_11 /* Patterns.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Patterns.swift; sourceTree = "<group>"; };
 		OBJ_12 /* TextPattern.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextPattern.swift; sourceTree = "<group>"; };
@@ -184,6 +185,7 @@
 		OBJ_18 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				BAED895723046B040068D0B3 /* LinuxMain.swift */,
 				OBJ_19 /* PerformanceTests */,
 				OBJ_21 /* PatternsTests */,
 			);
@@ -587,7 +589,7 @@
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = TextPicker.xcodeproj/unicode_properties_Info.plist;
+				INFOPLIST_FILE = Patterns.xcodeproj/unicode_properties_Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -617,7 +619,7 @@
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = TextPicker.xcodeproj/unicode_properties_Info.plist;
+				INFOPLIST_FILE = Patterns.xcodeproj/unicode_properties_Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -752,7 +754,7 @@
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = TextPicker.xcodeproj/FootlessParser_Info.plist;
+				INFOPLIST_FILE = Patterns.xcodeproj/FootlessParser_Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
@@ -779,7 +781,7 @@
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
-				INFOPLIST_FILE = TextPicker.xcodeproj/FootlessParser_Info.plist;
+				INFOPLIST_FILE = Patterns.xcodeproj/FootlessParser_Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
