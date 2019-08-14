@@ -12,18 +12,23 @@ matrix:
         - mkdir swift
         - curl https://swift.org/builds/$SWIFT_BRANCH/ubuntu1404/$SWIFT_VERSION/$SWIFT_VERSION-ubuntu14.04.tar.gz -s | tar -xz -C swift
         - export PATH="$(pwd)/swift/$SWIFT_VERSION-ubuntu14.04/usr/bin:$PATH"
+			script:
+				- swift --version
+				- swift package reset
+				- swift build
+				- swift test -c debug --enable-test-discovery
+				- ./ci.bash
 
     - name: "macOS Xcode 10.2"
       os: osx
-      osx_image: xcode10.2
+      osx_image: xcode11
       language: generic
       sudo: required
-      install: 
+      install:
         - gem install xcpretty-travis-formatter
-
-script:
-  - swift --version
-  - swift package reset
-  - swift build
-  - swift test -c release --enable-index-store --enable-test-discovery
-  - ./ci.bash
+			script:
+				- swift --version
+				- swift package reset
+				- swift build
+				- swift test -c release
+				- ./ci.bash
