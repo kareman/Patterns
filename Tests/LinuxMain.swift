@@ -1,8 +1,8 @@
 
 import XCTest
 
-@testable import PatternsTests
-@testable import PerformanceTests
+import PatternsTests
+import PerformanceTests
 
 let tests: [XCTestCaseEntry] = [
 	testCase(TextPatternTests.allTests),
