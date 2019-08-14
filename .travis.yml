@@ -25,5 +25,5 @@ script:
   - swift --version
   - swift package reset
   - swift build
-  - swift test
+  - swift test -c release
   - ./ci.bash
