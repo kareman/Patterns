@@ -1,13 +1,13 @@
 matrix:
   include:
-    - name: "Linux Swift 5.0.1"
+    - name: "Linux Swift 5.1"
       os: linux
       language: generic
       dist: trusty
       sudo: required
       env:
-        - SWIFT_BRANCH=swift-5.0.1-release
-        - SWIFT_VERSION=swift-5.0.1-RELEASE
+        - SWIFT_BRANCH=swift-5.1-branch
+        - SWIFT_VERSION=swift-5.1-DEVELOPMENT-SNAPSHOT-2019-08-13-a
       install:
         - mkdir swift
         - curl https://swift.org/builds/$SWIFT_BRANCH/ubuntu1404/$SWIFT_VERSION/$SWIFT_VERSION-ubuntu14.04.tar.gz -s | tar -xz -C swift
@@ -25,5 +25,5 @@ script:
   - swift --version
   - swift package reset
   - swift build
-  - swift test -c release
+  - swift test -c release --enable-index-store --enable-test-discovery
   - ./ci.bash
