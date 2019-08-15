@@ -236,17 +236,3 @@ class PatternsTests: XCTestCase {
 		assertCaptures(rangeAndProperty, input: text, result: [["0000", "001F", "Common"], ["0020", "Common"]])
 	}
 }
-
-extension PatternsTests {
-	public static var allTests = [
-		("testPatternsSimple", testPatternsSimple),
-		("testPatternsWithSkip", testPatternsWithSkip),
-		("testPatternsWithRepeat", testPatternsWithRepeat),
-		("testPatternsWithBounds", testPatternsWithBounds),
-		("testRepeatOrThenEndOfLine", testRepeatOrThenEndOfLine),
-		("testPatternsWithSkipAndBounds", testPatternsWithSkipAndBounds),
-		("testSkipWithRepeatingPattern", testSkipWithRepeatingPattern),
-		("testMatchBeginningOfLines", testMatchBeginningOfLines),
-		("testMatchEndOfLines", testMatchEndOfLines),
-	]
-}

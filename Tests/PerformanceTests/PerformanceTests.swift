@@ -71,17 +71,6 @@ class PerformanceTests: XCTestCase {
 	}
 }
 
-extension PerformanceTests {
-	public static var allTests = [
-		("testWordBoundary", testWordBoundary),
-		("testLine", testLine),
-		("testNotNewLine", testNotNewLine),
-		("testLiteralSearch", testLiteralSearch),
-		("testNonExistentLiteralSearch", testNonExistentLiteralSearch),
-		("testOptionalStringFollowedByNonOptionalString", testOptionalStringFollowedByNonOptionalString),
-	]
-}
-
 func getLocalURL(for path: String, file: String = #file) -> URL {
 	return URL(fileURLWithPath: file)
 		.deletingLastPathComponent().appendingPathComponent(path)
