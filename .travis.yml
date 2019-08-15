@@ -6,18 +6,18 @@ matrix:
       dist: trusty
       sudo: required
       env:
-        - SWIFT_BRANCH=swift-5.1-branch
-        - SWIFT_VERSION=swift-5.1-DEVELOPMENT-SNAPSHOT-2019-08-13-a
+      - SWIFT_BRANCH=swift-5.1-branch
+      - SWIFT_VERSION=swift-5.1-DEVELOPMENT-SNAPSHOT-2019-08-13-a
       install:
-        - mkdir swift
-        - curl https://swift.org/builds/$SWIFT_BRANCH/ubuntu1404/$SWIFT_VERSION/$SWIFT_VERSION-ubuntu14.04.tar.gz -s | tar -xz -C swift
-        - export PATH="$(pwd)/swift/$SWIFT_VERSION-ubuntu14.04/usr/bin:$PATH"
-			script:
-				- swift --version
-				- swift package reset
-				- swift build
-				- swift test -c debug --enable-test-discovery
-				- ./ci.bash
+      - mkdir swift
+      - curl https://swift.org/builds/$SWIFT_BRANCH/ubuntu1404/$SWIFT_VERSION/$SWIFT_VERSION-ubuntu14.04.tar.gz -s | tar -xz -C swift
+      - export PATH="$(pwd)/swift/$SWIFT_VERSION-ubuntu14.04/usr/bin:$PATH"
+      script:
+      - swift --version
+      - swift package reset
+      - swift build
+      - swift test -c debug --enable-test-discovery
+      - ./ci.bash
 
     - name: "macOS Xcode 10.2"
       os: osx
@@ -26,9 +26,9 @@ matrix:
       sudo: required
       install:
         - gem install xcpretty-travis-formatter
-			script:
-				- swift --version
-				- swift package reset
-				- swift build
-				- swift test -c release
-				- ./ci.bash
+      script:
+        - swift --version
+        - swift package reset
+        - swift build
+        - swift test -c release
+        - ./ci.bash
