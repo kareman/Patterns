@@ -10,8 +10,6 @@ import Foundation
 import Patterns
 import XCTest
 
-let doublequote = Literal("\"")
-
 class TextPatternTests: XCTestCase {
 	func testLiteral() {
 		assertParseAll(Literal("a"), input: "abcd", result: "a", count: 1)
@@ -140,16 +138,4 @@ class TextPatternTests: XCTestCase {
 		assertParseMarkers(pattern, input: #"|I| |said| |"|hello|"|"#)
 		assertParseMarkers(pattern, input: "|this| |I| |-|3,875.08| |can't|,| |you| |letter|-|like|.| |And|?| |then|")
 	}
-}
-
-extension TextPatternTests {
-	public static var allTests = [
-		("testLiteral", testLiteral),
-		("testOneOf", testOneOf),
-		("testOptional", testOptional),
-		("testRepeat", testRepeat),
-		("testOrPattern", testOrPattern),
-		("testLineStart", testLineStart),
-		("testLineEnd", testLineEnd),
-	]
 }
