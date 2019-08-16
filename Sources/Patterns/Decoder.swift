@@ -49,7 +49,12 @@ extension Patterns.Match {
 		}
 
 		public func singleValueContainer() throws -> SingleValueDecodingContainer {
-			fatalError()
+			guard match.captures.count < 2 else {
+				throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: codingPath, debugDescription:
+					"Property '\(codingPath.map {"\($0.stringValue)"}.joined(separator: "."))' needs a single value, but multiple captures exists."))
+			}
+			let range = match.captures.first?.range ?? match.fullRange
+			return StringDecoder(string: String(string[range]), codingPath: codingPath)
 		}
 
 		struct UDC: UnkeyedDecodingContainer {
