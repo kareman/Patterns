@@ -254,13 +254,18 @@ extension Patterns {
 		public let fullRange: ParsedRange
 		public let captures: [(name: String?, range: ParsedRange)]
 
-		public var range: ParsedRange {
-			return captures.isEmpty ? fullRange : captures.first!.range.lowerBound ..< captures.last!.range.upperBound
+		init(fullRange: ParsedRange, captures: [(name: String?, range: ParsedRange)]) {
+			self.fullRange = fullRange
+			self.captures = captures
 		}
 
 		init(fullRange: ParsedRange, data: ParseData) {
-			self.fullRange = fullRange
-			self.captures = (data.captureBeginnings.map { ($0, $1 ..< $1) } + data.captures).sorted(by: { $0.range < $1.range })
+			let captures = (data.captureBeginnings.map { ($0, $1 ..< $1) } + data.captures).sorted(by: { $0.range < $1.range })
+			self.init(fullRange: fullRange, captures: captures)
+		}
+
+		public var range: ParsedRange {
+			return captures.isEmpty ? fullRange : captures.first!.range.lowerBound ..< captures.last!.range.upperBound
 		}
 
 		public func description(using text: String) -> String {
