@@ -1,6 +1,6 @@
 //
 //  WordBoundaries.swift
-//  TextPicker
+//  Patterns
 //
 //  Created by Kåre Morstøl on 28/06/2019.
 //

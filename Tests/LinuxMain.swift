@@ -1,7 +1,7 @@
 
 import XCTest
 
-@testable import TextPickerTests
+@testable import PatternsTests
 @testable import PerformanceTests
 
 let tests: [XCTestCaseEntry] = [

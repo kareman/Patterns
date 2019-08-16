@@ -1,6 +1,6 @@
 //
 //  StringInterpolation.swift
-//  TextPicker
+//  Patterns
 //
 //  Created by Kåre Morstøl on 11/08/2019.
 //

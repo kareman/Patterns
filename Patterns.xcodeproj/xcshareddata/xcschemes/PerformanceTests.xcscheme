@@ -10,42 +10,32 @@
             buildForTesting = "YES"
             buildForRunning = "YES"
             buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "TextPicker::TextPicker"
-               BuildableName = "TextPicker.framework"
-               BlueprintName = "TextPicker"
-               ReferencedContainer = "container:TextPicker.xcodeproj">
+               BlueprintIdentifier = "TextPicker::PerformanceTests"
+               BuildableName = "PerformanceTests.xctest"
+               BlueprintName = "PerformanceTests"
+               ReferencedContainer = "container:Patterns.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      codeCoverageEnabled = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "TextPicker::TextPicker"
-            BuildableName = "TextPicker.framework"
-            BlueprintName = "TextPicker"
-            ReferencedContainer = "container:TextPicker.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
+      shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "TextPicker::TextPickerTests"
-               BuildableName = "TextPickerTests.xctest"
-               BlueprintName = "TextPickerTests"
-               ReferencedContainer = "container:TextPicker.xcodeproj">
+               BlueprintIdentifier = "TextPicker::PerformanceTests"
+               BuildableName = "PerformanceTests.xctest"
+               BlueprintName = "PerformanceTests"
+               ReferencedContainer = "container:Patterns.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -63,26 +53,27 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "TextPicker::TextPicker"
-            BuildableName = "TextPicker.framework"
-            BlueprintName = "TextPicker"
-            ReferencedContainer = "container:TextPicker.xcodeproj">
+            BlueprintIdentifier = "TextPicker::PerformanceTests"
+            BuildableName = "PerformanceTests.xctest"
+            BlueprintName = "PerformanceTests"
+            ReferencedContainer = "container:Patterns.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
       shouldUseLaunchSchemeArgsEnv = "YES"
-      savedToolIdentifier = ""
+      savedToolIdentifier = "Time Profiler"
       useCustomWorkingDirectory = "NO"
+      ignoresPersistentStateOnLaunch = "YES"
       debugDocumentVersioning = "YES">
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "TextPicker::TextPicker"
-            BuildableName = "TextPicker.framework"
-            BlueprintName = "TextPicker"
-            ReferencedContainer = "container:TextPicker.xcodeproj">
+            BlueprintIdentifier = "TextPicker::PerformanceTests"
+            BuildableName = "PerformanceTests.xctest"
+            BlueprintName = "PerformanceTests"
+            ReferencedContainer = "container:Patterns.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

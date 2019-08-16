@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "TextPicker::TextPickerPackageTests::ProductTarget"
-               BuildableName = "TextPickerPackageTests"
-               BlueprintName = "TextPickerPackageTests"
-               ReferencedContainer = "container:TextPicker.xcodeproj">
+               BlueprintIdentifier = "TextPicker::unicode_properties"
+               BuildableName = "unicode_properties"
+               BlueprintName = "unicode_properties"
+               ReferencedContainer = "container:Patterns.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,20 +35,32 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
-      useCustomWorkingDirectory = "NO"
+      useCustomWorkingDirectory = "YES"
+      customWorkingDirectory = "$PROJECT_DIR/Sources/unicode_properties"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "TextPicker::TextPickerPackageTests::ProductTarget"
-            BuildableName = "TextPickerPackageTests"
-            BlueprintName = "TextPickerPackageTests"
-            ReferencedContainer = "container:TextPicker.xcodeproj">
+            BlueprintIdentifier = "TextPicker::unicode_properties"
+            BuildableName = "unicode_properties"
+            BlueprintName = "unicode_properties"
+            ReferencedContainer = "container:Patterns.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
+      <CommandLineArguments>
+         <CommandLineArgument
+            argument = "Scripts.txt"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "WordBreakProperty.txt"
+            isEnabled = "YES">
+         </CommandLineArgument>
+      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -56,15 +68,6 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "TextPicker::TextPickerPackageTests::ProductTarget"
-            BuildableName = "TextPickerPackageTests"
-            BlueprintName = "TextPickerPackageTests"
-            ReferencedContainer = "container:TextPicker.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

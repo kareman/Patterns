@@ -1,6 +1,6 @@
 //
 //  Collections.swift
-//  TextPicker
+//  Patterns
 //
 //  Created by Kåre Morstøl on 24/09/16.
 //

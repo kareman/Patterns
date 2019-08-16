@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "TextPicker::SwiftPMPackageDescription"
-               BuildableName = "TextPickerPackageDescription"
-               BlueprintName = "TextPickerPackageDescription"
-               ReferencedContainer = "container:TextPicker.xcodeproj">
+               BlueprintIdentifier = "TextPicker::TextPickerPackageTests::ProductTarget"
+               BuildableName = "PatternsPackageTests"
+               BlueprintName = "PatternsPackageTests"
+               ReferencedContainer = "container:Patterns.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -43,10 +43,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "TextPicker::SwiftPMPackageDescription"
-            BuildableName = "TextPickerPackageDescription"
-            BlueprintName = "TextPickerPackageDescription"
-            ReferencedContainer = "container:TextPicker.xcodeproj">
+            BlueprintIdentifier = "TextPicker::TextPickerPackageTests::ProductTarget"
+            BuildableName = "PatternsPackageTests"
+            BlueprintName = "PatternsPackageTests"
+            ReferencedContainer = "container:Patterns.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </LaunchAction>
@@ -59,10 +59,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "TextPicker::SwiftPMPackageDescription"
-            BuildableName = "TextPickerPackageDescription"
-            BlueprintName = "TextPickerPackageDescription"
-            ReferencedContainer = "container:TextPicker.xcodeproj">
+            BlueprintIdentifier = "TextPicker::TextPickerPackageTests::ProductTarget"
+            BuildableName = "PatternsPackageTests"
+            BlueprintName = "PatternsPackageTests"
+            ReferencedContainer = "container:Patterns.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

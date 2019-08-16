@@ -1,6 +1,6 @@
 //
 //  Group.swift
-//  TextPicker
+//  Patterns
 //
 //  Created by Kåre Morstøl on 23/04/2019.
 //

@@ -1,12 +1,12 @@
 //
 //  File.swift
-//  TextPicker
+//  Patterns
 //
 //  Created by Kåre Morstøl on 29.07.2018.
 //
 
 import Foundation
-import TextPicker
+import Patterns
 import XCTest
 
 extension Array where Element: Hashable {

@@ -3,11 +3,11 @@
    <a href="https://developer.apple.com/swift/">
       <img src="https://img.shields.io/badge/Swift-5.0-orange.svg?style=flat" alt="Swift 5.0">
    </a>
-   <a href="http://cocoapods.org/pods/TextPicker">
-      <img src="https://img.shields.io/cocoapods/v/TextPicker.svg?style=flat" alt="Version">
+   <a href="http://cocoapods.org/pods/Patterns">
+      <img src="https://img.shields.io/cocoapods/v/Patterns.svg?style=flat" alt="Version">
    </a>
-   <a href="http://cocoapods.org/pods/TextPicker">
-      <img src="https://img.shields.io/cocoapods/p/TextPicker.svg?style=flat" alt="Platform">
+   <a href="http://cocoapods.org/pods/Patterns">
+      <img src="https://img.shields.io/cocoapods/p/Patterns.svg?style=flat" alt="Platform">
    </a>
    <a href="https://github.com/Carthage/Carthage">
       <img src="https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat" alt="Carthage Compatible">
@@ -17,13 +17,13 @@
    </a>
 </p>
 
-# TextPicker
+# Patterns
 
-TextPicker is a Swift framework for searching for text patterns, similar in functionality to regex.
+Patterns is a Swift framework for searching for text patterns, similar in functionality to regex.
 
 Its primary goal is to be easier to read than regexes.
 
-There is also a [Mac application](https://nottoobadsoftware.com/textpicker/) of the same name, which can automatically generate TextPicker patterns.
+There is also a [Mac application](https://nottoobadsoftware.com/Patterns/) of the same name, which can automatically generate Patterns patterns.
 
 ## Features
 
@@ -38,23 +38,23 @@ There is also a [Mac application](https://nottoobadsoftware.com/textpicker/) of 
 
 ### CocoaPods
 
-TextPicker is available through [CocoaPods](http://cocoapods.org). To install it, simply add the following line to your Podfile:
+Patterns is available through [CocoaPods](http://cocoapods.org). To install it, simply add the following line to your Podfile:
 
 ```bash
-pod 'TextPicker'
+pod 'Patterns'
 ```
 
 ### Carthage
 
 [Carthage](https://github.com/Carthage/Carthage) is a decentralized dependency manager that builds your dependencies and provides you with binary frameworks.
 
-To integrate TextPicker into your Xcode project using Carthage, specify it in your `Cartfile`:
+To integrate Patterns into your Xcode project using Carthage, specify it in your `Cartfile`:
 
 ```ogdl
-github "NotTooBadSoftware/textpicker"
+github "NotTooBadSoftware/Patterns"
 ```
 
-Run `carthage update` to build the framework and drag the built `TextPicker.framework` into your Xcode project. 
+Run `carthage update` to build the framework and drag the built `Patterns.framework` into your Xcode project. 
 
 On your application targets’ “Build Phases” settings tab, click the “+” icon and choose “New Run Script Phase” and add the Framework path as mentioned in [Carthage Getting started Step 4, 5 and 6](https://github.com/Carthage/Carthage/blob/master/README.md#if-youre-building-for-ios-tvos-or-watchos)
 
@@ -64,13 +64,13 @@ To integrate using Apple's [Swift Package Manager](https://swift.org/package-man
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/NotTooBadSoftware/textpicker.git", from: "0.1.0")
+    .package(url: "https://github.com/NotTooBadSoftware/Patterns.git", from: "0.1.0")
 ]
 ```
 
 ### Manually
 
-If you prefer not to use any of the aforementioned dependency managers, you can integrate TextPicker into your project manually. Simply drag the `Sources` Folder into your Xcode project.
+If you prefer not to use any of the aforementioned dependency managers, you can integrate Patterns into your project manually. Simply drag the `Sources` Folder into your Xcode project.
 
 ## Usage
 
@@ -82,7 +82,7 @@ Contributions are very welcome 🙌
 ## License
 
 ```
-TextPicker
+Patterns
 Copyright (c) 2019 NotTooBad Software kare@nottoobadsoftware.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

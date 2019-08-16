@@ -1,10 +1,10 @@
 //
-//  TextPickerTests
+//  PatternsTests
 //
 //  Created by Kåre Morstøl on 18/05/2018.
 //
 
-import TextPicker
+import Patterns
 import XCTest
 
 class PatternsTests: XCTestCase {
