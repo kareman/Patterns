@@ -81,7 +81,10 @@ extension Patterns.Match {
 
 		struct KDC<Key: CodingKey>: KeyedDecodingContainerProtocol {
 			var codingPath: [CodingKey] = []
-			var allKeys: [Key] = []
+			var allKeys: [Key] {
+				matchDecoder.match.names.compactMap(Key.init(stringValue:))
+			}
+
 			let matchDecoder: MatchDecoder
 
 			func capture(for key: CodingKey) throws -> String {

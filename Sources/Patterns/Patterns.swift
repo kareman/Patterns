@@ -282,6 +282,8 @@ extension Patterns {
 		public subscript(multiple name: String) -> [ParsedRange] {
 			return captures.filter { $0.name == name }.map { $0.range }
 		}
+
+		public var names: Set<String> { Set(captures.compactMap { $0.name }) }
 	}
 
 	internal func match(in input: Input, at startindex: Input.Index) -> Match? {
