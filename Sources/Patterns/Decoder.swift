@@ -75,14 +75,14 @@ extension Patterns.Match {
 				fatalError()
 			}
 
-			mutating func decode<T>(_ t: T.Type) throws -> T where T: Decodable {
+			mutating func decode<T>(_ type: T.Type) throws -> T where T: Decodable {
 				defer { currentIndex += 1 }
-				return try t.init(from: StringDecoder(string: String(string[values[currentIndex]]), codingPath: codingPath))
+				return try type.init(from: StringDecoder(string: String(string[values[currentIndex]]), codingPath: codingPath))
 			}
 
-			mutating func decode<T>(_ t: T.Type) throws -> T where T: Decodable & LosslessStringConvertible {
-				guard let value = t.init(String(string[values[currentIndex]])) else {
-					throw DecodingError.typeMismatch(t, DecodingError.Context(codingPath: codingPath, debugDescription: ""))
+			mutating func decode<T>(_ type: T.Type) throws -> T where T: Decodable & LosslessStringConvertible {
+				guard let value = type.init(String(string[values[currentIndex]])) else {
+					throw DecodingError.typeMismatch(type, DecodingError.Context(codingPath: codingPath, debugDescription: ""))
 				}
 				currentIndex += 1
 				return value
@@ -112,13 +112,13 @@ extension Patterns.Match {
 				return contains(key)
 			}
 
-			func decode<T>(_ t: T.Type, forKey key: Key) throws -> T where T: Decodable {
-				return try t.init(from: MatchDecoder(match: matchDecoder.match, string: matchDecoder.string, codingPath: codingPath + [key]))
+			func decode<T>(_ type: T.Type, forKey key: Key) throws -> T where T: Decodable {
+				return try type.init(from: MatchDecoder(match: matchDecoder.match, string: matchDecoder.string, codingPath: codingPath + [key]))
 			}
 
-			func decode<T>(_ t: T.Type, forKey key: Key) throws -> T where T: Decodable & LosslessStringConvertible {
-				guard let value = t.init(try capture(for: key)) else {
-					throw DecodingError.typeMismatch(t, DecodingError.Context(codingPath: [key], debugDescription: ""))
+			func decode<T>(_ type: T.Type, forKey key: Key) throws -> T where T: Decodable & LosslessStringConvertible {
+				guard let value = type.init(try capture(for: key)) else {
+					throw DecodingError.typeMismatch(type, DecodingError.Context(codingPath: [key], debugDescription: ""))
 				}
 				return value
 			}
