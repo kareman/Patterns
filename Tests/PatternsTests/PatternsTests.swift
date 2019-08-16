@@ -255,11 +255,9 @@ class PatternsTests: XCTestCase {
 		}
 
 		let matches = rangeAndProperty.matches(in: text).array()
-		var decoder = matches.first!.decoder(with: text)
-		let property = try Property(from: decoder)
+		let property = try matches.first!.decode(Property.self, from: text)
 		XCTAssertEqual(property, Property(codePoint: [10, 32], property: "Common", notCaptured: nil))
 
-		decoder = matches.last!.decoder(with: text)
-		XCTAssertThrowsError(try Property(from: decoder))
+		XCTAssertThrowsError(try matches.last!.decode(Property.self, from: text))
 	}
 }

@@ -6,8 +6,8 @@
 //
 
 extension Patterns.Match {
-	public func decoder(with string: String) -> MatchDecoder {
-		return MatchDecoder(match: self, string: string)
+	public func decode<T>(_ type: T.Type, from string: String) throws -> T where T: Decodable {
+		return try type.init(from: MatchDecoder(match: self, string: string))
 	}
 
 	public struct MatchDecoder: Decoder {
