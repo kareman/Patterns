@@ -5,6 +5,16 @@
 //  Created by Kåre Morstøl on 14/08/2019.
 //
 
+extension Patterns {
+	public func decode<T>(_ type: [T].Type, from string: String) throws -> [T] where T: Decodable {
+		try matches(in: string).map { try $0.decode(type.Element.self, from: string) }
+	}
+
+	public func decodeFirst<T>(_ type: T.Type, from string: String) throws -> T? where T: Decodable {
+		try match(in: string[...], from: string.startIndex).map { try $0.decode(type.self, from: string) }
+	}
+}
+
 extension Patterns.Match {
 	public func decode<T>(_ type: T.Type, from string: String) throws -> T where T: Decodable {
 		return try type.init(from: MatchDecoder(match: self, string: string))
