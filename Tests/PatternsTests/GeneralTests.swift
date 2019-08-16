@@ -36,11 +36,3 @@ class CollectionsRangesOfTests: XCTestCase {
 		XCTAssertEqual(c.ranges(of: [1, 0, 1, 0]), [1 ..< 5, 3 ..< 7, 5 ..< 9])
 	}
 }
-
-extension CollectionsRangesOfTests {
-	public static var allTests = [
-		("testRangeOf1Pattern", testRangeOf1Pattern),
-		("testRangesOfRepeatedPattern", testRangesOfRepeatedPattern),
-		("testRangesOfOverlappingPattern", testRangesOfOverlappingPattern),
-	]
-}
