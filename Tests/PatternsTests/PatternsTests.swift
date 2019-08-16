@@ -235,4 +235,30 @@ class PatternsTests: XCTestCase {
 
 		assertCaptures(rangeAndProperty, input: text, result: [["0000", "001F", "Common"], ["0020", "Common"]])
 	}
+
+	func testMatchDecoding() throws {
+		let text = """
+		# ================================================
+
+		0010          ; Common # Cc  [32] <control-0000>..<control-001F>
+		002F          ; Common # Zs       SPACE
+		"""
+
+		let hexNumber = Capture(name: "codePoint", hexDigit.repeat(1...))
+		let rangeAndProperty: Patterns = "\n\(hexNumber, Skip()); \(Capture(name: "property", Skip())) "
+
+		struct Property: Decodable, Equatable {
+			let codePoint: Int
+			let property: String
+			let notCaptured: String?
+		}
+
+		let matches = rangeAndProperty.matches(in: text).array()
+		var decoder = matches.first!.decoder(with: text)
+		let property = try Property(from: decoder)
+		XCTAssertEqual(property, Property(codePoint: 10, property: "Common", notCaptured: nil))
+
+		decoder = matches.last!.decoder(with: text)
+		XCTAssertThrowsError(try Property(from: decoder))
+	}
 }
