@@ -7,9 +7,9 @@ assignees: ''
 
 ---
 
-## TextPicker Environment
+## Patterns Environment
 
-- TextPicker version:
+- Patterns version:
 - macOS version:
 - Xcode version:
 - Dependency manager (Carthage, CocoaPods, SPM, Manually):

@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an idea for TextPicker
+about: Suggest an idea for Patterns
 title: ''
 labels: ''
 assignees: ''
