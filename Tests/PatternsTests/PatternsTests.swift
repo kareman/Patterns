@@ -221,18 +221,47 @@ class PatternsTests: XCTestCase {
 		XCTAssertNil(matches.first![one: "not a name"])
 	}
 
-	func testStringInterpolation() throws {
-		let text = """
-		# ================================================
+	let text = """
+	# ================================================
 
-		0000..001F    ; Common # Cc  [32] <control-0000>..<control-001F>
-		0020          ; Common # Zs       SPACE
-		"""
+	0005..0010    ; Common # Cc  [32] <control-0000>..<control-001F>
+	002F          ; Common # Zs       SPACE
+	"""
 
-		let hexNumber = Capture(name: "hexNumber", hexDigit.repeat(1...))
+	let rangeAndProperty: Patterns = {
+		let hexNumber = Capture(name: "codePoint", hexDigit.repeat(1...))
 		let hexRange = Patterns("\(hexNumber)..\(hexNumber)") || hexNumber
-		let rangeAndProperty: Patterns = "\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) "
+		return Patterns("\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) ")
+	}()
 
-		assertCaptures(rangeAndProperty, input: text, result: [["0000", "001F", "Common"], ["0020", "Common"]])
+	func testStringInterpolation() throws {
+		assertCaptures(rangeAndProperty, input: text, result: [["0005", "0010", "Common"], ["002F", "Common"]])
+	}
+
+	func testMatchDecoding() throws {
+		struct Property: Decodable, Equatable {
+			let codePoint: [Int]
+			let property: String
+			let notCaptured: String?
+		}
+
+		let matches = rangeAndProperty.matches(in: text).array()
+		let property = try matches.first!.decode(Property.self, from: text)
+		XCTAssertEqual(property, Property(codePoint: [5, 10], property: "Common", notCaptured: nil))
+
+		XCTAssertThrowsError(try matches.last!.decode(Property.self, from: text))
+	}
+
+	func testPatternsDecoding() {
+		struct Property: Decodable, Equatable {
+			let codePoint: [String]
+			let property: String
+		}
+
+		XCTAssertEqual(try rangeAndProperty.decode([Property].self, from: text),
+		               [Property(codePoint: ["0005", "0010"], property: "Common"),
+		                Property(codePoint: ["002F"], property: "Common")])
+		XCTAssertEqual(try rangeAndProperty.decodeFirst(Property.self, from: text),
+		               Property(codePoint: ["0005", "0010"], property: "Common"))
 	}
 }
