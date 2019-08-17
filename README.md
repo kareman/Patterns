@@ -27,21 +27,31 @@ There is also a [Mac application](https://nottoobadsoftware.com/Patterns/) of th
 
 ## Features
 
-- [x] Easy to read
-- [x] Easy to write
+- [x] Easier to read
+- [x] Easier to write
 - [x] Cross-platform
 - [x] Negation 
 - [ ] Support human language features like word, sentence and paragraph.
-
+- [ ] Fast
 
 ## Installation
+
+### Swift Package Manager
+
+To integrate using Apple's [Swift Package Manager](https://swift.org/package-manager/), add the following as a dependency to your `Package.swift`:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/kareman/Patterns.git", from: "0.1.0")
+]
+```
 
 ### CocoaPods
 
 Patterns is available through [CocoaPods](http://cocoapods.org). To install it, simply add the following line to your Podfile:
 
 ```bash
-pod 'Patterns'
+pod 'Patterns', :git => 'https://github.com/kareman/Patterns.git'
 ```
 
 ### Carthage
@@ -51,22 +61,12 @@ pod 'Patterns'
 To integrate Patterns into your Xcode project using Carthage, specify it in your `Cartfile`:
 
 ```ogdl
-github "NotTooBadSoftware/Patterns"
+github "kareman/Patterns"
 ```
 
 Run `carthage update` to build the framework and drag the built `Patterns.framework` into your Xcode project. 
 
 On your application targets’ “Build Phases” settings tab, click the “+” icon and choose “New Run Script Phase” and add the Framework path as mentioned in [Carthage Getting started Step 4, 5 and 6](https://github.com/Carthage/Carthage/blob/master/README.md#if-youre-building-for-ios-tvos-or-watchos)
-
-### Swift Package Manager
-
-To integrate using Apple's [Swift Package Manager](https://swift.org/package-manager/), add the following as a dependency to your `Package.swift`:
-
-```swift
-dependencies: [
-    .package(url: "https://github.com/NotTooBadSoftware/Patterns.git", from: "0.1.0")
-]
-```
 
 ### Manually
 
