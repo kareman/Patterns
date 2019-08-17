@@ -51,7 +51,7 @@ extension Patterns.Match {
 		public func singleValueContainer() throws -> SingleValueDecodingContainer {
 			guard match.captures.count < 2 else {
 				throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: codingPath, debugDescription:
-					"Property '\(codingPath.map {"\($0.stringValue)"}.joined(separator: "."))' needs a single value, but multiple captures exists."))
+					"Property '\(codingPath.map { "\($0.stringValue)" }.joined(separator: "."))' needs a single value, but multiple captures exists."))
 			}
 			let range = match.captures.first?.range ?? match.fullRange
 			return StringDecoder(string: String(string[range]), codingPath: codingPath)
@@ -69,15 +69,15 @@ extension Patterns.Match {
 			mutating func decodeNil() throws -> Bool { false }
 
 			mutating func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type) throws -> KeyedDecodingContainer<NestedKey> where NestedKey: CodingKey {
-				fatalError()
+				fatalError("Not implemented yet. If you want to help with that, go to https://github.com/kareman/Patterns")
 			}
 
 			mutating func nestedUnkeyedContainer() throws -> UnkeyedDecodingContainer {
-				fatalError()
+				fatalError("Not implemented yet. If you want to help with that, go to https://github.com/kareman/Patterns")
 			}
 
 			mutating func superDecoder() throws -> Decoder {
-				fatalError()
+				fatalError("Not implemented yet. If you want to help with that, go to https://github.com/kareman/Patterns")
 			}
 
 			mutating func decode<T>(_ type: T.Type) throws -> T where T: Decodable {
@@ -129,19 +129,19 @@ extension Patterns.Match {
 			}
 
 			func nestedContainer<NestedKey>(keyedBy _: NestedKey.Type, forKey _: Key) throws -> KeyedDecodingContainer<NestedKey> where NestedKey: CodingKey {
-				fatalError()
+				fatalError("Not implemented yet. If you want to help with that, go to https://github.com/kareman/Patterns")
 			}
 
 			func nestedUnkeyedContainer(forKey _: Key) throws -> UnkeyedDecodingContainer {
-				fatalError()
+				fatalError("Not implemented yet. If you want to help with that, go to https://github.com/kareman/Patterns")
 			}
 
 			func superDecoder() throws -> Decoder {
-				fatalError()
+				fatalError("Not implemented yet. If you want to help with that, go to https://github.com/kareman/Patterns")
 			}
 
 			func superDecoder(forKey _: Key) throws -> Decoder {
-				fatalError()
+				fatalError("Not implemented yet. If you want to help with that, go to https://github.com/kareman/Patterns")
 			}
 		}
 	}
@@ -153,11 +153,11 @@ struct StringDecoder: Decoder, SingleValueDecodingContainer {
 	var userInfo: [CodingUserInfoKey: Any] = [:]
 
 	func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key: CodingKey {
-		fatalError()
+		fatalError("Not implemented yet. If you want to help with that, go to https://github.com/kareman/Patterns")
 	}
 
 	func unkeyedContainer() throws -> UnkeyedDecodingContainer {
-		fatalError()
+		fatalError("Not implemented yet. If you want to help with that, go to https://github.com/kareman/Patterns")
 	}
 
 	func singleValueContainer() throws -> SingleValueDecodingContainer {
@@ -167,7 +167,7 @@ struct StringDecoder: Decoder, SingleValueDecodingContainer {
 	func decodeNil() -> Bool { false }
 
 	func decode<T>(_ type: T.Type) throws -> T where T: Decodable {
-		fatalError()
+		fatalError("Not implemented yet. If you want to help with that, go to https://github.com/kareman/Patterns")
 	}
 
 	func decode<T>(_ type: T.Type) throws -> T where T: Decodable & LosslessStringConvertible {
