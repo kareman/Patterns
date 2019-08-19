@@ -37,6 +37,8 @@ class TextPatternTests: XCTestCase {
 		assertParseAll(digit.repeat(1...), input: "123abc09d4 8", count: 4)
 		assertParseAll(try Patterns(verify: digit.repeat(1 ... 2)), input: "123abc09d48", result: ["12", "3", "09", "48"])
 
+		assertParseAll(digit.repeat(2), input: "1234 5 6 78", result: ["12", "34", "78"])
+
 		XCTAssertEqual(digit.repeat(1...).description, "digit{1...}")
 	}
 

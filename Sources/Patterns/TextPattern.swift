@@ -211,6 +211,10 @@ extension TextPattern {
 	public func `repeat`<R: RangeExpression>(_ range: R) -> TextPattern where R.Bound == Int {
 		return RepeatPattern(repeatedPattern: self, range: range)
 	}
+
+	public func `repeat`(_ count:  Int) -> TextPattern {
+		return RepeatPattern(repeatedPattern: self, range: count...count)
+	}
 }
 
 public struct OrPattern: TextPattern {

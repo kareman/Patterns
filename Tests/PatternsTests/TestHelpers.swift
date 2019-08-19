@@ -18,11 +18,16 @@ extension Array where Element: Hashable {
 }
 
 extension XCTestCase {
-	func assertParseAll(_ pattern: Patterns, input: String, result: [String],
+	func assertParseAll(_ pattern: TextPattern, input: String, result: [String],
 	                    file: StaticString = #file, line: UInt = #line) {
-		let parsed = pattern.ranges(in: input).map { String(input[$0]) }
-		XCTAssertEqual(parsed, result, "\nThe differences are: \n" + parsed.difference(from: result).joined(separator: "\n"), file: file, line: line)
-		XCTAssertEqual(parsed, result, "\nThe differences are: \n" + parsed.difference(from: result).sorted().joined(separator: "\n"), file: file, line: line)
+		do {
+			let pattern = try (pattern as? Patterns) ?? Patterns(verify: pattern)
+			let parsed = pattern.ranges(in: input).map { String(input[$0]) }
+			XCTAssertEqual(parsed, result, "\nThe differences are: \n" + parsed.difference(from: result).joined(separator: "\n"), file: file, line: line)
+			XCTAssertEqual(parsed, result, "\nThe differences are: \n" + parsed.difference(from: result).sorted().joined(separator: "\n"), file: file, line: line)
+		} catch {
+			XCTFail("\(error)", file: file, line: line)
+		}
 	}
 
 	func assertParseAll(_ pattern: TextPattern, input: String, result: String? = nil, count: Int,
@@ -32,9 +37,10 @@ extension XCTestCase {
 			if let result = result {
 				assertParseAll(pattern, input: input, result: Array(repeating: result, count: count), file: file, line: line)
 				return
+			} else {
+				let parsed = pattern.ranges(in: input).array()
+				XCTAssertEqual(parsed.count, count, "Incorrect count.", file: file, line: line)
 			}
-			let parsed = pattern.ranges(in: input).array()
-			XCTAssertEqual(parsed.count, count, "Incorrect count.", file: file, line: line)
 		} catch {
 			XCTFail("\(error)", file: file, line: line)
 		}
