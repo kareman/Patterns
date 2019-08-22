@@ -145,6 +145,18 @@ class TextPatternTests: XCTestCase {
 			input: "\n", count: 2)
 	}
 
+	func testLine() throws {
+		let text = """
+		line 1
+
+		line 3
+		line 4
+
+		"""
+
+		assertParseAll(line, input: text, result: ["line 1", "", "line 3", "line 4", ""])
+	}
+
 	func testWordBoundary() throws {
 		let pattern = try Patterns(verify: Word.boundary)
 		assertParseMarkers(pattern, input: #"|I| |said| |"|hello|"|"#)

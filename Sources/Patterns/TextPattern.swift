@@ -261,15 +261,25 @@ public func || (p1: TextPattern, p2: TextPattern) -> OrPattern {
 	return OrPattern(pattern1: p1, pattern2: p2)
 }
 
-public struct Line: TextPatternWrapper {
+public struct Line: TextPattern {
 	public let description: String = "line"
 	public let regex: String = "^.*$"
+	public let length: Int? = nil
+
 	public let pattern: TextPattern
 	public let start = Start()
 	public let end = End()
 
 	init() {
 		pattern = Patterns(Start(), Skip(), End())
+	}
+
+	public func parse(_ input: Input, at index: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
+		pattern.parse(input, at: index, using: &data)
+	}
+
+	public func parse(_ input: Input, from startIndex: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
+		pattern.parse(input, from: startIndex, using: &data)
 	}
 
 	public struct Start: TextPattern {
@@ -279,9 +289,9 @@ public struct Line: TextPatternWrapper {
 		public var regex = "^"
 		public var length: Int? = 0
 
-		public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index, using _: inout Patterns.ParseData) -> ParsedRange? {
-			return startindex == input.startIndex || input[input.index(before: startindex)].isNewline
-				? startindex ..< startindex
+		public func parse(_ input: Input, at index: Input.Index, using _: inout Patterns.ParseData) -> ParsedRange? {
+			return index == input.startIndex || input[input.index(before: index)].isNewline
+				? index ..< index
 				: nil
 		}
 
@@ -300,9 +310,9 @@ public struct Line: TextPatternWrapper {
 		public let regex = "$"
 		public let length: Int? = 0
 
-		public func parse(_ input: TextPattern.Input, at startindex: TextPattern.Input.Index, using _: inout Patterns.ParseData) -> ParsedRange? {
-			if startindex == input.endIndex || input[startindex].isNewline {
-				return startindex ..< startindex
+		public func parse(_ input: Input, at index: Input.Index, using _: inout Patterns.ParseData) -> ParsedRange? {
+			if index == input.endIndex || input[index].isNewline {
+				return index ..< index
 			}
 			return nil
 		}
