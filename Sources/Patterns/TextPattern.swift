@@ -132,7 +132,7 @@ public struct OneOf: TextPattern {
 		self.init(description: description, regex: regex, set: Group(contains: contains))
 	}
 
-	public init<S: Collection>(contentsOf characters: S) where S.Element == Input.Element {
+	public init<S: Sequence>(_ characters: S) where S.Element == Input.Element {
 		set = Group(contentsOf: characters)
 		description = "\"\(set)\""
 		regex = "[\(NSRegularExpression.escapedPattern(for: characters.map(String.init(describing:)).joined()))]"
@@ -212,8 +212,8 @@ extension TextPattern {
 		return RepeatPattern(repeatedPattern: self, range: range)
 	}
 
-	public func `repeat`(_ count:  Int) -> TextPattern {
-		return RepeatPattern(repeatedPattern: self, range: count...count)
+	public func `repeat`(_ count: Int) -> TextPattern {
+		return RepeatPattern(repeatedPattern: self, range: count ... count)
 	}
 }
 

@@ -29,9 +29,8 @@ public struct Word {
 		public func parse(_ input: Input, at index: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
 			let success = index ..< index
 			guard index != input.endIndex,
-				let char1Before = input.validIndex(index, offsetBy: -1).map({ input[$0] }) else {
-				return success
-			}
+				let char1Before = input.validIndex(index, offsetBy: -1).map({ input[$0] })
+			else { return success }
 			let char1After = input[index]
 
 			func before(_ b1: Group<UInt32>) -> Bool {

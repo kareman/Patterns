@@ -105,7 +105,7 @@ class PatternsTests: XCTestCase {
 
 	func testRepeatOrThenEndOfLine() throws {
 		assertParseAll(
-			try Patterns(verify: (alphanumeric || OneOf(contentsOf: " ")).repeat(1...),
+			try Patterns(verify: (alphanumeric || OneOf(" ")).repeat(1...),
 			             line.end),
 			input: "FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S",
 			result: ["FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S"])

@@ -23,8 +23,8 @@ extension XCTestCase {
 		do {
 			let pattern = try (pattern as? Patterns) ?? Patterns(verify: pattern)
 			let parsed = pattern.ranges(in: input).map { String(input[$0]) }
-			XCTAssertEqual(parsed, result, "\nThe differences are: \n" + parsed.difference(from: result).joined(separator: "\n"), file: file, line: line)
-			XCTAssertEqual(parsed, result, "\nThe differences are: \n" + parsed.difference(from: result).sorted().joined(separator: "\n"), file: file, line: line)
+			XCTAssertEqual(parsed, result, "\nThe differences are: \n"
+				+ parsed.difference(from: result).sorted().joined(separator: "\n"), file: file, line: line)
 		} catch {
 			XCTFail("\(error)", file: file, line: line)
 		}

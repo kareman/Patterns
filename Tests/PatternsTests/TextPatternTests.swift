@@ -18,6 +18,14 @@ class TextPatternTests: XCTestCase {
 	}
 
 	func testOneOf() {
+		let vowels = OneOf("aeiouAEIOU")
+		assertParseAll(vowels, input: "I am, you are", result: ["I", "a", "o", "u", "a", "e"])
+
+		let lowercaseASCII = OneOf(description: "lowercaseASCII") { character in
+			character.isASCII && character.isLowercase
+		}
+		assertParseAll(lowercaseASCII, input: "aTæøåk☀️", result: ["a", "k"])
+
 		assertParseAll(digit, input: "ab12c3,d4", count: 4)
 	}
 
@@ -35,6 +43,8 @@ class TextPatternTests: XCTestCase {
 
 		assertParseAll(digit.repeat(1...), input: "a123abc123d", result: "123", count: 2)
 		assertParseAll(digit.repeat(1...), input: "123abc09d4 8", count: 4)
+		assertParseAll(Patterns(digit.repeat(...2), letter), input: "123abc09d4 8", result: ["23a", "b", "c", "09d"])
+
 		assertParseAll(try Patterns(verify: digit.repeat(1 ... 2)), input: "123abc09d48", result: ["12", "3", "09", "48"])
 
 		assertParseAll(digit.repeat(2), input: "1234 5 6 78", result: ["12", "34", "78"])
