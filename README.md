@@ -21,9 +21,7 @@
 
 Patterns is a Swift framework for searching for text patterns, similar in functionality to regex.
 
-Its primary goal is to be easier to read than regexes.
-
-There is also a [Mac application](https://nottoobadsoftware.com/Patterns/) of the same name, which can automatically generate Patterns patterns.
+Its primary goal is to be easier to read than regexes, and fully Unicode compliant.
 
 ## Features
 
@@ -31,8 +29,46 @@ There is also a [Mac application](https://nottoobadsoftware.com/Patterns/) of th
 - [x] Easier to write
 - [x] Cross-platform
 - [x] Negation 
-- [ ] Support human language features like word, sentence and paragraph.
-- [ ] Fast
+
+## Usage
+
+### Defining patterns
+
+`Literal("some text")` matches that exact text.
+
+`OneOf("aeiouAEIOU")` matches any single character in that string.
+
+```swift
+OneOf(description: "lowercaseASCII") { character in
+	character.isASCII && character.isLowercase
+}
+```
+
+takes a closure `@escaping (Character) -> Bool)` and matches any character for which the closure returns `true`. The description parameter is only used when creating a textual representation of the pattern.
+
+`digit.repeat(2)` matches 2 of that pattern in a row. `digit.repeat(0...1)` matches 0 or 1 (so it is optional), `digit.repeat(...2)` matches 0, 1 or 2 and `digit.repeat(2...)` matches 2 or more. These always match as many characters as possible, so a pattern like `digit.repeat(1...) digit` will never match anything because the repeated digit pattern will always take all the digits, leaving none left for the single digit pattern.
+
+`a || b` first tries the pattern on the left. If that fails it tries the pattern on the right.
+
+`Patterns(Literal("name: '"), letter.repeat(1...), Literal("'"))` matches a series of patterns. If that specific combination of patterns is invalid it will crash. You can use `try Patterns(verify: Literal("name: '"), letter.repeat(1...), Literal("'"))` to throw an error instead.
+
+If your pattern contains several literals it might be easier to read using string interpolation: `Patterns("name: '\(letter.repeat(1...))'")`. This means the same as the previous example.
+
+`Skip()` means to skip all characters until the rest of the pattern is found. So `Patterns("name: '\(Skip())'")` is a better version of the examples above if you also want to include names with non-letter characters.
+
+### Predefined patterns
+
+There are predefined patterns for all the boolean `is...` properties of Swift's `Character`: `letter`, `lowercase`, `uppercase`, `punctuation`, `whitespace`, `newline`, `hexDigit`, `digit`, `ascii`, `symbol`, `mathSymbol`, `currencySymbol`.
+
+They all have the same name as the last part of the property, except for `wholeNumber`, which has been renamed to `digit` because `wholeNumber` sounds more like an entire number than a single digit.
+
+There is also `alphanumeric`, which is a `letter` or a `digit`.
+
+`line.start` matches at the beginning of the text, and after any newline characters. `line.end` matches at the end of the text, and right before any newline characters. They both have a length of 0, which means the next pattern will start at the same position in the text.
+
+`line` matches a single line, not including the newline characters.
+
+### Extracting data
 
 ## Installation
 
@@ -42,15 +78,15 @@ To integrate using Apple's [Swift Package Manager](https://swift.org/package-man
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/kareman/Patterns.git", from: "0.1.0")
+    .package(url: "https://github.com/kareman/Patterns.git", .branch("master")),
 ]
 ```
 
 ### CocoaPods
 
-Patterns is available through [CocoaPods](http://cocoapods.org). To install it, simply add the following line to your Podfile:
+Patterns is available through [CocoaPods](http://cocoapods.org). To install it, add the following line to your Podfile:
 
-```bash
+```ruby
 pod 'Patterns', :git => 'https://github.com/kareman/Patterns.git'
 ```
 
@@ -70,14 +106,13 @@ On your application targets’ “Build Phases” settings tab, click the “+�
 
 ### Manually
 
-If you prefer not to use any of the aforementioned dependency managers, you can integrate Patterns into your project manually. Simply drag the `Sources` Folder into your Xcode project.
+If you prefer not to use any of the aforementioned dependency managers, you can integrate Patterns into your project manually. Just drag the `Sources` folder into your Xcode project.
 
-## Usage
-
-ℹ️ Describe the usage of your Kit
 
 ## Contributing
-Contributions are very welcome 🙌
+Contributions are very welcome 🙌 
+
+Especially suggestions are for a better name. 
 
 ## License
 
