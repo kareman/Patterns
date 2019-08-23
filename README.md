@@ -74,7 +74,7 @@ All `Patterns` have a `.matches(in: String)` method which returns a lazy sequenc
 Patterns(Line()).matches(in: text).map { text[$0.fullRange] }
 ```
 
-Often we are only interested in parts of a pattern. You can use the `Capture` pattern to assign a name to a part of the pattern, and retrieve that range later in the match:
+Often we are only interested in parts of a pattern. You can use the `Capture` pattern to assign a name to those parts:
 
 ```swift
 let text = "This is a point: (43,7), so is (0,5). But my final point is (3,-1)."
@@ -97,7 +97,7 @@ let pointsAsSubstrings = point.matches(in: text).map { match in
 }
 ```
 
-You can also use `match[multiple: name]` if captures with that name may be matched multiple times.
+You can also use `match[multiple: name]` if captures with that name may be matched multiple times. `match[one: name]` only returns the first capture of that name.
 
 
 ## Installation
@@ -114,7 +114,7 @@ dependencies: [
 
 ### [CocoaPods](http://cocoapods.org)
 
-Add this to your Podfile:
+Add to your Podfile:
 
 ```ruby
 pod 'Patterns', :git => 'https://github.com/kareman/Patterns.git'
@@ -122,7 +122,7 @@ pod 'Patterns', :git => 'https://github.com/kareman/Patterns.git'
 
 ### [Carthage](https://github.com/Carthage/Carthage)
 
-To integrate Patterns into your Xcode project using Carthage, specify it in your `Cartfile`:
+Add to your `Cartfile`:
 
 ```ogdl
 github "kareman/Patterns"
@@ -138,11 +138,13 @@ If you prefer not to use any dependency managers, you can integrate Patterns int
 
 
 ## Contributing
-Contributions are most welcome 🙌 
+Contributions are most welcome 🙌.
 
 Especially suggestions for a better name. 
 
 ## License
+
+MIT
 
 ```
 Patterns
