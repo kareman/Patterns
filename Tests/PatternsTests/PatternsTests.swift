@@ -168,6 +168,19 @@ class PatternsTests: XCTestCase {
 			input: text, result: ["(a)", "(aaaaa)", "(aaabaa)", "()"])
 	}
 
+	func testMatchFullRange() throws {
+		let text = """
+		line 1
+
+		line 3
+		line 4
+
+		"""
+
+		XCTAssertEqual(Patterns(Line()).matches(in: text).map { text[$0.fullRange] },
+		               ["line 1", "", "line 3", "line 4", ""])
+	}
+
 	func testMatchBeginningOfLines() throws {
 		let text = """
 		airs
@@ -190,13 +203,16 @@ class PatternsTests: XCTestCase {
 		dilled10 io
 
 		"""
+
 		var pattern = try Patterns(verify: Line.end, Capture())
-		var m = Array(pattern.matches(in: text))
-		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].range.lowerBound] }, Array(repeating: Character("\n"), count: 4))
+		var m = pattern.matches(in: text)
+		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].range.lowerBound] },
+		               Array(repeating: Character("\n"), count: 4))
 
 		pattern = try Patterns(verify: Capture(), Line.end)
-		m = Array(pattern.matches(in: text))
-		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].range.lowerBound] }, Array(repeating: Character("\n"), count: 4))
+		m = pattern.matches(in: text)
+		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].range.lowerBound] },
+		               Array(repeating: Character("\n"), count: 4))
 	}
 
 	func testMultipleCaptures() throws {
@@ -263,5 +279,25 @@ class PatternsTests: XCTestCase {
 		                Property(codePoint: ["002F"], property: "Common")])
 		XCTAssertEqual(try rangeAndProperty.decodeFirst(Property.self, from: text),
 		               Property(codePoint: ["0005", "0010"], property: "Common"))
+	}
+
+	func testReadmeExample() throws {
+		let text = "This is a point: (43,7), so is (0,5). But my final point is (3,-1)."
+
+		let number = Patterns(OneOf("+-").repeat(0 ... 1), digit.repeat(1...))
+		let point: Patterns = "(\(Capture(name: "x", number)),\(Capture(name: "y", number)))"
+
+		let pointsAsSubstrings = point.matches(in: text).map { match in
+			(text[match[one: "x"]!], text[match[one: "y"]!])
+		}
+
+		struct Point: Codable, Equatable {
+			let x, y: Int
+		}
+
+		let points = try point.decode([Point].self, from: text)
+
+		assertCaptures(point, input: text, result: [["43", "7"], ["0", "5"], ["3", "-1"]])
+		_ = (pointsAsSubstrings, points)
 	}
 }
