@@ -33,7 +33,7 @@ class PerformanceTests: XCTestCase {
 	}
 
 	func testLine() throws {
-		let pattern = try Patterns(verify: [line.start, Capture(Skip()), line.end])
+		let pattern = try Patterns(verify: [Line.start, Capture(Skip()), Line.end])
 		try speedTest(pattern, textFraction: 32, hits: 494)
 	}
 
@@ -65,7 +65,7 @@ class PerformanceTests: XCTestCase {
 	}
 
 	func testSkipping1() throws {
-		// [ word.boundary ] * " " * ":" * " " * " " * " " * "{" * line.end
+		// [ word.boundary ] * " " * ":" * " " * " " * " " * "{" * Line.end
 		let pattern = try Patterns(verify: Skip(), Literal("."), Skip(), Literal(" "), Skip(), Literal(" "))
 		try speedTest(pattern, textFraction: 50, hits: 569)
 	}

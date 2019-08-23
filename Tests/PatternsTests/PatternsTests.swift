@@ -106,7 +106,7 @@ class PatternsTests: XCTestCase {
 	func testRepeatOrThenEndOfLine() throws {
 		assertParseAll(
 			try Patterns(verify: (alphanumeric || OneOf(" ")).repeat(1...),
-			             line.end),
+			             Line.end),
 			input: "FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S",
 			result: ["FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S"])
 	}
@@ -175,7 +175,7 @@ class PatternsTests: XCTestCase {
 		cera user
 		dilled10 io
 		"""
-		let pattern = try Patterns(verify: line.start, Capture())
+		let pattern = try Patterns(verify: Line.start, Capture())
 		let m = Array(pattern.matches(in: text))
 
 		XCTAssertEqual(m.map { text[$0.captures[0].range.lowerBound] }, ["a", "b", "c", "d"].map(Character.init))
@@ -190,11 +190,11 @@ class PatternsTests: XCTestCase {
 		dilled10 io
 
 		"""
-		var pattern = try Patterns(verify: line.end, Capture())
+		var pattern = try Patterns(verify: Line.end, Capture())
 		var m = Array(pattern.matches(in: text))
 		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].range.lowerBound] }, Array(repeating: Character("\n"), count: 4))
 
-		pattern = try Patterns(verify: Capture(), line.end)
+		pattern = try Patterns(verify: Capture(), Line.end)
 		m = Array(pattern.matches(in: text))
 		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].range.lowerBound] }, Array(repeating: Character("\n"), count: 4))
 	}
@@ -210,7 +210,7 @@ class PatternsTests: XCTestCase {
 
 		let twoFirstWords = [["There", "was"], ["Whose", "speed"], ["She", "set"], ["In", "a"], ["And", "returned"]]
 		let pattern = Patterns(
-			line.start, Capture(name: "word", letter.repeat(1...)),
+			Line.start, Capture(name: "word", letter.repeat(1...)),
 			Literal(" "), Capture(name: "word", letter.repeat(1...)))
 
 		assertCaptures(pattern, input: text, result: twoFirstWords)

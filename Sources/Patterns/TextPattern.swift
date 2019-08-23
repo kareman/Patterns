@@ -267,10 +267,10 @@ public struct Line: TextPattern {
 	public let length: Int? = nil
 
 	public let pattern: TextPattern
-	public let start = Start()
-	public let end = End()
+	public static let start = Start()
+	public static let end = End()
 
-	init() {
+	public init() {
 		pattern = Patterns(Start(), Skip(), End())
 	}
 
@@ -381,5 +381,3 @@ public let mathSymbol = OneOf(description: "mathSymbol", regex: #"\p{Sm}"#,
 
 public let currencySymbol = OneOf(description: "currencySymbol", regex: #"\p{Sc}"#,
                                   contains: (\Character.isCurrencySymbol).toFunc)
-
-public let line = Line()
