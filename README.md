@@ -1,25 +1,19 @@
 
 <p align="center">
    <a href="https://developer.apple.com/swift/">
-      <img src="https://img.shields.io/badge/Swift-5.0-orange.svg?style=flat" alt="Swift 5.0">
-   </a>
-   <a href="http://cocoapods.org/pods/Patterns">
-      <img src="https://img.shields.io/cocoapods/v/Patterns.svg?style=flat" alt="Version">
-   </a>
-   <a href="http://cocoapods.org/pods/Patterns">
-      <img src="https://img.shields.io/cocoapods/p/Patterns.svg?style=flat" alt="Platform">
-   </a>
-   <a href="https://github.com/Carthage/Carthage">
-      <img src="https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat" alt="Carthage Compatible">
+      <img src="https://img.shields.io/badge/Swift-5.1-orange.svg?style=flat" alt="Swift 5.1">
    </a>
    <a href="https://github.com/apple/swift-package-manager">
       <img src="https://img.shields.io/badge/Swift%20Package%20Manager-compatible-brightgreen.svg" alt="SPM">
+   </a>
+   <a href="https://github.com/Carthage/Carthage">
+      <img src="https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat" alt="Carthage Compatible">
    </a>
 </p>
 
 # Patterns
 
-Patterns is a Swift framework for searching for text patterns, similar in functionality to regex.
+Patterns is a Swift framework for finding text patterns, similar in functionality to regex.
 
 Its primary goal is to be easier to read than regexes, and fully Unicode compliant.
 
@@ -52,29 +46,65 @@ takes a closure `@escaping (Character) -> Bool)` and matches any character for w
 
 `Patterns(Literal("name: '"), letter.repeat(1...), Literal("'"))` matches a series of patterns. If that specific combination of patterns is invalid it will crash. You can use `try Patterns(verify: Literal("name: '"), letter.repeat(1...), Literal("'"))` to throw an error instead.
 
-If your pattern contains several literals it might be easier to read using string interpolation: `Patterns("name: '\(letter.repeat(1...))'")`. This means the same as the previous example.
+If your pattern contains several literals it might be easier to read using string interpolation: `Patterns("name: '\(letter.repeat(1...))'")`. This is the same as the previous example.
 
-`Skip()` means to skip all characters until the rest of the pattern is found. So `Patterns("name: '\(Skip())'")` is a better version of the examples above if you also want to include names with non-letter characters.
+`Skip()` matches 0 or more characters until a match for the rest of the pattern up to the next `Skip`. So `Patterns("name: '\(Skip())'")` is a better version of the examples above if you also want to include names with non-letter characters.
+
 
 ### Predefined patterns
 
 There are predefined patterns for all the boolean `is...` properties of Swift's `Character`: `letter`, `lowercase`, `uppercase`, `punctuation`, `whitespace`, `newline`, `hexDigit`, `digit`, `ascii`, `symbol`, `mathSymbol`, `currencySymbol`.
 
-They all have the same name as the last part of the property, except for `wholeNumber`, which has been renamed to `digit` because `wholeNumber` sounds more like an entire number than a single digit.
+They all have the same name as the last part of the property, except for `wholeNumber`, which is renamed to `digit` because `wholeNumber` sounds more like an entire number than a single digit.
 
 There is also `alphanumeric`, which is a `letter` or a `digit`.
 
-`line.start` matches at the beginning of the text, and after any newline characters. `line.end` matches at the end of the text, and right before any newline characters. They both have a length of 0, which means the next pattern will start at the same position in the text.
+`Line.start` matches at the beginning of the text, and after any newline characters. `Line.end` matches at the end of the text, and right before any newline characters. They both have a length of 0, which means the next pattern will start at the same position in the text.
 
-`line` matches a single line, not including the newline characters.
+`Line()` matches a single line, not including the newline characters.
+
+`Word.boundary` matches the position right before or right after a word. Like `Line.start` and `Line.end` it also has a length of 0.
+
 
 ### Extracting data
 
+All `Patterns` have a `.matches(in: String)` method which returns a lazy sequence of `Match` instances. Use their `.fullRange` property to access the full range matched by the pattern:
+
+```swift
+Patterns(Line()).matches(in: text).map { text[$0.fullRange] }
+```
+
+Often we are only interested in parts of a pattern. You can use the `Capture` pattern to assign a name to a part of the pattern, and retrieve that range later in the match:
+
+```swift
+let text = "This is a point: (43,7), so is (0,5). But my final point is (3,-1)."
+
+let number = Patterns(OneOf("+-").repeat(0 ... 1), digit.repeat(1...))
+let point = Patterns("(\(Capture(name: "x", number)),\(Capture(name: "y", number)))")
+
+struct Point: Codable, Equatable {
+	let x, y: Int
+}
+
+let points = try point.decode([Point].self, from: text)
+```
+
+If you don't want to create new types, you can use subscripting:
+
+```swift
+let pointsAsSubstrings = point.matches(in: text).map { match in
+	(text[match[one: "x"]!], text[match[one: "y"]!])
+}
+```
+
+You can also use `match[multiple: name]` if captures with that name may be matched multiple times.
+
+
 ## Installation
 
-### Swift Package Manager
+### [Swift Package Manager](https://swift.org/package-manager/)
 
-To integrate using Apple's [Swift Package Manager](https://swift.org/package-manager/), add the following as a dependency to your `Package.swift`:
+Add this to your `Package.swift` file:
 
 ```swift
 dependencies: [
@@ -82,17 +112,15 @@ dependencies: [
 ]
 ```
 
-### CocoaPods
+### [CocoaPods](http://cocoapods.org)
 
-Patterns is available through [CocoaPods](http://cocoapods.org). To install it, add the following line to your Podfile:
+Add this to your Podfile:
 
 ```ruby
 pod 'Patterns', :git => 'https://github.com/kareman/Patterns.git'
 ```
 
-### Carthage
-
-[Carthage](https://github.com/Carthage/Carthage) is a decentralized dependency manager that builds your dependencies and provides you with binary frameworks.
+### [Carthage](https://github.com/Carthage/Carthage)
 
 To integrate Patterns into your Xcode project using Carthage, specify it in your `Cartfile`:
 
@@ -102,17 +130,17 @@ github "kareman/Patterns"
 
 Run `carthage update` to build the framework and drag the built `Patterns.framework` into your Xcode project. 
 
-On your application targets’ “Build Phases” settings tab, click the “+” icon and choose “New Run Script Phase” and add the Framework path as mentioned in [Carthage Getting started Step 4, 5 and 6](https://github.com/Carthage/Carthage/blob/master/README.md#if-youre-building-for-ios-tvos-or-watchos)
+In your application targets’ “Build Phases” settings tab, click the “+” icon and choose “New Run Script Phase” and add the Framework path as mentioned in [Carthage Getting started Step 4, 5 and 6](https://github.com/Carthage/Carthage/blob/master/README.md#if-youre-building-for-ios-tvos-or-watchos)
 
 ### Manually
 
-If you prefer not to use any of the aforementioned dependency managers, you can integrate Patterns into your project manually. Just drag the `Sources` folder into your Xcode project.
+If you prefer not to use any dependency managers, you can integrate Patterns into your project manually. Just drag the `Sources` folder into your Xcode project.
 
 
 ## Contributing
-Contributions are very welcome 🙌 
+Contributions are most welcome 🙌 
 
-Especially suggestions are for a better name. 
+Especially suggestions for a better name. 
 
 ## License
 
