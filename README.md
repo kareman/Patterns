@@ -24,6 +24,10 @@ Its primary goal is to be easier to read than regexes, and fully Unicode complia
 - [x] Cross-platform
 - [x] Negation 
 
+## Examples
+
+- [Parsing Unicode property data files](https://nottoobadsoftware.com/blog/textpicker/patterns/parsing_unicode_property_data_files/)
+
 ## Usage
 
 ### Defining patterns
