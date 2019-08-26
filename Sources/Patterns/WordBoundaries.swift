@@ -85,10 +85,11 @@ extension Group where Element == UInt32 {
 		// The collection is sorted. Exit as soon as possible.
 		self.contains = { element in
 			for range in c {
-				if range.contains(element) {
-					return true
-				} else if element < range.upperBound {
+				if element < range.lowerBound {
 					return false
+				}
+				if element <= range.upperBound {
+					return true
 				}
 			}
 			return false
