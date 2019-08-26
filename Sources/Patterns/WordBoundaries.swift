@@ -28,45 +28,47 @@ public struct Word {
 
 		public func parse(_ input: Input, at index: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
 			let success = index ..< index
-			guard index != input.endIndex,
-				let char1Before = input.validIndex(index, offsetBy: -1).map({ input[$0] })
-			else { return success }
+			guard index != input.endIndex, index != input.startIndex else { return success }
+
 			let char1After = input[index]
+			let char1Before = input[input.index(before: index)]
+
+			if char1Before.isNewline || char1After.isNewline { return success }
 
 			func before(_ b1: Group<UInt32>) -> Bool {
 				return b1.contains(char1Before)
 			}
+
 			func after(_ a1: Group<UInt32>) -> Bool {
 				return a1.contains(char1After)
 			}
 
+			if before(wSegSpace), after(wSegSpace) { return nil }
+			if before(aHLetter), after(aHLetter) { return nil }
+
 			let char2After = input.validIndex(index, offsetBy: +1).map { input[$0] }
-			func after(_ a1: Group<UInt32>, _ a2: Group<UInt32>) -> Bool {
+			func after2(_ a1: Group<UInt32>, _ a2: Group<UInt32>) -> Bool {
 				return a1.contains(char1After) && char2After.map(a2.contains) ?? false
 			}
 
 			let char2Before = input.validIndex(index, offsetBy: -2).map { input[$0] }
-			func before(_ b2: Group<UInt32>, _ b1: Group<UInt32>) -> Bool {
+			func before2(_ b2: Group<UInt32>, _ b1: Group<UInt32>) -> Bool {
 				return b1.contains(char1Before) && (char2Before.map(b2.contains) ?? false)
 			}
 
-			if char1Before.isNewline || char1After.isNewline { return success }
-			if before(wSegSpace), after(wSegSpace) { return nil }
-			if before(aHLetter), after(aHLetter) { return nil }
-
-			if before(aHLetter), after(midLetter || midNumLetQ, aHLetter) { return nil }
-			if before(aHLetter, midLetter || midNumLetQ), after(aHLetter) { return nil }
+			if before(aHLetter), after2(midLetter || midNumLetQ, aHLetter) { return nil }
+			if before2(aHLetter, midLetter || midNumLetQ), after(aHLetter) { return nil }
 
 			if before(hebrewLetter), after(singleQuote) { return nil }
-			if before(hebrewLetter), after(doubleQuote, hebrewLetter) { return nil }
-			if before(hebrewLetter, doubleQuote), after(hebrewLetter) { return nil }
+			if before(hebrewLetter), after2(doubleQuote, hebrewLetter) { return nil }
+			if before2(hebrewLetter, doubleQuote), after(hebrewLetter) { return nil }
 
 			if before(numeric), after(numeric) { return nil }
 			if before(aHLetter), after(numeric) { return nil }
 			if before(numeric), after(aHLetter) { return nil }
 
-			if before(numeric, midNum || midNumLetQ), after(numeric) { return nil }
-			if before(numeric), after(midNum || midNumLetQ, numeric) { return nil }
+			if before2(numeric, midNum || midNumLetQ), after(numeric) { return nil }
+			if before(numeric), after2(midNum || midNumLetQ, numeric) { return nil }
 
 			if before(katakana), after(katakana) { return nil }
 
