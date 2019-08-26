@@ -24,7 +24,7 @@ public struct Word {
 	public struct Boundary: TextPattern {
 		public let length: Int? = 0
 		public let regex: String = #"\b"#
-		public let description: String = "word.boundary"
+		public let description: String = "Word.boundary"
 
 		public func parse(_ input: Input, at index: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
 			let success = index ..< index
