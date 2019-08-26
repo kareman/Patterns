@@ -82,7 +82,17 @@ public struct Word {
 
 extension Group where Element == UInt32 {
 	init<C: Collection>(_ c: C) where C.Element == ClosedRange<Element> {
-		self.contains = { element in c.contains(where: { $0.contains(element) }) }
+		// The collection is sorted. Exit as soon as possible.
+		self.contains = { element in
+			for range in c {
+				if range.contains(element) {
+					return true
+				} else if element < range.upperBound {
+					return false
+				}
+			}
+			return false
+		}
 	}
 
 	fileprivate init(_ property: UnicodeProperty) {
