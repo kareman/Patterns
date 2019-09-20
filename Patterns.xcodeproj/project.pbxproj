@@ -81,6 +81,7 @@
 /* Begin PBXFileReference section */
 		BA3E6E5622C95FFC00A8DEF5 /* Long.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Long.txt; sourceTree = "<group>"; };
 		BAED89582304A36E0068D0B3 /* Decoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Decoder.swift; sourceTree = "<group>"; };
+		BAF481E523353A3700E483D6 /* Multi-language-short.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Multi-language-short.txt"; sourceTree = "<group>"; };
 		BAF9AB4023006E7D0040D0AB /* StringInterpolation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringInterpolation.swift; sourceTree = "<group>"; };
 		OBJ_10 /* Group.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
 		OBJ_11 /* Patterns.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Patterns.swift; sourceTree = "<group>"; };
@@ -164,6 +165,7 @@
 		OBJ_19 /* PerformanceTests */ = {
 			isa = PBXGroup;
 			children = (
+				BAF481E523353A3700E483D6 /* Multi-language-short.txt */,
 				OBJ_20 /* PerformanceTests.swift */,
 				BA3E6E5622C95FFC00A8DEF5 /* Long.txt */,
 			);
