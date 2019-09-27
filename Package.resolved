@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Moderator",
+        "repositoryURL": "https://github.com/kareman/Moderator",
+        "state": {
+          "branch": null,
+          "revision": "a4b8f05bcff3c283dd32e4ec6bb3da3b16a29045",
+          "version": "0.5.1"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

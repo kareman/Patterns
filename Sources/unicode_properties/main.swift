@@ -1,6 +1,7 @@
 /// Converts Unicode property data files to Swift code.
 
 import Foundation
+import Moderator
 import Patterns
 
 func unicodeProperty(fromDataFile text: String) -> [(range: ClosedRange<UInt32>, property: Substring)] {
@@ -45,19 +46,46 @@ func caseName(_ string: Substring) -> String {
 	return firstLetter + caseName
 }
 
-do {
-	guard CommandLine.arguments.count == 2 else {
-		print("""
-
-		Converts Unicode property data files to Swift code.
-
-		    Usage: unicode_properties <filepath>
-
-		""")
-		exit(1)
+func generateEnumAndDictionary(_ properties: [Substring: [ClosedRange<UInt32>]]) -> String {
+	let propertyRanges = properties.map { propertyName, ranges in
+		"\t.\(caseName(propertyName)): [\(ranges.map { "\($0)" }.joined(separator: ", "))],"
 	}
-	let unicodeData = try String(contentsOfFile: CommandLine.arguments[1])
-	let properties = Dictionary(grouping: unicodeProperty(fromDataFile: unicodeData), by: { $0.property })
+
+	return """
+	enum UnicodeProperty: String {
+		case \(properties.keys.map { #"\#(caseName($0)) = "\#($0)""# }.joined(separator: ", "))
+	}
+
+	let propertyRanges: [UnicodeProperty : ContiguousArray<ClosedRange<UInt32>>] = [
+	\(propertyRanges.joined(separator: "\n"))
+	]
+	"""
+}
+
+func generateConstants(_ properties: [Substring: [ClosedRange<UInt32>]]) -> String {
+	return properties.map { propertyName, ranges in
+		"let \(caseName(propertyName)) = [ \(ranges.map { "\($0)" }.joined(separator: ", ")) ]"
+	}.joined(separator: "\n")
+}
+
+do {
+	let arguments = Moderator(description: "Converts Unicode property data files to Swift code.")
+	let enumAndDictionaryArgument = arguments.add(
+		.option("enumAndDictionary",
+		        description: "Outputs an enum containing all the property names, and a dictionary with the enum as keys and arrays of ranges as values. Is the default."))
+	let constantsArgument = arguments.add(
+		.option("constants", description: "Outputs the property names as constants with arrays of ranges as values."))
+	let unicodeData = arguments.add(Argument<String>.singleArgument(name: "file", description: "The path to the Unicode property data file.")
+		.required(errormessage: "File path is missing.")
+		.map { try String(contentsOfFile: $0) }
+	)
+	try arguments.parse(strict: true)
+
+	if !enumAndDictionaryArgument.value, !constantsArgument.value {
+		enumAndDictionaryArgument.value = true
+	}
+
+	let properties = Dictionary(grouping: unicodeProperty(fromDataFile: unicodeData.value), by: { $0.property })
 		.mapValues { ranges -> [ClosedRange<UInt32>] in
 			ranges.map { $0.range }
 				.sorted { $0.lowerBound < $1.lowerBound }
@@ -67,18 +95,17 @@ do {
 				}
 		}
 
-	print()
-	print("enum UnicodeProperty: String {")
-	print("  case", properties.keys.map { #"\#(caseName($0)) = "\#($0)""# }.joined(separator: ", "))
-	print("}")
-
-	print()
-	print("let propertyRanges: [UnicodeProperty : ContiguousArray<ClosedRange<UInt32>>] = [")
-	properties.forEach { propertyName, ranges in
-		print("  .\(caseName(propertyName)): [", ranges.map { "\($0)" }.joined(separator: ", "), "],", separator: "")
+	if enumAndDictionaryArgument.value {
+		print(generateEnumAndDictionary(properties))
+		print()
 	}
-	print("]")
-	print()
+	if constantsArgument.value {
+		print(generateConstants(properties))
+		print()
+	}
+} catch let error as ArgumentError {
+	print(error)
+	exit(Int32(error._code))
 } catch {
 	print(error.localizedDescription)
 	exit(Int32(error._code))
