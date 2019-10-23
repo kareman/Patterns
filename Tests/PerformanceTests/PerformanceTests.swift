@@ -69,6 +69,24 @@ class PerformanceTests: XCTestCase {
 		let pattern = try Patterns(verify: Skip(), Literal("."), Skip(), Literal(" "), Skip(), Literal(" "))
 		try speedTest(pattern, textFraction: 6, hits: 4779)
 	}
+
+	func testAnyNumeral() throws {
+		/* An advanced regular expression that matches any numeral is
+
+		[+-]?
+			(\d+(\.\d+)?)
+			|
+			(\.\d+)
+		([eE][+-]?\d+)?
+		*/
+
+		let digits = digit.repeat(1...)
+		let pattern = try Patterns(verify: OneOf("+-").repeat(0...1),
+															 Patterns(digits, Patterns(Literal("."), digits).repeat(0...1))
+																|| Patterns(Literal("."), digits),
+															 Patterns(OneOf("eE"), OneOf("+-").repeat(0...1), digits).repeat(0...1))
+		try speedTest(pattern, textFraction: 16, hits: 11)
+	}
 }
 
 func getLocalURL(for path: String, file: String = #file) -> URL {
