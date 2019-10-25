@@ -87,6 +87,11 @@ class PerformanceTests: XCTestCase {
 															 Patterns(OneOf("eE"), OneOf("+-").repeat(0...1), digits).repeat(0...1))
 		try speedTest(pattern, textFraction: 16, hits: 11)
 	}
+
+	func testContainsClosure() throws {
+		let pattern = try Patterns(verify: Word.boundary, alphanumeric || OneOf(description: "isSymbol", contains: {$0.isSymbol}))
+		try speedTest(pattern, textFraction: 16, hits: 35643)
+	}
 }
 
 func getLocalURL(for path: String, file: String = #file) -> URL {
