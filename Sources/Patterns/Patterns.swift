@@ -159,11 +159,11 @@ public struct Patterns: TextPattern {
 
 	public let series: [TextPattern]
 	public var regex: String {
-		return series.map((\TextPattern.regex).toFunc).joined()
+		return series.map(\.regex).joined()
 	}
 
 	public var length: Int? {
-		let lengths = series.compactMap((\TextPattern.length).toFunc)
+		let lengths = series.compactMap(\TextPattern.length)
 		return lengths.count == series.count ? lengths.reduce(0, +) : nil
 	}
 

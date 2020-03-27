@@ -121,12 +121,6 @@ func ?? <T>(b: T?, a: @autoclosure () -> Never) -> T {
 	a()
 }
 
-extension KeyPath {
-	var toFunc: (Root) -> Value {
-		return { $0[keyPath: self] }
-	}
-}
-
 extension BidirectionalCollection {
 	func validIndex(_ i: Index, offsetBy distance: Int) -> Index? {
 		if distance < 0 {
