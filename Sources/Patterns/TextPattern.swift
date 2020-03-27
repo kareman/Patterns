@@ -297,7 +297,7 @@ public struct Line: TextPattern {
 
 		public func parse(_ input: Input, from startIndex: Input.Index, using _: inout Patterns.ParseData) -> ParsedRange? {
 			guard startIndex != input.startIndex else { return startIndex ..< startIndex }
-			return input[input.index(before: startIndex)...].firstIndex(where: (\Character.isNewline).toFunc)
+			return input[input.index(before: startIndex)...].firstIndex(where: \.isNewline)
 				.map(input.index(after:))
 				.map { $0 ..< $0 }
 		}
@@ -318,7 +318,7 @@ public struct Line: TextPattern {
 		}
 
 		public func parse(_ input: Input, from startIndex: Input.Index, using _: inout Patterns.ParseData) -> ParsedRange? {
-			return input[startIndex...].firstIndex(where: (\Character.isNewline).toFunc).map { $0 ..< $0 }
+			return input[startIndex...].firstIndex(where: \.isNewline).map { $0 ..< $0 }
 				?? input.endIndex ..< input.endIndex
 		}
 	}
@@ -354,30 +354,30 @@ extension TextPattern {
 public let alphanumeric = OneOf(description: "alphanumeric", regex: #"(?:\p{Alphabetic}|\p{Nd})"#,
                                 contains: { $0.isWholeNumber || $0.isLetter })
 public let digit = OneOf(description: "digit", regex: #"\p{Nd}"#,
-                         contains: (\Character.isWholeNumber).toFunc)
+                         contains: \Character.isWholeNumber)
 public let letter = OneOf(description: "letter", regex: #"\p{Alphabetic}"#,
-                          contains: (\Character.isLetter).toFunc)
+                          contains: \Character.isLetter)
 public let lowercase = OneOf(description: "lowercase", regex: #"\p{Ll}"#,
-                             contains: (\Character.isLowercase).toFunc)
+                             contains: \Character.isLowercase)
 public let newline = OneOf(description: "newline", regex: #"\p{Zl}"#,
-                           contains: (\Character.isNewline).toFunc)
+                           contains: \Character.isNewline)
 public let punctuation = OneOf(description: "punctuation", regex: #"\p{P}"#,
-                               contains: (\Character.isPunctuation).toFunc)
+                               contains: \Character.isPunctuation)
 public let symbol = OneOf(description: "symbol", regex: #"\p{S}"#,
-                          contains: (\Character.isSymbol).toFunc)
+                          contains: \Character.isSymbol)
 public let uppercase = OneOf(description: "uppercase", regex: #"\p{Lu}"#,
-                             contains: (\Character.isUppercase).toFunc)
+                             contains: \Character.isUppercase)
 public let whitespace = OneOf(description: "whitespace", regex: #"\p{White_Space}"#,
-                              contains: (\Character.isWhitespace).toFunc)
+                              contains: \Character.isWhitespace)
 
 public let hexDigit = OneOf(description: "hexDigit", regex: #"\p{Hex_Digit}"#,
-                            contains: (\Character.isHexDigit).toFunc)
+                            contains: \Character.isHexDigit)
 
 public let ascii = OneOf(description: "ascii", regex: #"[[:ascii:]]"#,
-                         contains: (\Character.isASCII).toFunc) // regex might also be [ -~] or [\x00-\x7F]
+                         contains: \Character.isASCII) // regex might also be [ -~] or [\x00-\x7F]
 
 public let mathSymbol = OneOf(description: "mathSymbol", regex: #"\p{Sm}"#,
-                              contains: (\Character.isMathSymbol).toFunc)
+                              contains: \Character.isMathSymbol)
 
 public let currencySymbol = OneOf(description: "currencySymbol", regex: #"\p{Sc}"#,
-                                  contains: (\Character.isCurrencySymbol).toFunc)
+                                  contains: \Character.isCurrencySymbol)
