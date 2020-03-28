@@ -89,7 +89,7 @@ class PerformanceTests: XCTestCase {
 	}
 
 	func testContainsClosure() throws {
-		let pattern = try Patterns(verify: Word.boundary, alphanumeric || OneOf(description: "isSymbol", contains: {$0.isSymbol}))
+		let pattern = try Patterns(verify: Word.boundary, alphanumeric || OneOf(description: "isSymbol", contains: \.isSymbol))
 		try speedTest(pattern, textFraction: 16, hits: 35643)
 	}
 }

@@ -241,7 +241,7 @@ public struct Patterns: TextPattern {
 
 	public func ranges<S: StringProtocol>(in input: S, from startindex: Input.Index? = nil)
 		-> AnySequence<ParsedRange> where S.SubSequence == Input {
-		return AnySequence(matches(in: input, from: startindex).lazy.map { $0.range })
+		return AnySequence(matches(in: input, from: startindex).lazy.map(\.range))
 	}
 
 	public func appending(_ pattern: TextPattern) throws -> Patterns {
@@ -280,10 +280,10 @@ extension Patterns {
 		}
 
 		public subscript(multiple name: String) -> [ParsedRange] {
-			return captures.filter { $0.name == name }.map { $0.range }
+			return captures.filter { $0.name == name }.map(\.range)
 		}
 
-		public var names: Set<String> { Set(captures.compactMap { $0.name }) }
+		public var names: Set<String> { Set(captures.compactMap(\.name)) }
 	}
 
 	internal func match(in input: Input, at startindex: Input.Index) -> Match? {
