@@ -28,7 +28,7 @@ extension Patterns.Match {
 		public var userInfo: [CodingUserInfoKey: Any] { return [:] }
 
 		init(match: Patterns.Match, string: String, codingPath: [CodingKey] = []) {
-			let namePrefix = codingPath.first.map { $0.stringValue }
+			let namePrefix = codingPath.first.map(\.stringValue)
 			let captures = namePrefix.map { namePrefix in
 				match.captures.flatMap { name, range in
 					name?.hasPrefix(namePrefix) ?? false ? [(String(name!.dropFirst(namePrefix.count)), range)] : []
@@ -45,7 +45,7 @@ extension Patterns.Match {
 		}
 
 		public func unkeyedContainer() throws -> UnkeyedDecodingContainer {
-			return UDC(codingPath: codingPath, values: match.captures.map { $0.range }, string: string)
+			return UDC(codingPath: codingPath, values: match.captures.map(\.range), string: string)
 		}
 
 		public func singleValueContainer() throws -> SingleValueDecodingContainer {

@@ -42,7 +42,7 @@ extension Sequence {
 /// Removes all underscores. Unless string is all caps, lowercases the first letter.
 func caseName(_ string: Substring) -> String {
 	var caseName = string.replacingOccurrences(of: "_", with: "")
-	let firstLetter = caseName.allSatisfy { $0.isUppercase } ? "" : caseName.removeFirst().lowercased()
+	let firstLetter = caseName.allSatisfy(\.isUppercase) ? "" : caseName.removeFirst().lowercased()
 	return firstLetter + caseName
 }
 
@@ -85,9 +85,9 @@ do {
 		enumAndDictionaryArgument.value = true
 	}
 
-	let properties = Dictionary(grouping: unicodeProperty(fromDataFile: unicodeData.value), by: { $0.property })
+	let properties = Dictionary(grouping: unicodeProperty(fromDataFile: unicodeData.value), by: \.property)
 		.mapValues { ranges -> [ClosedRange<UInt32>] in
-			ranges.map { $0.range }
+			ranges.map(\.range)
 				.sorted { $0.lowerBound < $1.lowerBound }
 				// compact the list of ranges by joining together adjacent ranges
 				.flatMapPairs { a, b in
