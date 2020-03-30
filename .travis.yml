@@ -19,9 +19,9 @@ matrix:
         - swift test -c debug --enable-test-discovery
         - ./ci.bash
 
-    - name: "macOS Xcode 10.2"
+    - name: "macOS Xcode 11.4"
       os: osx
-      osx_image: xcode11_4
+      osx_image: xcode11.4
       language: generic
       sudo: required
       install:
