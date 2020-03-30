@@ -1,17 +1,17 @@
 matrix:
   include:
-    - name: "Linux Swift 5.1"
+    - name: "Linux Swift 5.2"
       os: linux
       language: generic
-      dist: trusty
+      dist: bionic
       sudo: required
       env:
-        - SWIFT_BRANCH=swift-5.1-branch
-        - SWIFT_VERSION=swift-5.1-DEVELOPMENT-SNAPSHOT-2019-08-13-a
+        - SWIFT_BRANCH=swift-5.2-release
+        - SWIFT_VERSION=swift-5.2-RELEASE
       install:
         - mkdir swift
-        - curl https://swift.org/builds/$SWIFT_BRANCH/ubuntu1404/$SWIFT_VERSION/$SWIFT_VERSION-ubuntu14.04.tar.gz -s | tar -xz -C swift
-        - export PATH="$(pwd)/swift/$SWIFT_VERSION-ubuntu14.04/usr/bin:$PATH"
+        - curl https://swift.org/builds/$SWIFT_BRANCH/ubuntu1804/$SWIFT_VERSION/$SWIFT_VERSION-ubuntu18.04.tar.gz -s | tar -xz -C swift
+        - export PATH="$(pwd)/swift/$SWIFT_VERSION-ubuntu18.04/usr/bin:$PATH"
       script:
         - swift --version
         - swift package reset
@@ -21,7 +21,7 @@ matrix:
 
     - name: "macOS Xcode 10.2"
       os: osx
-      osx_image: xcode11
+      osx_image: xcode11_4
       language: generic
       sudo: required
       install:
