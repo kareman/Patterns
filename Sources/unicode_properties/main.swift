@@ -1,7 +1,7 @@
 /// Converts Unicode property data files to Swift code.
 
+import ArgumentParser
 import Foundation
-import Moderator
 import Patterns
 
 func unicodeProperty(fromDataFile text: String) -> [(range: ClosedRange<UInt32>, property: Substring)] {
@@ -68,45 +68,44 @@ func generateConstants(_ properties: [Substring: [ClosedRange<UInt32>]]) -> Stri
 	}.joined(separator: "\n")
 }
 
-do {
-	let arguments = Moderator(description: "Converts Unicode property data files to Swift code.")
-	let enumAndDictionaryArgument = arguments.add(
-		.option("enumAndDictionary",
-		        description: "Outputs an enum containing all the property names, and a dictionary with the enum as keys and arrays of ranges as values. Is the default."))
-	let constantsArgument = arguments.add(
-		.option("constants", description: "Outputs the property names as constants with arrays of ranges as values."))
-	let unicodeData = arguments.add(Argument<String>.singleArgument(name: "file", description: "The path to the Unicode property data file.")
-		.required(errormessage: "File path is missing.")
-		.map { try String(contentsOfFile: $0) }
-	)
-	try arguments.parse(strict: true)
+struct Arguments: ParsableCommand {
+	@Flag(name: .customLong("enumAndDictionary"), help: "Outputs an enum containing all the property names, and a dictionary with the enum as keys and arrays of ranges as values. Is the default.")
+	var enumAndDictionary: Bool
 
-	if !enumAndDictionaryArgument.value, !constantsArgument.value {
-		enumAndDictionaryArgument.value = true
-	}
+	@Flag(help: "Outputs the property names as constants with arrays of ranges as values.")
+	var constants: Bool
 
-	let properties = Dictionary(grouping: unicodeProperty(fromDataFile: unicodeData.value), by: \.property)
-		.mapValues { ranges -> [ClosedRange<UInt32>] in
-			ranges.map(\.range)
-				.sorted { $0.lowerBound < $1.lowerBound }
-				// compact the list of ranges by joining together adjacent ranges
-				.flatMapPairs { a, b in
-					a.upperBound + 1 == b.lowerBound ? [a.lowerBound ... b.upperBound] : [a, b]
-				}
+	@Argument(help: "The path to the Unicode property data file.", transform: {
+		try String(contentsOfFile: $0)
+	})
+	var unicodeData: String
+
+	func run() throws {
+		var enumAndDictionary = self.enumAndDictionary
+
+		if !enumAndDictionary, !constants {
+			enumAndDictionary = true
 		}
 
-	if enumAndDictionaryArgument.value {
-		print(generateEnumAndDictionary(properties))
-		print()
+		let properties = Dictionary(grouping: unicodeProperty(fromDataFile: unicodeData), by: \.property)
+			.mapValues { ranges -> [ClosedRange<UInt32>] in
+				ranges.map(\.range)
+					.sorted { $0.lowerBound < $1.lowerBound }
+					// compact the list of ranges by joining together adjacent ranges
+					.flatMapPairs { a, b in
+						a.upperBound + 1 == b.lowerBound ? [a.lowerBound ... b.upperBound] : [a, b]
+					}
+			}
+
+		if enumAndDictionary {
+			print(generateEnumAndDictionary(properties))
+			print()
+		}
+		if constants {
+			print(generateConstants(properties))
+			print()
+		}
 	}
-	if constantsArgument.value {
-		print(generateConstants(properties))
-		print()
-	}
-} catch let error as ArgumentError {
-	print(error)
-	exit(Int32(error._code))
-} catch {
-	print(error.localizedDescription)
-	exit(Int32(error._code))
 }
+
+Arguments.main()
