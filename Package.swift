@@ -14,7 +14,7 @@ let package = Package(
 			name: "unicode_properties",
 			targets: ["unicode_properties", "Patterns"])
 	],
-	dependencies: [.package(url: "https://github.com/kareman/Moderator", from: "0.5.1")],
+	dependencies: [.package(url: "https://github.com/apple/swift-argument-parser", from: "0.0.1")],
 	targets: [
 		// Targets are the basic building blocks of a package. A target can define a module or a test suite.
 		// Targets can depend on other targets in this package, and on products in packages which this package depends on.
@@ -29,6 +29,6 @@ let package = Package(
 			dependencies: ["Patterns"]),
 		.target(
 			name: "unicode_properties",
-			dependencies: ["Patterns", "Moderator"]),
+			dependencies: ["Patterns", "ArgumentParser"]),
 	]
 )
