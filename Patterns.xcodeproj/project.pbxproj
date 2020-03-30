@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -22,6 +22,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		BA45414F243260B700C1218B /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = BA45414E243260B700C1218B /* ArgumentParser */; };
 		BAED89592304A36E0068D0B3 /* Decoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAED89582304A36E0068D0B3 /* Decoder.swift */; };
 		BAF9AB4123006E7D0040D0AB /* StringInterpolation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAF9AB4023006E7D0040D0AB /* StringInterpolation.swift */; };
 		OBJ_102 /* GeneralTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_22 /* GeneralTests.swift */; };
@@ -121,6 +122,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
 			files = (
+				BA45414F243260B700C1218B /* ArgumentParser in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -323,6 +325,9 @@
 				BAF9AB4323007F0C0040D0AB /* PBXTargetDependency */,
 			);
 			name = unicode_properties;
+			packageProductDependencies = (
+				BA45414E243260B700C1218B /* ArgumentParser */,
+			);
 			productName = unicode_properties;
 			productReference = "TextPicker::unicode_properties::Product" /* unicode_properties */;
 			productType = "com.apple.product-type.tool";
@@ -345,6 +350,9 @@
 				Base,
 			);
 			mainGroup = OBJ_5;
+			packageReferences = (
+				BA45414D243260B700C1218B /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
+			);
 			productRefGroup = OBJ_36 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -884,6 +892,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		BA45414D243260B700C1218B /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-argument-parser.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		BA45414E243260B700C1218B /* ArgumentParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BA45414D243260B700C1218B /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
+			productName = ArgumentParser;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = OBJ_1 /* Project object */;
 }
