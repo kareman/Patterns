@@ -13,7 +13,7 @@ public struct Word {
 		public let regex: String = #"\b"#
 		public let description: String = "Word.boundary"
 
-		public func parse(_ input: Input, at index: Input.Index, using data: inout Patterns.ParseData) -> ParsedRange? {
+		public func parse(_ input: Input, at index: Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {
 			let success = index ..< index
 			guard index != input.endIndex, index != input.startIndex else { return success }
 
