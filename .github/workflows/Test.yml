@@ -1,4 +1,4 @@
-name: Swift
+name: Test
 
 on:
   push:
@@ -15,12 +15,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: YOCKOW/Action-setup-swift@master
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Install Swift
+      uses: YOCKOW/Action-setup-swift@master
     - name: Build
       run: |
         swift --version
-        swift package reset
         swift build
     - name: Test
       run: swift test -c release
