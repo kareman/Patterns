@@ -13,6 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - uses: YOCKOW/Action-setup-swift@master
     - name: Build
       run: swift build -v
     - name: Run tests
