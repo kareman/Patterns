@@ -24,4 +24,4 @@ jobs:
         swift --version
         swift build
     - name: Test
-      run: swift test -c release
+      run: swift test --enable-test-discovery --parallel
