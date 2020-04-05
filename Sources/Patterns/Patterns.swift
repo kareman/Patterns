@@ -8,13 +8,15 @@
 public struct Skip: TextPattern {
 	public let repeatedPattern: TextPattern?
 	public let description: String
-	public var regex: String
+	public var regex: String {
+		return repeatedPattern.map { "(\($0.regex)*?" } ?? ".*?"
+	}
+
 	public let length: Int? = nil
 
 	public init(whileRepeating repeatedPattern: TextPattern? = nil) {
 		self.repeatedPattern = repeatedPattern?.repeat(0...)
 		self.description = "\(repeatedPattern.map(String.init(describing:)) ?? "")*"
-		self.regex = repeatedPattern.map { _ in "NOT IMPLEMENTED" } ?? ".*?"
 	}
 
 	public func parse(_: TextPattern.Input, at _: TextPattern.Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {

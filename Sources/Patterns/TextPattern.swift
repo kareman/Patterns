@@ -119,13 +119,17 @@ public struct OneOf: TextPattern {
 	public let set: Group<Input.Element>
 
 	public let description: String
-	public let regex: String
+	private let _regex: String?
+	public var regex: String {
+		return _regex ?? fatalError("Regex not provided for '\(description)'")
+	}
+
 	public let length: Int? = 1
 
 	public init(description: String, regex: String? = nil, set: Group<Input.Element>) {
 		self.set = set
 		self.description = description
-		self.regex = regex ?? "NOT IMPLEMENTED"
+		self._regex = regex
 	}
 
 	public init(description: String, regex: String? = nil, contains: @escaping (Input.Element) -> Bool) {
@@ -135,7 +139,7 @@ public struct OneOf: TextPattern {
 	public init<S: Sequence>(_ characters: S) where S.Element == Input.Element {
 		set = Group(contentsOf: characters)
 		description = "\"\(set)\""
-		regex = "[\(NSRegularExpression.escapedPattern(for: characters.map(String.init(describing:)).joined()))]"
+		_regex = "[\(NSRegularExpression.escapedPattern(for: characters.map(String.init(describing:)).joined()))]"
 	}
 
 	public func parse(_ input: Input, at index: Input.Index, using _: inout PatternsEngine.ParseData) -> ParsedRange? {
@@ -331,8 +335,7 @@ public struct NotPattern: TextPattern {
 	}
 
 	public var regex: String {
-		assertionFailure()
-		return "NOT IMPLEMENTED"
+		fatalError("Regex does not support 'not'")
 	}
 
 	public let length: Int? = 1
