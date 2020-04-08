@@ -19,9 +19,11 @@ jobs:
       uses: actions/checkout@v2
     - name: Install Swift
       uses: YOCKOW/Action-setup-swift@master
+      with:
+        version: 5.2.1
     - name: Build
       run: |
         swift --version
         swift build
     - name: Test
-      run: swift test --enable-test-discovery --parallel
+      run: swift test --enable-test-discovery --parallel -c release
