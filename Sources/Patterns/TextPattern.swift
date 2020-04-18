@@ -177,7 +177,7 @@ public struct RepeatPattern: TextPattern {
 	}
 
 	public var regex: String {
-		return repeatedPattern.regex + "{\(min),\(max.map(String.init(describing:)) ?? "")}"
+		return "(?:\(repeatedPattern.regex)){\(min),\(max.map(String.init(describing:)) ?? "")}"
 	}
 
 	public var length: Int? {

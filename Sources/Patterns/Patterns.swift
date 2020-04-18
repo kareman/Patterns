@@ -9,7 +9,7 @@ public struct Skip: TextPattern {
 	public let repeatedPattern: TextPattern?
 	public let description: String
 	public var regex: String {
-		return repeatedPattern.map { "(\($0.regex)*?" } ?? ".*?"
+		return repeatedPattern.map { "(?:\($0.regex))*?" } ?? ".*?"
 	}
 
 	public let length: Int? = nil
@@ -69,7 +69,10 @@ public struct Skip: TextPattern {
 
 public struct Capture: TextPattern {
 	public var length: Int?
-	public var regex: String = ""
+	public var regex: String {
+		let capturedRegex = patterns.map(\.regex).joined()
+		return name.map { "(?<\($0)>\(capturedRegex))" } ?? "(\(capturedRegex))"
+	}
 	public var description: String = "CAPTURE" // TODO: proper description
 	public let name: String?
 	public let patterns: [TextPattern]
