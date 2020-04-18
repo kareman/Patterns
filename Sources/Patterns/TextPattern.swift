@@ -9,8 +9,9 @@
 import Foundation
 
 public typealias ParsedRange = Range<TextPattern.Input.Index>
+public typealias TextPattern = SwiftPattern
 
-public protocol TextPattern: CustomStringConvertible {
+public protocol SwiftPattern: CustomStringConvertible {
 	typealias Input = Substring
 
 	func parse(_ input: Input, at index: Input.Index, using: inout PatternsEngine.ParseData) -> ParsedRange?
@@ -21,7 +22,7 @@ public protocol TextPattern: CustomStringConvertible {
 	var regex: String { get }
 }
 
-public protocol TextPatternWrapper: TextPattern {
+public protocol TextPatternWrapper: SwiftPattern {
 	var pattern: TextPattern { get }
 }
 
@@ -75,7 +76,7 @@ extension TextPattern {
 	}
 }
 
-public struct Literal: TextPattern {
+public struct Literal: TextPattern, RegexConvertible {
 	public let substring: Input
 	let searchCache: SearchCache<Input.Element>
 
@@ -115,7 +116,7 @@ extension Literal: ExpressibleByStringLiteral {
 	}
 }
 
-public struct OneOf: TextPattern {
+public struct OneOf: TextPattern, RegexConvertible {
 	public let set: Group<Input.Element>
 
 	public let description: String
@@ -160,7 +161,7 @@ public struct OneOf: TextPattern {
 	}
 }
 
-public struct RepeatPattern: TextPattern {
+public struct RepeatPattern: TextPattern, RegexConvertible {
 	public let repeatedPattern: TextPattern
 	public let min: Int
 	public let max: Int?
@@ -221,7 +222,7 @@ extension TextPattern {
 	}
 }
 
-public struct OrPattern: TextPattern {
+public struct OrPattern: TextPattern, RegexConvertible {
 	public let pattern1, pattern2: TextPattern
 
 	init(pattern1: TextPattern, pattern2: TextPattern) {
@@ -265,7 +266,7 @@ public func || (p1: TextPattern, p2: TextPattern) -> OrPattern {
 	return OrPattern(pattern1: p1, pattern2: p2)
 }
 
-public struct Line: TextPattern {
+public struct Line: TextPattern, RegexConvertible {
 	public let description: String = "line"
 	public let regex: String = "^.*$"
 	public let length: Int? = nil
@@ -286,7 +287,7 @@ public struct Line: TextPattern {
 		pattern.parse(input, from: startIndex, using: &data)
 	}
 
-	public struct Start: TextPattern {
+	public struct Start: TextPattern, RegexConvertible {
 		public init() {}
 
 		public var description: String { return "line.start" }
@@ -307,7 +308,7 @@ public struct Line: TextPattern {
 		}
 	}
 
-	public struct End: TextPattern {
+	public struct End: TextPattern, RegexConvertible {
 		public init() {}
 
 		public var description: String { return "line.end" }

@@ -5,7 +5,7 @@
 //  Created by Kåre Morstøl on 23/10/2018.
 //
 
-public struct Skip: TextPattern {
+public struct Skip: TextPattern, RegexConvertible {
 	public let repeatedPattern: TextPattern?
 	public let description: String
 	public var regex: String {
@@ -67,12 +67,13 @@ public struct Skip: TextPattern {
 	}
 }
 
-public struct Capture: TextPattern {
+public struct Capture: TextPattern, RegexConvertible {
 	public var length: Int?
 	public var regex: String {
 		let capturedRegex = patterns.map(\.regex).joined()
 		return name.map { "(?<\($0)>\(capturedRegex))" } ?? "(\(capturedRegex))"
 	}
+
 	public var description: String = "CAPTURE" // TODO: proper description
 	public let name: String?
 	public let patterns: [TextPattern]
@@ -231,7 +232,7 @@ public class PatternsEngine: Matcher {
 	}
 }
 
-public struct Patterns: TextPattern {
+public struct Patterns: TextPattern, RegexConvertible {
 	public enum InitError: Error, CustomStringConvertible {
 		case invalid([TextPattern])
 		case message(String)

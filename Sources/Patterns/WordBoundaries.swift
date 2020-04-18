@@ -8,7 +8,7 @@
 public struct Word {
 	public static let boundary = Boundary()
 
-	public struct Boundary: TextPattern {
+	public struct Boundary: TextPattern, RegexConvertible {
 		public let length: Int? = 0
 		public let regex: String = #"\b"#
 		public let description: String = "Word.boundary"
