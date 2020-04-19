@@ -5,8 +5,14 @@
 //  Created by Kåre Morstøl on 23/10/2018.
 //
 
-public struct Skip: TextPattern, RegexConvertible {
-	public let repeatedPattern: TextPattern?
+#if VMBacktrackEngine
+public typealias TextPattern = VMPattern
+#else
+public typealias TextPattern = SwiftPattern
+#endif
+
+public struct Skip: SwiftPattern, RegexConvertible {
+	public let repeatedPattern: SwiftPattern?
 	public let description: String
 	public var regex: String {
 		return repeatedPattern.map { "(?:\($0.regex))*?" } ?? ".*?"
@@ -14,28 +20,28 @@ public struct Skip: TextPattern, RegexConvertible {
 
 	public let length: Int? = nil
 
-	public init(whileRepeating repeatedPattern: TextPattern? = nil) {
+	public init(whileRepeating repeatedPattern: SwiftPattern? = nil) {
 		self.repeatedPattern = repeatedPattern?.repeat(0...)
 		self.description = "\(repeatedPattern.map(String.init(describing:)) ?? "")*"
 	}
 
-	public func parse(_: TextPattern.Input, at _: TextPattern.Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {
+	public func parse(_: SwiftPattern.Input, at _: SwiftPattern.Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {
 		assertionFailure("do not call this"); return nil
 	}
 
-	public func parse(_: TextPattern.Input, from _: TextPattern.Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {
+	public func parse(_: SwiftPattern.Input, from _: SwiftPattern.Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {
 		assertionFailure("do not call this"); return nil
 	}
 
-	public func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>)
+	public func _prepForPatterns(remainingPatterns: inout ArraySlice<SwiftPattern>)
 		throws -> PatternsEngine.Patternette {
-		func getBoundHandler(_ remainingPatterns: inout ArraySlice<TextPattern>)
+		func getBoundHandler(_ remainingPatterns: inout ArraySlice<SwiftPattern>)
 			-> (Input, Input.Index, inout PatternsEngine.ParseData) -> Void {
 			switch remainingPatterns.first {
 			case is Capture.Start, is Capture.End:
 				let me = remainingPatterns.removeFirst()
 				return {
-					var forgetAboutIt = ArraySlice<TextPattern>()
+					var forgetAboutIt = ArraySlice<SwiftPattern>()
 					try! _ = me._prepForPatterns(remainingPatterns: &forgetAboutIt).pattern($0, $1, &$2)
 				}
 			default:
@@ -67,7 +73,7 @@ public struct Skip: TextPattern, RegexConvertible {
 	}
 }
 
-public struct Capture: TextPattern, RegexConvertible {
+public struct Capture: SwiftPattern, RegexConvertible {
 	public var length: Int?
 	public var regex: String {
 		let capturedRegex = patterns.map(\.regex).joined()
@@ -97,7 +103,7 @@ public struct Capture: TextPattern, RegexConvertible {
 	 	return try Capture.Start()._prepForPatterns(remainingPatterns: &remainingPatterns)
 	 }
 	 */
-	public struct Start: TextPattern {
+	public struct Start: SwiftPattern {
 		public var description: String { return "[" }
 		public var regex = "("
 		public let length: Int? = 0
@@ -117,18 +123,14 @@ public struct Capture: TextPattern, RegexConvertible {
 		}
 	}
 
-	public struct End: TextPattern {
+	public struct End: SwiftPattern {
 		public var description: String { return "]" }
 		public var regex = ")"
 		public let length: Int? = 0
 
 		public init() {}
 
-		public func parse(_: TextPattern.Input, at _: TextPattern.Input.Index) -> ParsedRange? {
-			assertionFailure("do not call this"); return nil
-		}
-
-		public func parse(_: TextPattern.Input, from _: TextPattern.Input.Index) -> ParsedRange? {
+		public func parse(_: TextPattern.Input, from _: TextPattern.Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {
 			assertionFailure("do not call this"); return nil
 		}
 
@@ -144,7 +146,6 @@ public struct Capture: TextPattern, RegexConvertible {
 }
 
 protocol Matcher: class {
-	init(_: [TextPattern]) throws
 	func match(in input: Patterns.Input, at startindex: Patterns.Input.Index) -> Patterns.Match?
 	func match(in input: Patterns.Input, from startIndex: Patterns.Input.Index) -> Patterns.Match?
 }
@@ -158,9 +159,9 @@ public class PatternsEngine: Matcher {
 	public typealias Patternette =
 		(pattern: (Patterns.Input, Patterns.Input.Index, inout ParseData) -> ParsedRange?, description: String)
 	private let patternettes: [Patternette]
-	private let patternFrom: TextPattern?
+	private let patternFrom: SwiftPattern?
 
-	private static func createPatternettes(_ patterns: [TextPattern]) throws -> [Patternette] {
+	private static func createPatternettes(_ patterns: [SwiftPattern]) throws -> [Patternette] {
 		var remainingPatterns = patterns[...]
 		var result = [Patternette]()
 		while let nextPattern = remainingPatterns.popFirst() {
@@ -179,7 +180,7 @@ public class PatternsEngine: Matcher {
 		return result
 	}
 
-	required init(_ series: [TextPattern]) throws {
+	required init(_ series: [SwiftPattern]) throws {
 		self.patternettes = try Self.createPatternettes(series)
 
 		// find first parseable pattern 'patternFrom', if there is no Skip pattern before it use it in Self.parse(_:from:):
@@ -232,7 +233,7 @@ public class PatternsEngine: Matcher {
 	}
 }
 
-public struct Patterns: TextPattern, RegexConvertible {
+public struct Patterns: SwiftPattern, RegexConvertible {
 	public enum InitError: Error, CustomStringConvertible {
 		case invalid([TextPattern])
 		case message(String)
@@ -247,7 +248,7 @@ public struct Patterns: TextPattern, RegexConvertible {
 		}
 	}
 
-	public let series: [TextPattern]
+	let series: [TextPattern]
 	public let description: String
 	let matcher: Matcher
 
@@ -256,7 +257,7 @@ public struct Patterns: TextPattern, RegexConvertible {
 	}
 
 	public var length: Int? {
-		let lengths = series.compactMap(\TextPattern.length)
+		let lengths = series.compactMap(\.length)
 		return lengths.count == series.count ? lengths.reduce(0, +) : nil
 	}
 
@@ -266,8 +267,11 @@ public struct Patterns: TextPattern, RegexConvertible {
 			throw InitError.invalid(self.series.array())
 		}
 
+		#if VMBacktrackEngine
+		self.matcher = try VMBacktrackEngine(self.series)
+		#else
 		self.matcher = try PatternsEngine(self.series)
-
+		#endif
 		self.description = self.series.map(String.init(describing:)).joined(separator: " ")
 	}
 

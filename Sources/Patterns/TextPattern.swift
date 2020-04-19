@@ -1,5 +1,5 @@
 //
-//  TextPattern.swift
+//  SwiftPattern.swift
 //  Patterns
 //
 //  Created by Kåre Morstøl on 20/03/2017.
@@ -8,25 +8,24 @@
 
 import Foundation
 
-public typealias ParsedRange = Range<TextPattern.Input.Index>
-public typealias TextPattern = SwiftPattern
+public typealias ParsedRange = Range<SwiftPattern.Input.Index>
 
 public protocol SwiftPattern: CustomStringConvertible {
 	typealias Input = Substring
 
 	func parse(_ input: Input, at index: Input.Index, using: inout PatternsEngine.ParseData) -> ParsedRange?
 	func parse(_ input: Input, from index: Input.Index, using: inout PatternsEngine.ParseData) -> ParsedRange?
-	func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>) throws -> PatternsEngine.Patternette
+	func _prepForPatterns(remainingPatterns: inout ArraySlice<SwiftPattern>) throws -> PatternsEngine.Patternette
 	/// The length this pattern always parses, if it is constant
 	var length: Int? { get }
 	var regex: String { get }
 }
 
-public protocol TextPatternWrapper: SwiftPattern {
-	var pattern: TextPattern { get }
+public protocol SwiftPatternWrapper: SwiftPattern {
+	var pattern: SwiftPattern { get }
 }
 
-public extension TextPatternWrapper {
+public extension SwiftPatternWrapper {
 	func parse(_ input: Input, at index: Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {
 		return self.parse(input, at: index, using: &data)
 	}
@@ -35,7 +34,7 @@ public extension TextPatternWrapper {
 		return self.parse(input, from: index, using: &data)
 	}
 
-	func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>) throws -> PatternsEngine.Patternette {
+	func _prepForPatterns(remainingPatterns: inout ArraySlice<SwiftPattern>) throws -> PatternsEngine.Patternette {
 		return try pattern._prepForPatterns(remainingPatterns: &remainingPatterns)
 	}
 
@@ -47,7 +46,7 @@ public extension TextPatternWrapper {
 	var regex: String { return pattern.regex }
 }
 
-extension TextPattern {
+extension SwiftPattern {
 	public func parse(_ input: Input, at startIndex: Input.Index) -> ParsedRange? {
 		var data = PatternsEngine.ParseData()
 		return parse(input, at: startIndex, using: &data)
@@ -69,14 +68,14 @@ extension TextPattern {
 		return parse(input, at: index, using: &data)
 	}
 
-	public func _prepForPatterns(remainingPatterns _: inout ArraySlice<TextPattern>) throws -> PatternsEngine.Patternette {
+	public func _prepForPatterns(remainingPatterns _: inout ArraySlice<SwiftPattern>) throws -> PatternsEngine.Patternette {
 		return ({ (input: Input, index: Input.Index, data: inout PatternsEngine.ParseData) in
 			self.parse(input, at: index, using: &data)
 		}, description)
 	}
 }
 
-public struct Literal: TextPattern, RegexConvertible {
+public struct Literal: SwiftPattern, RegexConvertible {
 	public let substring: Input
 	let searchCache: SearchCache<Input.Element>
 
@@ -91,7 +90,7 @@ public struct Literal: TextPattern, RegexConvertible {
 	public var length: Int? { return substring.count }
 
 	public init<S: Sequence>(_ sequence: S) where S.Element == Character {
-		self.substring = TextPattern.Input(sequence)
+		self.substring = SwiftPattern.Input(sequence)
 		self.searchCache = SearchCache(pattern: self.substring)
 		assert(!self.substring.isEmpty, "Cannot have an empty Literal.")
 	}
@@ -100,7 +99,7 @@ public struct Literal: TextPattern, RegexConvertible {
 		self.init(String(character))
 	}
 
-	public func parse(_ input: TextPattern.Input, at index: TextPattern.Input.Index, using _: inout PatternsEngine.ParseData) -> ParsedRange? {
+	public func parse(_ input: SwiftPattern.Input, at index: SwiftPattern.Input.Index, using _: inout PatternsEngine.ParseData) -> ParsedRange? {
 		return input[index ..< input.endIndex].starts(with: substring)
 			? index ..< input.index(index, offsetBy: substring.count) : nil
 	}
@@ -116,7 +115,7 @@ extension Literal: ExpressibleByStringLiteral {
 	}
 }
 
-public struct OneOf: TextPattern, RegexConvertible {
+public struct OneOf: SwiftPattern, RegexConvertible {
 	public let set: Group<Input.Element>
 
 	public let description: String
@@ -152,21 +151,21 @@ public struct OneOf: TextPattern, RegexConvertible {
 		symbol, mathSymbol, currencySymbol,
 	]
 
-	public static func patterns(for c: Input.Element) -> [TextPattern] {
+	public static func patterns(for c: Input.Element) -> [SwiftPattern] {
 		return OneOf.basePatterns.filter { $0.set.contains(c) }
 	}
 
-	public static func patterns<S: Sequence>(for s: S) -> [TextPattern] where S.Element == Input.Element {
+	public static func patterns<S: Sequence>(for s: S) -> [SwiftPattern] where S.Element == Input.Element {
 		return OneOf.basePatterns.filter { $0.set.contains(contentsOf: s) }
 	}
 }
 
-public struct RepeatPattern: TextPattern, RegexConvertible {
-	public let repeatedPattern: TextPattern
+public struct RepeatPattern: SwiftPattern, RegexConvertible {
+	public let repeatedPattern: SwiftPattern
 	public let min: Int
 	public let max: Int?
 
-	init<R: RangeExpression>(repeatedPattern: TextPattern, range: R) where R.Bound == Int {
+	init<R: RangeExpression>(repeatedPattern: SwiftPattern, range: R) where R.Bound == Int {
 		let actualRange = range.relative(to: 0 ..< Int.max)
 		self.repeatedPattern = repeatedPattern
 		self.min = actualRange.lowerBound
@@ -212,17 +211,17 @@ public struct RepeatPattern: TextPattern, RegexConvertible {
 	 */
 }
 
-extension TextPattern {
-	public func `repeat`<R: RangeExpression>(_ range: R) -> TextPattern where R.Bound == Int {
+extension SwiftPattern {
+	public func `repeat`<R: RangeExpression>(_ range: R) -> SwiftPattern where R.Bound == Int {
 		return RepeatPattern(repeatedPattern: self, range: range)
 	}
 
-	public func `repeat`(_ count: Int) -> TextPattern {
+	public func `repeat`(_ count: Int) -> SwiftPattern {
 		return RepeatPattern(repeatedPattern: self, range: count ... count)
 	}
 }
 
-public struct OrPattern: TextPattern, RegexConvertible {
+public struct OrPattern: SwiftPattern, RegexConvertible {
 	public let pattern1, pattern2: TextPattern
 
 	init(pattern1: TextPattern, pattern2: TextPattern) {
@@ -260,13 +259,14 @@ public struct OrPattern: TextPattern, RegexConvertible {
 		data = backup
 		return pattern2.parse(input, at: index, using: &data)
 	}
+
 }
 
 public func || (p1: TextPattern, p2: TextPattern) -> OrPattern {
 	return OrPattern(pattern1: p1, pattern2: p2)
 }
 
-public struct Line: TextPattern, RegexConvertible {
+public struct Line: SwiftPattern, RegexConvertible {
 	public let description: String = "line"
 	public let regex: String = "^.*$"
 	public let length: Int? = nil
@@ -279,6 +279,7 @@ public struct Line: TextPattern, RegexConvertible {
 		pattern = Patterns(Start(), Skip(), End())
 	}
 
+
 	public func parse(_ input: Input, at index: Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {
 		pattern.parse(input, at: index, using: &data)
 	}
@@ -286,8 +287,9 @@ public struct Line: TextPattern, RegexConvertible {
 	public func parse(_ input: Input, from startIndex: Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {
 		pattern.parse(input, from: startIndex, using: &data)
 	}
+	
 
-	public struct Start: TextPattern, RegexConvertible {
+	public struct Start: SwiftPattern, RegexConvertible {
 		public init() {}
 
 		public var description: String { return "line.start" }
@@ -308,7 +310,7 @@ public struct Line: TextPattern, RegexConvertible {
 		}
 	}
 
-	public struct End: TextPattern, RegexConvertible {
+	public struct End: SwiftPattern, RegexConvertible {
 		public init() {}
 
 		public var description: String { return "line.end" }
@@ -329,8 +331,8 @@ public struct Line: TextPattern, RegexConvertible {
 	}
 }
 
-public struct NotPattern: TextPattern {
-	public let pattern: TextPattern
+public struct NotPattern: SwiftPattern {
+	public let pattern: SwiftPattern
 	public var description: String {
 		return "!\(pattern)"
 	}
@@ -349,7 +351,7 @@ public struct NotPattern: TextPattern {
 	}
 }
 
-extension TextPattern {
+extension SwiftPattern {
 	public var not: NotPattern {
 		return NotPattern(pattern: self)
 	}

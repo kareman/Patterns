@@ -20,7 +20,11 @@ let package = Package(
 		// Targets can depend on other targets in this package, and on products in packages which this package depends on.
 		.target(
 			name: "Patterns",
-			dependencies: []),
+			dependencies: [],
+			swiftSettings: [
+				.define("DEBUG", .when(configuration: .debug)),
+				//.define("VMBacktrackEngine"),
+				]),
 		.testTarget(
 			name: "PatternsTests",
 			dependencies: ["Patterns"]),
