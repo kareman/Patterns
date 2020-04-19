@@ -8,12 +8,16 @@
 public struct Word {
 	public static let boundary = Boundary()
 
-	public struct Boundary: SwiftPattern, RegexConvertible {
+	public struct Boundary: VMPattern, RegexConvertible {
+		public func createInstructions() -> [Instruction] {
+			fatalError()
+		}
+
 		public let length: Int? = 0
 		public let regex: String = #"\b"#
 		public let description: String = "Word.boundary"
 
-		public func parse(_ input: Input, at index: Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {
+		func parse(_ input: Input, at index: Input.Index) -> ParsedRange? {
 			let success = index ..< index
 			guard index != input.endIndex, index != input.startIndex else { return success }
 

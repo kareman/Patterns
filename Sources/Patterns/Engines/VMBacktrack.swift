@@ -5,30 +5,9 @@
 //  Created by Kåre Morstøl on 18/04/2020.
 //
 
-#if VMBacktrackEngine
-
-public protocol VMPattern {
-	typealias Input = Substring
+public protocol VMPattern: CustomStringConvertible {
+	typealias Input = Substring // TODO: remove
 	func createInstructions() -> [Instruction]
-}
-
-extension VMPattern {
-	func parse(_ input: Input, at index: Input.Index, using: inout PatternsEngine.ParseData) -> ParsedRange? {
-		fatalError("wrong engine")
-	}
-
-	func parse(_ input: Input, from index: Input.Index, using: inout PatternsEngine.ParseData) -> ParsedRange? {
-		fatalError("wrong engine")
-	}
-
-	/// The length this pattern always parses, if it is constant
-	var length: Int? {
-		fatalError("wrong engine")
-	}
-
-	var regex: String {
-		fatalError("wrong engine")
-	}
 }
 
 public class VMBacktrackEngine: Matcher {
@@ -134,65 +113,9 @@ func pike<S: StringProtocol>(_ instructions: [Instruction], input: S, startIndex
 	return nil
 }
 
-extension Patterns: VMPattern {
-	public func createInstructions() -> [Instruction] {
-		return series.flatMap { $0.createInstructions() }
-	}
-
+extension Patterns {
 	func parse(_ input: String) -> Patterns.Match? {
 		let instructions = [Instruction.captureStart(name: nil)] + self.createInstructions() + [.captureEnd, .match]
 		return pike(instructions, input: input)
 	}
 }
-
-extension Literal: VMPattern {
-	public func createInstructions() -> [Instruction] {
-		return substring.map(Instruction.literal)
-	}
-}
-
-extension Skip: VMPattern {
-	public func createInstructions() -> [Instruction] {
-		return [.split(first: 1, second: 3),
-		        .any,
-		        .jump(relative: -2)]
-	}
-}
-
-extension Capture: VMPattern {
-	public func createInstructions() -> [Instruction] {
-		fatalError()
-	}
-}
-
-extension Capture.Start: VMPattern {
-	public func createInstructions() -> [Instruction] {
-		fatalError()
-	}
-}
-
-extension Capture.End: VMPattern {
-	public func createInstructions() -> [Instruction] {
-		fatalError()
-	}
-}
-
-extension Line.Start: VMPattern {
-	public func createInstructions() -> [Instruction] {
-		fatalError()
-	}
-}
-
-extension Line.End: VMPattern {
-	public func createInstructions() -> [Instruction] {
-		fatalError()
-	}
-}
-
-extension OneOf: VMPattern {
-	public func createInstructions() -> [Instruction] {
-		fatalError()
-	}
-}
-
-#endif

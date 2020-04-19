@@ -23,7 +23,7 @@ let package = Package(
 			dependencies: [],
 			swiftSettings: [
 				.define("DEBUG", .when(configuration: .debug)),
-				//.define("VMBacktrackEngine"),
+				//.define("SwiftEngine"),
 				]),
 		.testTarget(
 			name: "PatternsTests",
