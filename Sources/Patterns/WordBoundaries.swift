@@ -9,10 +9,6 @@ public struct Word {
 	public static let boundary = Boundary()
 
 	public struct Boundary: VMPattern, RegexConvertible {
-		public func createInstructions() -> [Instruction] {
-			fatalError()
-		}
-
 		public let length: Int? = 0
 		public let regex: String = #"\b"#
 		public let description: String = "Word.boundary"
@@ -67,6 +63,12 @@ public struct Word {
 			if before(extendNumLet), after(aHLetter || numeric || katakana) { return nil }
 
 			return success
+		}
+
+		public func createInstructions() -> [Instruction] {
+			[.checkIndex({ (index, input) -> Bool in
+				self.parse(input, at: index) != nil
+			})]
 		}
 	}
 }

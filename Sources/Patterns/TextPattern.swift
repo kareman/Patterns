@@ -44,12 +44,7 @@ extension Literal: ExpressibleByStringLiteral {
 }
 
 public struct OneOf: VMPattern, RegexConvertible {
-	public func createInstructions() -> [Instruction] {
-		fatalError()
-	}
-
 	public let set: Group<Input.Element>
-
 	public let description: String
 	private let _regex: String?
 	public var regex: String {
@@ -84,13 +79,13 @@ public struct OneOf: VMPattern, RegexConvertible {
 	public static func patterns<S: Sequence>(for s: S) -> [TextPattern] where S.Element == Input.Element {
 		return OneOf.basePatterns.filter { $0.set.contains(contentsOf: s) }
 	}
+
+	public func createInstructions() -> [Instruction] {
+		return [.checkCharacter(set.contains)]
+	}
 }
 
 public struct RepeatPattern: VMPattern, RegexConvertible {
-	public func createInstructions() -> [Instruction] {
-		fatalError()
-	}
-
 	public let repeatedPattern: TextPattern
 	public let min: Int
 	public let max: Int?
@@ -108,6 +103,22 @@ public struct RepeatPattern: VMPattern, RegexConvertible {
 
 	public var regex: String {
 		return "(?:\((repeatedPattern as! RegexConvertible).regex){\(min),\(max.map(String.init(describing:)) ?? "")}"
+	}
+
+	public func createInstructions() -> [Instruction] {
+		let repeatedInstructions = repeatedPattern.createInstructions()
+		var result = (0 ..< min).flatMap { _ in repeatedInstructions }
+		if let max = max {
+			result.append(contentsOf: (min ..< max).flatMap { _ in
+				[.split(first: 1, second: repeatedInstructions.count + 1)] + repeatedInstructions
+			})
+		} else {
+			result.append(contentsOf:
+				[.split(first: 1, second: repeatedInstructions.count + 2)]
+					+ repeatedInstructions
+					+ [.jump(relative: -repeatedInstructions.count - 1)])
+		}
+		return result
 	}
 }
 
@@ -138,7 +149,11 @@ public struct OrPattern: VMPattern, RegexConvertible {
 	}
 
 	public func createInstructions() -> [Instruction] {
-		fatalError()
+		let (inst1, inst2) = (pattern1.createInstructions(), pattern2.createInstructions())
+		return [.split(first: 1, second: inst1.count + 2)]
+			+ inst1
+			+ [.jump(relative: inst2.count + 1)]
+			+ inst2
 	}
 }
 
@@ -147,10 +162,6 @@ public func || (p1: TextPattern, p2: TextPattern) -> OrPattern {
 }
 
 public struct Line: VMPattern, RegexConvertible {
-	public func createInstructions() -> [Instruction] {
-		fatalError()
-	}
-
 	public let description: String = "line"
 	public let regex: String = "^.*$"
 
@@ -162,48 +173,51 @@ public struct Line: VMPattern, RegexConvertible {
 		pattern = Patterns(Start(), Skip(), End())
 	}
 
-	public struct Start: VMPattern, RegexConvertible {
-		public func createInstructions() -> [Instruction] {
-			fatalError()
-		}
+	public func createInstructions() -> [Instruction] {
+		pattern.createInstructions()
+	}
 
+	public struct Start: VMPattern, RegexConvertible {
 		public init() {}
 
-		public var description: String { return "line.start" }
+		public var description: String { "line.start" }
 		public var regex = "^"
+
+		public func createInstructions() -> [Instruction] {
+			[.checkIndex { (index, input) -> Bool in
+				index == input.startIndex || input[input.index(before: index)].isNewline
+			}]
+		}
 	}
 
 	public struct End: VMPattern, RegexConvertible {
 		public init() {}
 
-		public var description: String { return "line.end" }
+		public var description: String { "line.end" }
 		public let regex = "$"
 
 		public func createInstructions() -> [Instruction] {
-			fatalError()
+			[.checkIndex { (index, input) -> Bool in
+				index == input.endIndex || input[index].isNewline
+			}]
 		}
 	}
 }
 
 public struct NotPattern: VMPattern {
-	public func createInstructions() -> [Instruction] {
-		fatalError()
-	}
-
 	public let pattern: TextPattern
-	public var description: String {
-		return "!\(pattern)"
-	}
+	public var description: String { "!\(pattern)" }
 
-	public var regex: String {
-		fatalError("Regex does not support 'not'")
+	public func createInstructions() -> [Instruction] {
+		return [.checkIndex { (index, input) -> Bool in
+			let pattern = (self.pattern as? Patterns) ?? Patterns(self.pattern)
+			return pattern.match(in: input, at: index) != nil
+		}]
 	}
 }
 
 extension TextPattern {
-	public var not: NotPattern {
-		return NotPattern(pattern: self)
-	}
+	public var not: NotPattern { NotPattern(pattern: self) }
 }
 
 public let alphanumeric = OneOf(description: "alphanumeric", regex: #"(?:\p{Alphabetic}|\p{Nd})"#,

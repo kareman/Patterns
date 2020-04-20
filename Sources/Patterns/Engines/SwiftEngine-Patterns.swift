@@ -196,6 +196,15 @@ extension Patterns: SwiftPattern {
 		return lengths.count == series.count ? lengths.reduce(0, +) : nil
 	}
 
+	public init(verify series: [SwiftPattern?]) throws {
+		self.series = series.compactMap { $0 }.flattenPatterns()
+		if series.isEmpty || (series.filter { $0 is Capture.Start || $0 is Capture.End }.count > 2) {
+			throw InitError.invalid(self.series.array())
+		}
+		self.matcher = try PatternsEngine(self.series)
+		self.description = self.series.map(String.init(describing:)).joined(separator: " ")
+	}
+
 	public func parse(_ input: Input, at startindex: Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {
 		return matcher.parse(input, at: startindex, using: &data)
 	}
@@ -205,6 +214,20 @@ extension Patterns.Match {
 	init(fullRange: ParsedRange, data: PatternsEngine.ParseData) {
 		let captures = (data.captureBeginnings.map { ($0, $1 ..< $1) } + data.captures).sorted(by: { $0.range < $1.range })
 		self.init(fullRange: fullRange, captures: captures)
+	}
+}
+
+private extension Sequence where Element == TextPattern {
+	func flattenPatterns() -> [TextPattern] {
+		return self.flatMap { (pattern: TextPattern) -> [TextPattern] in
+			if let series = (pattern as? Patterns)?.series,
+				!series.contains(where: { $0 is Capture.Start || $0 is Capture.End }) {
+				return series
+			} else if let capture = pattern as? Capture {
+				return [Capture.Start(name: capture.name)] + capture.patterns + [Capture.End()]
+			}
+			return [pattern]
+		}
 	}
 }
 

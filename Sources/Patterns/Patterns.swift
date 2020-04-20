@@ -24,37 +24,33 @@ public struct Skip: VMPattern, RegexConvertible {
 	}
 
 	public func createInstructions() -> [Instruction] {
-		assert(repeatedPattern == nil)
-		return [.split(first: 1, second: 3),
-		        .any,
-		        .jump(relative: -2)]
+		let reps = repeatedPattern?.createInstructions() ?? [.any]
+		return [.split(first: reps.count + 2, second: 1)]
+			+ reps
+			+ [.jump(relative: -reps.count - 1)]
 	}
 }
 
 public struct Capture: VMPattern, RegexConvertible {
-	public func createInstructions() -> [Instruction] {
-		fatalError()
-	}
+	public var description: String = "CAPTURE" // TODO: proper description
+	public let name: String?
+	public let patterns: [TextPattern]
 
 	public var regex: String {
 		let capturedRegex = patterns.map { ($0 as! RegexConvertible).regex }.joined()
 		return name.map { "(?<\($0)>\(capturedRegex))" } ?? "(\(capturedRegex))"
 	}
 
-	public var description: String = "CAPTURE" // TODO: proper description
-	public let name: String?
-	public let patterns: [TextPattern]
-
 	public init(name: String? = nil, _ patterns: TextPattern...) {
 		self.patterns = patterns
 		self.name = name
 	}
 
-	public struct Start: VMPattern, RegexConvertible {
-		public func createInstructions() -> [Instruction] {
-			fatalError()
-		}
+	public func createInstructions() -> [Instruction] {
+		return [.captureStart(name: name)] + patterns.flatMap { $0.createInstructions() } + [.captureEnd]
+	}
 
+	public struct Start: VMPattern, RegexConvertible {
 		public var description: String { return "[" }
 		public var regex = "("
 		public let name: String?
@@ -62,17 +58,21 @@ public struct Capture: VMPattern, RegexConvertible {
 		public init(name: String? = nil) {
 			self.name = name
 		}
+
+		public func createInstructions() -> [Instruction] {
+			return [.captureStart(name: name)]
+		}
 	}
 
 	public struct End: VMPattern, RegexConvertible {
-		public func createInstructions() -> [Instruction] {
-			fatalError()
-		}
-
 		public var description: String { return "]" }
 		public var regex = ")"
 
 		public init() {}
+
+		public func createInstructions() -> [Instruction] {
+			return [.captureEnd]
+		}
 	}
 }
 
@@ -108,17 +108,9 @@ public struct Patterns: VMPattern, RegexConvertible {
 		return series.map { ($0 as! RegexConvertible).regex }.joined()
 	}
 
-	public init(verify series: [TextPattern?]) throws {
-		self.series = series.compactMap { $0 }.flattenPatterns()
-		if series.isEmpty || (series.filter { $0 is Capture.Start || $0 is Capture.End }.count > 2) {
-			throw InitError.invalid(self.series.array())
-		}
-
-		#if SwiftEngine
-		self.matcher = try PatternsEngine(self.series)
-		#else
+	public init(verify series: [VMPattern?]) throws {
+		self.series = series.compactMap { $0 }
 		self.matcher = try VMBacktrackEngine(self.series)
-		#endif
 		self.description = self.series.map(String.init(describing:)).joined(separator: " ")
 	}
 
@@ -201,20 +193,6 @@ extension Patterns {
 				? input.index(after: range.upperBound) : range.upperBound
 			return match
 		})
-	}
-}
-
-private extension Sequence where Element == TextPattern {
-	func flattenPatterns() -> [TextPattern] {
-		return self.flatMap { (pattern: TextPattern) -> [TextPattern] in
-			if let series = (pattern as? Patterns)?.series,
-				!series.contains(where: { $0 is Capture.Start || $0 is Capture.End }) {
-				return series
-			} else if let capture = pattern as? Capture {
-				return [Capture.Start(name: capture.name)] + capture.patterns + [Capture.End()]
-			}
-			return [pattern]
-		}
 	}
 }
 
