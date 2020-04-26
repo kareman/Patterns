@@ -37,7 +37,7 @@ class PerformanceTests: XCTestCase {
 		try speedTest(pattern, textFraction: 6, hits: 2550)
 	}
 
-	func testNotNewLine() throws {
+	func skiptestNotNewLine() throws {
 		let pattern = try Patterns(verify: Literal(","),
 		                           Capture(Skip(whileRepeating: newline.not)),
 		                           Line.End())
