@@ -38,6 +38,11 @@
                BlueprintName = "PatternsTests"
                ReferencedContainer = "container:">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "PatternsTests/testSkipWithRepeatingPattern()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>

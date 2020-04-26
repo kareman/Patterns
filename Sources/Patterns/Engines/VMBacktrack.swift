@@ -79,6 +79,7 @@ public enum Instruction {
 	case captureEnd
 	case jump(relative: Int)
 	case split(first: Int, second: Int)
+	case cancelLastSplit
 	case match
 
 	static let any = Self.checkCharacter { _ in true }
@@ -112,6 +113,9 @@ func pike(_ instructions: Array<Instruction>.SubSequence, input: Patterns.Input,
 			case let .split(first, second):
 				currentThreads.append(Thread(startAt: thread.instructionIndex + second, withDataFrom: thread))
 				thread.instructionIndex += first
+			case .cancelLastSplit:
+				_ = currentThreads.popLast()
+				thread.instructionIndex += 1
 			case .match:
 				return Patterns.Match(thread, instructions: instructions)
 			}

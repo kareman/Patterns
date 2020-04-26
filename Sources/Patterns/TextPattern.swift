@@ -110,13 +110,16 @@ public struct RepeatPattern: VMPattern, RegexConvertible {
 		var result = (0 ..< min).flatMap { _ in repeatedInstructions }
 		if let max = max {
 			result.append(contentsOf: (min ..< max).flatMap { _ in
-				[.split(first: 1, second: repeatedInstructions.count + 1)] + repeatedInstructions
+				[.split(first: 1, second: repeatedInstructions.count + 2)]
+					+ repeatedInstructions
+					+ [.cancelLastSplit]
 			})
 		} else {
 			result.append(contentsOf:
-				[.split(first: 1, second: repeatedInstructions.count + 2)]
+				[.split(first: 1, second: repeatedInstructions.count + 3)]
 					+ repeatedInstructions
-					+ [.jump(relative: -repeatedInstructions.count - 1)])
+					+ [.cancelLastSplit,
+					   .jump(relative: -repeatedInstructions.count - 2)])
 		}
 		return result
 	}
@@ -150,9 +153,10 @@ public struct OrPattern: VMPattern, RegexConvertible {
 
 	public func createInstructions() -> [Instruction] {
 		let (inst1, inst2) = (pattern1.createInstructions(), pattern2.createInstructions())
-		return [.split(first: 1, second: inst1.count + 2)]
+		return [.split(first: 1, second: inst1.count + 3)]
 			+ inst1
-			+ [.jump(relative: inst2.count + 1)]
+			+ [.cancelLastSplit,
+			   .jump(relative: inst2.count + 1)]
 			+ inst2
 	}
 }
