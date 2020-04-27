@@ -57,6 +57,11 @@ extension XCTestCase {
 		return (string, indices)
 	}
 
+	func assertParseMarkers(_ pattern: TextPattern, input: String,
+	                        file: StaticString = #file, line: UInt = #line) {
+		assertParseMarkers(Patterns(pattern), input: input, file: file, line: line)
+	}
+
 	func assertParseMarkers(_ pattern: Patterns, input: String,
 	                        file: StaticString = #file, line: UInt = #line) {
 		let (string, correct) = processMarkers(input)

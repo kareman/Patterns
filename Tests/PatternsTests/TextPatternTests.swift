@@ -104,11 +104,11 @@ class TextPatternTests: XCTestCase {
 			input: text, result: ["1\nl", "2\nl", "3\nl"])
 
 		/* TODO: Implement?
-		XCTAssertThrowsError(try Patterns(verify: Line.start, Line.start))
-		XCTAssertThrowsError(try Patterns(verify: Line.start, Capture(Line.start)))
-		XCTAssertThrowsError(
-			try Patterns(verify: [Line.start, Skip(), Line.start]))
-		*/
+		 XCTAssertThrowsError(try Patterns(verify: Line.start, Line.start))
+		 XCTAssertThrowsError(try Patterns(verify: Line.start, Capture(Line.start)))
+		 XCTAssertThrowsError(
+		 	try Patterns(verify: [Line.start, Skip(), Line.start]))
+		 */
 		XCTAssertNoThrow(try Patterns(verify: [Line.start, Skip(whileRepeating: alphanumeric || Literal("\n")), Line.start]))
 	}
 
@@ -136,12 +136,12 @@ class TextPatternTests: XCTestCase {
 			input: text, result: ["1\nl", "2\nl", "3\nl"])
 
 		/* TODO: Implement?
-		XCTAssertThrowsError(try Patterns(verify: Line.end, Line.end))
-		XCTAssertThrowsError(
-			try Patterns(verify: Line.end, Capture(Line.end)))
-		XCTAssertThrowsError(
-			try Patterns(verify: Line.end, Skip(), Line.end))
-		*/
+		 XCTAssertThrowsError(try Patterns(verify: Line.end, Line.end))
+		 XCTAssertThrowsError(
+		 	try Patterns(verify: Line.end, Capture(Line.end)))
+		 XCTAssertThrowsError(
+		 	try Patterns(verify: Line.end, Skip(), Line.end))
+		 */
 
 		XCTAssertNoThrow(try Patterns(verify: [Line.end, Skip(whileRepeating: alphanumeric || Literal("\n")), Line.end]))
 
@@ -166,5 +166,13 @@ class TextPatternTests: XCTestCase {
 		let pattern = try Patterns(verify: Word.boundary)
 		assertParseMarkers(pattern, input: #"|I| |said| |"|hello|"|"#)
 		assertParseMarkers(pattern, input: "|this| |I| |-|3,875.08| |can't|,| |you| |letter|-|like|.| |And|?| |then|")
+	}
+
+	func testNotParser() throws {
+		assertParseMarkers(alphanumeric.not, input: #"I| said|,| 3|"#)
+		assertParseAll(
+			Patterns(Word.boundary, digit.not, alphanumeric.repeat(1...)),
+			input: "123 abc 1ab a32b",
+			result: ["abc", "a32b"])
 	}
 }

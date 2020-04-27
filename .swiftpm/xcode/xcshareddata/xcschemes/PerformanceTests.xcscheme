@@ -38,11 +38,6 @@
                BlueprintName = "PerformanceTests"
                ReferencedContainer = "container:">
             </BuildableReference>
-            <SkippedTests>
-               <Test
-                  Identifier = "PerformanceTests/testNotNewLine()">
-               </Test>
-            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>

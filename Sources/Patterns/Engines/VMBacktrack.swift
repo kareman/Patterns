@@ -74,7 +74,7 @@ struct Thread {
 public enum Instruction {
 	case literal(Character)
 	case checkCharacter((Character) -> Bool)
-	case checkIndex((inout Patterns.Input.Index, Patterns.Input) -> Bool)
+	case checkIndex((Patterns.Input.Index, Patterns.Input) -> Bool)
 	case captureStart(name: String?)
 	case captureEnd
 	case jump(relative: Int)
@@ -103,7 +103,7 @@ func pike(_ instructions: Array<Instruction>.SubSequence, input: Patterns.Input,
 				input.formIndex(after: &thread.inputIndex)
 				thread.instructionIndex += 1
 			case let .checkIndex(test):
-				guard test(&thread.inputIndex, input) else { break loop }
+				guard test(thread.inputIndex, input) else { break loop }
 				thread.instructionIndex += 1
 			case let .jump(relative: distance):
 				thread.instructionIndex += distance

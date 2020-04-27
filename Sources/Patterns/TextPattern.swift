@@ -213,10 +213,11 @@ public struct NotPattern: VMPattern {
 	public var description: String { "!\(pattern)" }
 
 	public func createInstructions() -> [Instruction] {
-		return [.checkIndex { (index, input) -> Bool in
-			let pattern = (self.pattern as? Patterns) ?? Patterns(self.pattern)
-			return pattern.match(in: input, at: index) != nil
-		}]
+		let instructions = pattern.createInstructions()
+		return [.split(first: 1, second: instructions.count + 3)]
+			+ instructions
+			+ [.cancelLastSplit,
+			   .checkIndex { _, _ in false }]
 	}
 }
 
