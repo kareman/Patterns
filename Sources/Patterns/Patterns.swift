@@ -19,12 +19,12 @@ public struct Skip: VMPattern, RegexConvertible {
 	}
 
 	public init(whileRepeating repeatedPattern: TextPattern? = nil) {
-		self.repeatedPattern = repeatedPattern?.repeat(0...)
+		self.repeatedPattern = repeatedPattern
 		self.description = "\(repeatedPattern.map(String.init(describing:)) ?? "")*"
 	}
 
 	public func createInstructions() -> [Instruction] {
-		let reps = repeatedPattern?.createInstructions() ?? [.any]
+		let reps = repeatedPattern?.repeat(0...).createInstructions() ?? [.any]
 		return [.split(first: reps.count + 2, second: 1)]
 			+ reps
 			+ [.jump(relative: -reps.count - 1)]
@@ -41,9 +41,13 @@ public struct Capture: VMPattern, RegexConvertible {
 		return name.map { "(?<\($0)>\(capturedRegex))" } ?? "(\(capturedRegex))"
 	}
 
-	public init(name: String? = nil, _ patterns: TextPattern...) {
+	public init(name: String? = nil, _ patterns: [TextPattern]) {
 		self.patterns = patterns
 		self.name = name
+	}
+
+	public init(name: String? = nil, _ patterns: TextPattern...) {
+		self.init(name: name, patterns)
 	}
 
 	public func createInstructions() -> [Instruction] {
@@ -136,8 +140,108 @@ public struct Patterns: VMPattern, RegexConvertible {
 	}
 
 	public func createInstructions() -> [Instruction] {
-		return series.flatMap { $0.createInstructions() }
+		series.createInstructions()
 	}
+}
+
+internal extension Sequence where Element == VMPattern {
+	func createInstructions() -> [Instruction] {
+		let series = self.flattenPatterns()
+		let l = series.splitWhileKeepingSeparators(omittingEmptySubsequences: false, whereSeparator: { $0 is Skip })
+		return l.first!.flatMap { $0.createInstructions() }
+			+ l.dropFirst().flatMap {
+				prependSkip(skip: $0.first! as! Skip, $0.dropFirst().flatMap { $0.createInstructions() })
+			}
+	}
+}
+
+internal func prependSkip<C: BidirectionalCollection>(skip: Skip = Skip(), _ instructions: C)
+	-> [Instruction] where C.Element == Instruction {
+	var remainingInstructions = instructions[...]
+	var chars = [Instruction]()[...]
+	var nonIndexMovers = [Instruction]()[...]
+	var lastMoveTo = 0
+	loop: while let inst = remainingInstructions.popFirst() {
+		switch inst {
+		case .literal, .checkCharacter:
+			chars.append(inst)
+		case .checkIndex, .captureStart, .captureEnd, .cancelLastSplit:
+			let moveBy = chars.count - lastMoveTo
+			if moveBy > 0 {
+				nonIndexMovers.append(.moveIndex(relative: moveBy))
+				lastMoveTo = chars.count
+			}
+			nonIndexMovers.append(inst)
+		case .jump, .split, .match, .moveIndex, .function:
+			remainingInstructions = instructions[instructions.index(before: remainingInstructions.startIndex)...]
+			break loop
+		}
+	}
+	if chars.count - lastMoveTo != 0 {
+		nonIndexMovers.append(.moveIndex(relative: chars.count - lastMoveTo))
+	}
+
+	let search: (Patterns.Input, Patterns.Input.Index) -> Patterns.Input.Index?
+	let searchInstructions: [Instruction]
+
+	switch chars.first {
+	case nil:
+		func isCheckIndex(_ inst: Instruction) -> Bool {
+			if case .checkIndex = inst { return true } else { return false }
+		}
+		_ = nonIndexMovers.partition(by: { !isCheckIndex($0) })
+		switch nonIndexMovers.popFirst() {
+		case let .checkIndex(function):
+			search = { input, index in
+				input[index...].indices.first(where: { function($0, input) })
+					?? (function(input.endIndex, input) ? input.endIndex : nil)
+			}
+		default:
+			return skip.createInstructions() + instructions
+		}
+	case let .checkCharacter(test):
+		search = { input, index in input[index...].firstIndex(where: test) }
+	case .literal:
+		// TODO: mapWhile
+		let cs: [Character] = chars.prefix(while: { if case .literal = $0 { return true } else { return false } })
+			.map { if case let .literal(c) = $0 { return c } else { fatalError() } }
+		if cs.count == 1 {
+			search = { input, index in input[index...].firstIndex(of: cs[0]) }
+		} else {
+			let cache = SearchCache(pattern: cs)
+			search = { input, index in input.range(of: cs, from: index, cache: cache)?.lowerBound }
+		}
+	default:
+		fatalError()
+	}
+
+	if let repeatedPattern = skip.repeatedPattern {
+		let skipInstructions = (repeatedPattern.repeat(0...).createInstructions() + [.match])[...]
+		searchInstructions = [.function { (input, thread) -> Bool in
+			guard let end = search(input, thread.inputIndex) else { return false }
+			guard let newThread = backtrackingVM(skipInstructions, input: input[..<end],
+			                                     thread: Thread(startAt: skipInstructions.startIndex, withDataFrom: thread)),
+				newThread.inputIndex == end else { return false }
+
+			thread = Thread(startAt: thread.instructionIndex + 1, withDataFrom: newThread)
+			return true
+		}]
+	} else {
+		searchInstructions = [.search(search)]
+	}
+	return
+		searchInstructions + [
+			// TODO: seriously hacky
+			.split(first: 1, second: 4),
+			.moveIndex(relative: 1),
+			.split(first: 1, second: -3),
+			.moveIndex(relative: -1),
+		]
+		+ Array(chars)
+		+ [.moveIndex(relative: -chars.count)]
+		+ Array(nonIndexMovers)
+		+ Array(remainingInstructions)
+		+ [.cancelLastSplit]
 }
 
 extension Patterns {
@@ -151,7 +255,7 @@ extension Patterns {
 		}
 
 		public var range: ParsedRange {
-			return captures.isEmpty ? fullRange : captures.first!.range.lowerBound ..< captures.last!.range.upperBound
+			captures.isEmpty ? fullRange : captures.first!.range.lowerBound ..< captures.last!.range.upperBound
 		}
 
 		public func description(using text: String) -> String {
@@ -199,5 +303,17 @@ extension Patterns {
 extension Patterns: CustomDebugStringConvertible {
 	public var debugDescription: String {
 		return self.description
+	}
+}
+
+internal extension Sequence where Element == TextPattern {
+	func flattenPatterns() -> [TextPattern] {
+		self.flatMap { (pattern: TextPattern) -> [TextPattern] in
+			(pattern as? Patterns)?.series
+				?? (pattern as? Capture).map {
+					[Capture.Start(name: $0.name)] + $0.patterns + [Capture.End()]
+				}
+				?? [pattern]
+		}
 	}
 }

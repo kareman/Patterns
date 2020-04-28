@@ -48,6 +48,7 @@ class TextPatternTests: XCTestCase {
 		assertParseAll(try Patterns(verify: digit.repeat(1 ... 2)), input: "123abc09d48", result: ["12", "3", "09", "48"])
 
 		assertParseAll(digit.repeat(2), input: "1234 5 6 78", result: ["12", "34", "78"])
+		assertParseAll(Patterns(newline.not, ascii).repeat(1...), input: "123\n4567\n89", result: ["123", "4567", "89"])
 
 		XCTAssertEqual(digit.repeat(1...).description, "digit{1...}")
 	}
@@ -143,7 +144,8 @@ class TextPatternTests: XCTestCase {
 		 	try Patterns(verify: Line.end, Skip(), Line.end))
 		 */
 
-		XCTAssertNoThrow(try Patterns(verify: [Line.end, Skip(whileRepeating: alphanumeric || Literal("\n")), Line.end]))
+		XCTAssertNoThrow(
+			try Patterns(verify: [Line.end, Skip(whileRepeating: alphanumeric || Literal("\n")), Line.end]))
 
 		assertParseAll(
 			try Patterns(verify: Line.end),

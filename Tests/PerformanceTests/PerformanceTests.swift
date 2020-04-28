@@ -37,10 +37,11 @@ class PerformanceTests: XCTestCase {
 		try speedTest(pattern, textFraction: 6, hits: 2550)
 	}
 
-	func skiptestNotNewLine() throws {
+	func testNotNewLine() throws {
+		let any = OneOf(description: "any", contains: { _ in true })
 		let pattern = try Patterns(verify: Literal(","),
-		                           Capture(Skip(whileRepeating: newline.not)),
-		                           Line.End())
+		                           Capture(Skip(whileRepeating: Patterns(newline.not, any))),
+		                           Line.end)
 		try speedTest(pattern, textFraction: 8, hits: 1413)
 	}
 
@@ -73,18 +74,18 @@ class PerformanceTests: XCTestCase {
 	func testAnyNumeral() throws {
 		/* An advanced regular expression that matches any numeral is
 
-		[+-]?
-			(\d+(\.\d+)?)
-			|
-			(\.\d+)
-		([eE][+-]?\d+)?
-		*/
+		 [+-]?
+		 	(\d+(\.\d+)?)
+		 	|
+		 	(\.\d+)
+		 ([eE][+-]?\d+)?
+		 */
 
 		let digits = digit.repeat(1...)
-		let pattern = try Patterns(verify: OneOf("+-").repeat(0...1),
-															 Patterns(digits, Patterns(Literal("."), digits).repeat(0...1))
-																|| Patterns(Literal("."), digits),
-															 Patterns(OneOf("eE"), OneOf("+-").repeat(0...1), digits).repeat(0...1))
+		let pattern = try Patterns(verify: OneOf("+-").repeat(0 ... 1),
+		                           Patterns(digits, Patterns(Literal("."), digits).repeat(0 ... 1))
+		                           	|| Patterns(Literal("."), digits),
+		                           Patterns(OneOf("eE"), OneOf("+-").repeat(0 ... 1), digits).repeat(0 ... 1))
 		try speedTest(pattern, textFraction: 16, hits: 11)
 	}
 

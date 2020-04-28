@@ -14,19 +14,20 @@ class VMBacktrackEngine: Matcher {
 	let instructionsFrom, instructionsAt: Array<Instruction>.SubSequence
 
 	required init(_ series: [VMPattern]) throws {
-		let skips = Skip().createInstructions()
-		instructionsFrom = (skips + [.captureStart(name: nil)]
-			+ series.flatMap { $0.createInstructions() }
-			+ [.captureEnd, .match])[...]
-		instructionsAt = instructionsFrom.dropFirst(skips.count)
+		struct Match: VMPattern {
+			let description = "match"
+			func createInstructions() -> [Instruction] { [.match] }
+		}
+		instructionsAt = ([Capture.Start()] + series + [Capture.End(), Match()]).createInstructions()[...]
+		instructionsFrom = prependSkip(instructionsAt)[...]
 	}
 
 	func match(in input: Patterns.Input, at startindex: Patterns.Input.Index) -> Patterns.Match? {
-		return pike(instructionsAt, input: input, startIndex: startindex)
+		return backtrackingVM(instructionsAt, input: input, startIndex: startindex)
 	}
 
 	func match(in input: Patterns.Input, from startIndex: Patterns.Input.Index) -> Patterns.Match? {
-		return pike(instructionsFrom, input: input, startIndex: startIndex)
+		return backtrackingVM(instructionsFrom, input: input, startIndex: startIndex)
 	}
 }
 
@@ -53,7 +54,7 @@ extension Patterns.Match {
 	}
 }
 
-struct Thread {
+public struct Thread {
 	var instructionIndex: Array<Instruction>.SubSequence.Index
 	var inputIndex: String.Index
 	var captures: ContiguousArray<(index: String.Index, instruction: Array<Instruction>.Index)>
@@ -75,6 +76,8 @@ public enum Instruction {
 	case literal(Character)
 	case checkCharacter((Character) -> Bool)
 	case checkIndex((Patterns.Input.Index, Patterns.Input) -> Bool)
+	case moveIndex(relative: Int)
+	case function((Patterns.Input, inout Thread) -> Bool)
 	case captureStart(name: String?)
 	case captureEnd
 	case jump(relative: Int)
@@ -83,13 +86,26 @@ public enum Instruction {
 	case match
 
 	static let any = Self.checkCharacter { _ in true }
+	static func search(_ f: @escaping (Patterns.Input, Patterns.Input.Index) -> Patterns.Input.Index?) -> Instruction {
+		.function { (input, thread) -> Bool in
+			guard let index = f(input, thread.inputIndex) else { return false }
+			thread.inputIndex = index
+			thread.instructionIndex += 1
+			return true
+		}
+	}
 }
 
-func pike(_ instructions: Array<Instruction>.SubSequence, input: Patterns.Input, startIndex: Patterns.Input.Index? = nil) -> Patterns.Match? {
-	let startIndex = startIndex ?? input.startIndex
+func backtrackingVM(_ instructions: Array<Instruction>.SubSequence, input: Patterns.Input, startIndex: Patterns.Input.Index? = nil) -> Patterns.Match? {
+	let thread = Thread(instructionIndex: instructions.startIndex, inputIndex: startIndex ?? input.startIndex)
+	return backtrackingVM(instructions, input: input, thread: thread)
+		.map { Patterns.Match($0, instructions: instructions) }
+}
+
+func backtrackingVM(_ instructions: Array<Instruction>.SubSequence, input: Patterns.Input, thread: Thread) -> Thread? {
 	var currentThreads = ContiguousArray<Thread>()[...]
 
-	currentThreads.append(Thread(instructionIndex: instructions.startIndex, inputIndex: startIndex))
+	currentThreads.append(thread)
 	while var thread = currentThreads.popLast() {
 		loop: while true {
 			guard thread.instructionIndex < instructions.endIndex else { break loop }
@@ -105,6 +121,17 @@ func pike(_ instructions: Array<Instruction>.SubSequence, input: Patterns.Input,
 			case let .checkIndex(test):
 				guard test(thread.inputIndex, input) else { break loop }
 				thread.instructionIndex += 1
+			case let .moveIndex(relative: distance):
+				if distance > 0 {
+					guard input.formIndex(&thread.inputIndex, offsetBy: distance, limitedBy: input.endIndex)
+					else { break loop }
+				} else {
+					guard input.formIndex(&thread.inputIndex, offsetBy: distance, limitedBy: input.startIndex)
+					else { break loop }
+				}
+				thread.instructionIndex += 1
+			case let .function(function):
+				guard function(input, &thread) else { break loop }
 			case let .jump(relative: distance):
 				thread.instructionIndex += distance
 			case .captureStart(_), .captureEnd:
@@ -117,7 +144,7 @@ func pike(_ instructions: Array<Instruction>.SubSequence, input: Patterns.Input,
 				_ = currentThreads.popLast()
 				thread.instructionIndex += 1
 			case .match:
-				return Patterns.Match(thread, instructions: instructions)
+				return thread
 			}
 		}
 	}

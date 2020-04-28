@@ -5,6 +5,7 @@
 //  Created by Kåre Morstøl on 31/05/2019.
 //
 
+@testable import Patterns
 import XCTest
 
 class CollectionsRangesOfTests: XCTestCase {
@@ -34,5 +35,14 @@ class CollectionsRangesOfTests: XCTestCase {
 
 		XCTAssertEqual(c.ranges(of: [0, 1, 0]), [0 ..< 3, 2 ..< 5, 4 ..< 7, 6 ..< 9])
 		XCTAssertEqual(c.ranges(of: [1, 0, 1, 0]), [1 ..< 5, 3 ..< 7, 5 ..< 9])
+	}
+
+	func testSplitWhileKeepingSeparators() {
+		let c = Array(0 ... 9)
+
+		XCTAssertEqual(c.splitWhileKeepingSeparators(whereSeparator: { $0.isMultiple(of: 3) }),
+		               [ArraySlice([0, 1, 2]), ArraySlice([3, 4, 5]), ArraySlice([6, 7, 8]), ArraySlice([9])])
+		XCTAssertEqual(c.splitWhileKeepingSeparators(omittingEmptySubsequences: false, whereSeparator: [0, 5, 8].contains),
+		               [ArraySlice([]), ArraySlice([0, 1, 2, 3, 4]), ArraySlice([5, 6, 7]), ArraySlice([8, 9])])
 	}
 }
