@@ -229,14 +229,16 @@ internal func prependSkip<C: BidirectionalCollection>(skip: Skip = Skip(), _ ins
 	} else {
 		searchInstruction = .search(search)
 	}
-	return
-		[searchInstruction,
-		 .split(first: 1, second: -1, atIndex: 1)]
-		+ Array(chars)
-		+ [.moveIndex(relative: -chars.count)]
-		+ Array(nonIndexMovers)
-		+ Array(remainingInstructions)
-		+ [.cancelLastSplit]
+	return Array<Instruction> {
+		$0.reserveCapacity(chars.count + nonIndexMovers.count + remainingInstructions.count + 4)
+		$0 += searchInstruction
+		$0 += .split(first: 1, second: -1, atIndex: 1)
+		$0 += chars
+		$0 += .moveIndex(relative: -chars.count)
+		$0 += nonIndexMovers
+		$0 += remainingInstructions
+		$0 += .cancelLastSplit
+	}
 }
 
 extension Patterns {

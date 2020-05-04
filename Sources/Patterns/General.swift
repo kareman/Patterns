@@ -198,3 +198,18 @@ extension RangeReplaceableCollection {
 		return remove(at: index)
 	}
 }
+
+extension RangeReplaceableCollection {
+	init(compose: (inout Self) -> Void) {
+		self.init()
+		compose(&self)
+	}
+
+	static func += (lhs: inout Self, rhs: Element) {
+		lhs.append(rhs)
+	}
+
+	mutating func append(compose: (inout Self) -> Void) {
+		compose(&self)
+	}
+}
