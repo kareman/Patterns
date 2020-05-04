@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>classNames</key>
+	<dict>
+		<key>PerformanceTests</key>
+		<dict>
+			<key>testAnyNumeral()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.57065</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>4 May 2020 at 14:49:39</string>
+				</dict>
+			</dict>
+			<key>testContainsClosure()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.48831</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>4 May 2020 at 14:49:39</string>
+				</dict>
+			</dict>
+			<key>testLine()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.24447</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>4 May 2020 at 14:49:39</string>
+				</dict>
+			</dict>
+			<key>testLiteralSearch()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.60518</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>4 May 2020 at 14:49:39</string>
+				</dict>
+			</dict>
+			<key>testNonExistentLiteralSearch()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>1.2619</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>4 May 2020 at 14:49:39</string>
+				</dict>
+			</dict>
+			<key>testNotNewLine()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.66486</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>4 May 2020 at 14:49:39</string>
+				</dict>
+			</dict>
+			<key>testOneOrMore()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.42928</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>4 May 2020 at 14:49:39</string>
+				</dict>
+			</dict>
+			<key>testOptionalStringFollowedByNonOptionalString()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.67984</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>4 May 2020 at 14:49:39</string>
+				</dict>
+			</dict>
+			<key>testSkipping1()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.25714</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>4 May 2020 at 14:49:39</string>
+				</dict>
+			</dict>
+			<key>testWordBoundary()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.43892</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>4 May 2020 at 14:49:39</string>
+				</dict>
+			</dict>
+			<key>testWordBoundaryManyLanguages()</key>
+			<dict>
+				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.31555</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>4 May 2020 at 14:49:39</string>
+				</dict>
+			</dict>
+		</dict>
+	</dict>
+</dict>
+</plist>
