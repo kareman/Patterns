@@ -81,7 +81,7 @@ public enum Instruction {
 	case captureStart(name: String?)
 	case captureEnd
 	case jump(relative: Int)
-	case split(first: Int, second: Int)
+	case split(first: Int, second: Int, atIndex: Int)
 	case cancelLastSplit
 	case match
 
@@ -93,6 +93,9 @@ public enum Instruction {
 			thread.instructionIndex += 1
 			return true
 		}
+	}
+	static func split(first: Int, second: Int) -> Instruction {
+		.split(first: first, second: second, atIndex: 0)
 	}
 }
 
@@ -122,13 +125,7 @@ func backtrackingVM(_ instructions: Array<Instruction>.SubSequence, input: Patte
 				guard test(thread.inputIndex, input) else { break loop }
 				thread.instructionIndex += 1
 			case let .moveIndex(relative: distance):
-				if distance > 0 {
-					guard input.formIndex(&thread.inputIndex, offsetBy: distance, limitedBy: input.endIndex)
-					else { break loop }
-				} else {
-					guard input.formIndex(&thread.inputIndex, offsetBy: distance, limitedBy: input.startIndex)
-					else { break loop }
-				}
+				guard input.formIndexSafely(&thread.inputIndex, offsetBy: distance) else { break loop }
 				thread.instructionIndex += 1
 			case let .function(function):
 				guard function(input, &thread) else { break loop }
@@ -137,9 +134,13 @@ func backtrackingVM(_ instructions: Array<Instruction>.SubSequence, input: Patte
 			case .captureStart(_), .captureEnd:
 				thread.captures.append((index: thread.inputIndex, instruction: thread.instructionIndex))
 				thread.instructionIndex += 1
-			case let .split(first, second):
-				currentThreads.append(Thread(startAt: thread.instructionIndex + second, withDataFrom: thread))
-				thread.instructionIndex += first
+			case let .split(first, second, atIndex):
+				defer { thread.instructionIndex += first }
+				var newThread = Thread(startAt: thread.instructionIndex + second, withDataFrom: thread)
+				if atIndex != 0 {
+					guard input.formIndexSafely(&newThread.inputIndex, offsetBy: atIndex) else { break }
+				}
+				currentThreads.append(newThread)
 			case .cancelLastSplit:
 				_ = currentThreads.popLast()
 				thread.instructionIndex += 1

@@ -136,6 +136,14 @@ extension BidirectionalCollection {
 		}
 		return self[...i]
 	}
+
+	func formIndexSafely(_ i: inout Index, offsetBy distance: Int) -> Bool {
+		if distance > 0 {
+			return formIndex(&i, offsetBy: distance, limitedBy: endIndex)
+		} else {
+			return formIndex(&i, offsetBy: distance, limitedBy: startIndex)
+		}
+	}
 }
 
 // from https://github.com/apple/swift/blob/da61cc8cdf7aa2bfb3ab03200c52c4d371dc6751/stdlib/public/core/Collection.swift#L1527
@@ -181,5 +189,12 @@ extension Collection {
 		}
 
 		return result
+	}
+}
+
+extension RangeReplaceableCollection {
+	mutating func popFirst(where shouldBeRemoved: (Element) throws -> Bool) rethrows -> Element? {
+		guard let index = try firstIndex(where: shouldBeRemoved) else { return nil }
+		return remove(at: index)
 	}
 }

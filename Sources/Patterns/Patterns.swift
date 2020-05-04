@@ -182,15 +182,15 @@ internal func prependSkip<C: BidirectionalCollection>(skip: Skip = Skip(), _ ins
 	}
 
 	let search: (Patterns.Input, Patterns.Input.Index) -> Patterns.Input.Index?
-	let searchInstructions: [Instruction]
+	let searchInstruction: Instruction
 
 	switch chars.first {
 	case nil:
 		func isCheckIndex(_ inst: Instruction) -> Bool {
 			if case .checkIndex = inst { return true } else { return false }
 		}
-		_ = nonIndexMovers.partition(by: { !isCheckIndex($0) })
-		switch nonIndexMovers.popFirst() {
+
+		switch nonIndexMovers.popFirst(where: isCheckIndex(_:)) {
 		case let .checkIndex(function):
 			search = { input, index in
 				input[index...].indices.first(where: { function($0, input) })
@@ -217,7 +217,7 @@ internal func prependSkip<C: BidirectionalCollection>(skip: Skip = Skip(), _ ins
 
 	if let repeatedPattern = skip.repeatedPattern {
 		let skipInstructions = (repeatedPattern.repeat(0...).createInstructions() + [.match])[...]
-		searchInstructions = [.function { (input, thread) -> Bool in
+		searchInstruction = .function { (input, thread) -> Bool in
 			guard let end = search(input, thread.inputIndex) else { return false }
 			guard let newThread = backtrackingVM(skipInstructions, input: input[..<end],
 			                                     thread: Thread(startAt: skipInstructions.startIndex, withDataFrom: thread)),
@@ -225,18 +225,13 @@ internal func prependSkip<C: BidirectionalCollection>(skip: Skip = Skip(), _ ins
 
 			thread = Thread(startAt: thread.instructionIndex + 1, withDataFrom: newThread)
 			return true
-		}]
+		}
 	} else {
-		searchInstructions = [.search(search)]
+		searchInstruction = .search(search)
 	}
 	return
-		searchInstructions + [
-			// TODO: seriously hacky
-			.split(first: 1, second: 4),
-			.moveIndex(relative: 1),
-			.split(first: 1, second: -3),
-			.moveIndex(relative: -1),
-		]
+		[searchInstruction,
+		 .split(first: 1, second: -1, atIndex: 1)]
 		+ Array(chars)
 		+ [.moveIndex(relative: -chars.count)]
 		+ Array(nonIndexMovers)
