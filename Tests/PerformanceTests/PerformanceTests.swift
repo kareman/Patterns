@@ -16,9 +16,14 @@ class PerformanceTests: XCTestCase {
 		let fulltext = try String(contentsOf: getLocalURL(for: testFile))
 		let text = fulltext.prefix(fulltext.count / textFraction)
 		var result = 0
-		self.measure {
+		let block = {
 			result = pattern.matches(in: text).reduce(into: 0) { c, _ in c += 1 }
 		}
+		#if DEBUG
+		block()
+		#else
+		self.measure(block)
+		#endif
 		XCTAssertEqual(result, hits, file: file, line: line)
 	}
 
