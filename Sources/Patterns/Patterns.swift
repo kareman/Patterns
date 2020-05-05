@@ -5,233 +5,87 @@
 //  Created by Kåre Morstøl on 23/10/2018.
 //
 
-public struct Skip: TextPattern {
+#if SwiftEngine
+public typealias TextPattern = SwiftPattern
+#else
+public typealias TextPattern = VMPattern
+#endif
+
+public struct Skip: VMPattern, RegexConvertible {
 	public let repeatedPattern: TextPattern?
 	public let description: String
 	public var regex: String {
-		return repeatedPattern.map { "(?:\($0.regex))*?" } ?? ".*?"
+		return repeatedPattern.map { "(?:\(($0 as! RegexConvertible).regex))*?" } ?? ".*?"
 	}
 
-	public let length: Int? = nil
-
 	public init(whileRepeating repeatedPattern: TextPattern? = nil) {
-		self.repeatedPattern = repeatedPattern?.repeat(0...)
+		self.repeatedPattern = repeatedPattern
 		self.description = "\(repeatedPattern.map(String.init(describing:)) ?? "")*"
 	}
 
-	public func parse(_: TextPattern.Input, at _: TextPattern.Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {
-		assertionFailure("do not call this"); return nil
-	}
-
-	public func parse(_: TextPattern.Input, from _: TextPattern.Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {
-		assertionFailure("do not call this"); return nil
-	}
-
-	public func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>)
-		throws -> PatternsEngine.Patternette {
-		func getBoundHandler(_ remainingPatterns: inout ArraySlice<TextPattern>)
-			-> (Input, Input.Index, inout PatternsEngine.ParseData) -> Void {
-			switch remainingPatterns.first {
-			case is Capture.Start, is Capture.End:
-				let me = remainingPatterns.removeFirst()
-				return {
-					var forgetAboutIt = ArraySlice<TextPattern>()
-					try! _ = me._prepForPatterns(remainingPatterns: &forgetAboutIt).pattern($0, $1, &$2)
-				}
-			default:
-				return { _, _, _ in }
-			}
-		}
-
-		let maybeStoreBound = getBoundHandler(&remainingPatterns)
-
-		guard let next = remainingPatterns.first else {
-			return ({ (input, index, bounds: inout PatternsEngine.ParseData) in
-				// TODO: remove because it's never used
-				maybeStoreBound(input, input.endIndex, &bounds)
-				return index ..< input.endIndex
-			}, description + " (to the end)")
-		}
-		guard !(next is Skip) else {
-			throw Patterns.InitError.message("Cannot have 2 Skip in a row.")
-		}
-
-		return ({ (input, index, bounds: inout PatternsEngine.ParseData) in
-			guard let nextRange = next.parse(input, from: index, using: &bounds) else { return nil }
-			if let repeatedPattern = self.repeatedPattern {
-				guard repeatedPattern.parse(input[index ..< nextRange.lowerBound], at: index, using: &bounds)?.upperBound == nextRange.lowerBound else { return nil }
-			}
-			maybeStoreBound(input, nextRange.lowerBound, &bounds)
-			return index ..< nextRange.lowerBound
-		}, description)
+	public func createInstructions() -> [Instruction] {
+		let reps = repeatedPattern?.repeat(0...).createInstructions() ?? [.any]
+		return [.split(first: reps.count + 2, second: 1)]
+			+ reps
+			+ [.jump(relative: -reps.count - 1)]
 	}
 }
 
-public struct Capture: TextPattern {
-	public var length: Int?
-	public var regex: String {
-		let capturedRegex = patterns.map(\.regex).joined()
-		return name.map { "(?<\($0)>\(capturedRegex))" } ?? "(\(capturedRegex))"
-	}
+public struct Capture: VMPattern, RegexConvertible {
 	public var description: String = "CAPTURE" // TODO: proper description
 	public let name: String?
 	public let patterns: [TextPattern]
 
-	public init(name: String? = nil, _ patterns: TextPattern...) {
+	public var regex: String {
+		let capturedRegex = patterns.map { ($0 as! RegexConvertible).regex }.joined()
+		return name.map { "(?<\($0)>\(capturedRegex))" } ?? "(\(capturedRegex))"
+	}
+
+	public init(name: String? = nil, _ patterns: [TextPattern]) {
 		self.patterns = patterns
 		self.name = name
 	}
 
-	public func parse(_: TextPattern.Input, at _: TextPattern.Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {
-		assertionFailure("do not call this"); return nil
+	public init(name: String? = nil, _ patterns: TextPattern...) {
+		self.init(name: name, patterns)
 	}
 
-	public func parse(_: TextPattern.Input, from _: TextPattern.Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {
-		assertionFailure("do not call this"); return nil
+	public func createInstructions() -> [Instruction] {
+		return [.captureStart(name: name)] + patterns.flatMap { $0.createInstructions() } + [.captureEnd]
 	}
 
-	/*
-	 public func _prepForPatterns(remainingPatterns: inout ArraySlice<TextPattern>) throws -> Patterns.Patternette {
-	 	remainingPatterns.insert(contentsOf: patterns + [Capture.End()], at: remainingPatterns.startIndex)
-	 	return try Capture.Start()._prepForPatterns(remainingPatterns: &remainingPatterns)
-	 }
-	 */
-	public struct Start: TextPattern {
+	public struct Start: VMPattern, RegexConvertible {
 		public var description: String { return "[" }
 		public var regex = "("
-		public let length: Int? = 0
 		public let name: String?
 
 		public init(name: String? = nil) {
 			self.name = name
 		}
 
-		public func parse(_: TextPattern.Input, from _: TextPattern.Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {
-			assertionFailure("do not call this"); return nil
-		}
-
-		public func parse(_: Input, at index: Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {
-			data.captureBeginnings.append((name, index))
-			return index ..< index
+		public func createInstructions() -> [Instruction] {
+			return [.captureStart(name: name)]
 		}
 	}
 
-	public struct End: TextPattern {
+	public struct End: VMPattern, RegexConvertible {
 		public var description: String { return "]" }
 		public var regex = ")"
-		public let length: Int? = 0
 
 		public init() {}
 
-		public func parse(_: TextPattern.Input, at _: TextPattern.Input.Index) -> ParsedRange? {
-			assertionFailure("do not call this"); return nil
-		}
-
-		public func parse(_: TextPattern.Input, from _: TextPattern.Input.Index) -> ParsedRange? {
-			assertionFailure("do not call this"); return nil
-		}
-
-		public func parse(_: Input, at index: Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {
-			if let (name, begin) = data.captureBeginnings.popLast() {
-				data.captures.append((name, begin ..< index))
-			} else {
-				data.captures.append((nil, index ..< index))
-			}
-			return index ..< index
+		public func createInstructions() -> [Instruction] {
+			return [.captureEnd]
 		}
 	}
 }
 
 protocol Matcher: class {
-	init(_: [TextPattern]) throws
 	func match(in input: Patterns.Input, at startindex: Patterns.Input.Index) -> Patterns.Match?
 	func match(in input: Patterns.Input, from startIndex: Patterns.Input.Index) -> Patterns.Match?
 }
 
-public class PatternsEngine: Matcher {
-	public struct ParseData {
-		var captureBeginnings = ContiguousArray<(name: String?, begin: Patterns.Input.Index)>()
-		var captures = ContiguousArray<(name: String?, range: ParsedRange)>()
-	}
-
-	public typealias Patternette =
-		(pattern: (Patterns.Input, Patterns.Input.Index, inout ParseData) -> ParsedRange?, description: String)
-	private let patternettes: [Patternette]
-	private let patternFrom: TextPattern?
-
-	private static func createPatternettes(_ patterns: [TextPattern]) throws -> [Patternette] {
-		var remainingPatterns = patterns[...]
-		var result = [Patternette]()
-		while let nextPattern = remainingPatterns.popFirst() {
-			if !(nextPattern is Capture.Start || nextPattern is Capture.End), nextPattern.length == 0, let first = remainingPatterns.first {
-				if type(of: nextPattern) == type(of: first) {
-					throw Patterns.InitError.message("Cannot have 2 \(type(of: nextPattern)) in a row, as they will always parse the same position.")
-				}
-				if let second = remainingPatterns.second,
-					type(of: nextPattern) == type(of: second),
-					first.length == 0 || (first as? Skip)?.repeatedPattern == nil {
-					throw Patterns.InitError.message("Cannot have 2 \(type(of: nextPattern)) with a \(first) in between, as they will always parse the same position.")
-				}
-			}
-			result.append(try nextPattern._prepForPatterns(remainingPatterns: &remainingPatterns))
-		}
-		return result
-	}
-
-	required init(_ series: [TextPattern]) throws {
-		self.patternettes = try Self.createPatternettes(series)
-
-		// find first parseable pattern 'patternFrom', if there is no Skip pattern before it use it in Self.parse(_:from:):
-		let patternFromIndex = series.firstIndex(where: { !($0 is Skip || $0 is Capture || $0 is Capture.Start || $0 is Capture.End) })!
-		let patternFrom = series[patternFromIndex]
-		if let firstSkipIndex = series.firstIndex(where: { $0 is Skip }), firstSkipIndex < patternFromIndex {
-			self.patternFrom = nil
-		} else {
-			if let patternFromAsPatterns = patternFrom as? Patterns {
-				self.patternFrom = (patternFromAsPatterns.matcher as! PatternsEngine).patternFrom
-			} else {
-				self.patternFrom = patternFrom
-			}
-		}
-	}
-
-	public func parse(_ input: Patterns.Input, at startindex: Patterns.Input.Index, using data: inout ParseData) -> ParsedRange? {
-		var index = startindex
-		for patternette in patternettes {
-			guard let range = patternette.pattern(input, index, &data) else { return nil }
-			index = range.upperBound
-		}
-		return startindex ..< index
-	}
-
-	internal func match(in input: Patterns.Input, at startindex: Patterns.Input.Index) -> Patterns.Match? {
-		var data = PatternsEngine.ParseData()
-		var index = startindex
-		for patternette in patternettes {
-			guard let range = patternette.pattern(input, index, &data) else { return nil }
-			index = range.upperBound
-		}
-
-		return Patterns.Match(fullRange: startindex ..< index, data: data)
-	}
-
-	internal func match(in input: Patterns.Input, from startIndex: Patterns.Input.Index) -> Patterns.Match? {
-		guard let patternFrom = patternFrom else { return self.match(in: input, at: startIndex) }
-		var index = startIndex
-		var data = PatternsEngine.ParseData()
-		while index <= input.endIndex {
-			guard let fromIndex = patternFrom.parse(input, from: index, using: &data)?.lowerBound else { return nil }
-			if let match = self.match(in: input, at: fromIndex) {
-				return match
-			}
-			guard fromIndex != input.endIndex else { return nil }
-			index = input.index(after: fromIndex)
-		}
-		return nil
-	}
-}
-
-public struct Patterns: TextPattern {
+public struct Patterns: VMPattern, RegexConvertible {
 	public enum InitError: Error, CustomStringConvertible {
 		case invalid([TextPattern])
 		case message(String)
@@ -246,27 +100,21 @@ public struct Patterns: TextPattern {
 		}
 	}
 
-	public let series: [TextPattern]
+	let series: [TextPattern]
 	public let description: String
-	let matcher: Matcher
+	#if SwiftEngine
+	let matcher: PatternsEngine
+	#else
+	let matcher: VMBacktrackEngine
+	#endif
 
 	public var regex: String {
-		return series.map(\.regex).joined()
+		return series.map { ($0 as! RegexConvertible).regex }.joined()
 	}
 
-	public var length: Int? {
-		let lengths = series.compactMap(\TextPattern.length)
-		return lengths.count == series.count ? lengths.reduce(0, +) : nil
-	}
-
-	public init(verify series: [TextPattern?]) throws {
-		self.series = series.compactMap { $0 }.flattenPatterns()
-		if series.isEmpty || (series.filter { $0 is Capture.Start || $0 is Capture.End }.count > 2) {
-			throw InitError.invalid(self.series.array())
-		}
-
-		self.matcher = try PatternsEngine(self.series)
-
+	public init(verify series: [VMPattern?]) throws {
+		self.series = series.compactMap { $0 }
+		self.matcher = try VMBacktrackEngine(self.series)
 		self.description = self.series.map(String.init(describing:)).joined(separator: " ")
 	}
 
@@ -282,18 +130,6 @@ public struct Patterns: TextPattern {
 		self.init(series)
 	}
 
-	public func parse(_ input: Input, at startindex: Input.Index) -> ParsedRange? {
-		return match(in: input, at: startindex)?.range
-	}
-
-	public func parse(_ input: Input, from startIndex: Input.Index) -> ParsedRange? {
-		return match(in: input, from: startIndex)?.range
-	}
-
-	public func parse(_ input: Input, at startindex: Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {
-		return (matcher as! PatternsEngine).parse(input, at: startindex, using: &data)
-	}
-
 	public func ranges<S: StringProtocol>(in input: S, from startindex: Input.Index? = nil)
 		-> AnySequence<ParsedRange> where S.SubSequence == Input {
 		return AnySequence(matches(in: input, from: startindex).lazy.map(\.range))
@@ -301,6 +137,107 @@ public struct Patterns: TextPattern {
 
 	public func appending(_ pattern: TextPattern) throws -> Patterns {
 		return try Patterns(verify: self.series + [pattern])
+	}
+
+	public func createInstructions() -> [Instruction] {
+		series.createInstructions()
+	}
+}
+
+internal extension Sequence where Element == VMPattern {
+	func createInstructions() -> [Instruction] {
+		let series = self.flattenPatterns()
+		let l = series.splitWhileKeepingSeparators(omittingEmptySubsequences: false, whereSeparator: { $0 is Skip })
+		return l.first!.flatMap { $0.createInstructions() }
+			+ l.dropFirst().flatMap {
+				prependSkip(skip: $0.first! as! Skip, $0.dropFirst().flatMap { $0.createInstructions() })
+			}
+	}
+}
+
+internal func prependSkip<C: BidirectionalCollection>(skip: Skip = Skip(), _ instructions: C)
+	-> [Instruction] where C.Element == Instruction {
+	var remainingInstructions = instructions[...]
+	var chars = [Instruction]()[...]
+	var nonIndexMovers = [Instruction]()[...]
+	var lastMoveTo = 0
+	loop: while let inst = remainingInstructions.popFirst() {
+		switch inst {
+		case .literal, .checkCharacter:
+			chars.append(inst)
+		case .checkIndex, .captureStart, .captureEnd, .cancelLastSplit:
+			let moveBy = chars.count - lastMoveTo
+			if moveBy > 0 {
+				nonIndexMovers.append(.moveIndex(relative: moveBy))
+				lastMoveTo = chars.count
+			}
+			nonIndexMovers.append(inst)
+		case .jump, .split, .match, .moveIndex, .function:
+			remainingInstructions = instructions[instructions.index(before: remainingInstructions.startIndex)...]
+			break loop
+		}
+	}
+	if chars.count - lastMoveTo != 0 {
+		nonIndexMovers.append(.moveIndex(relative: chars.count - lastMoveTo))
+	}
+
+	let search: (Patterns.Input, Patterns.Input.Index) -> Patterns.Input.Index?
+	let searchInstruction: Instruction
+
+	switch chars.first {
+	case nil:
+		func isCheckIndex(_ inst: Instruction) -> Bool {
+			if case .checkIndex = inst { return true } else { return false }
+		}
+
+		switch nonIndexMovers.popFirst(where: isCheckIndex(_:)) {
+		case let .checkIndex(function):
+			search = { input, index in
+				input[index...].indices.first(where: { function($0, input) })
+					?? (function(input.endIndex, input) ? input.endIndex : nil)
+			}
+		default:
+			return skip.createInstructions() + instructions
+		}
+	case let .checkCharacter(test):
+		search = { input, index in input[index...].firstIndex(where: test) }
+	case .literal:
+		// TODO: mapWhile
+		let cs: [Character] = chars.prefix(while: { if case .literal = $0 { return true } else { return false } })
+			.map { if case let .literal(c) = $0 { return c } else { fatalError() } }
+		if cs.count == 1 {
+			search = { input, index in input[index...].firstIndex(of: cs[0]) }
+		} else {
+			let cache = SearchCache(pattern: cs)
+			search = { input, index in input.range(of: cs, from: index, cache: cache)?.lowerBound }
+		}
+	default:
+		fatalError()
+	}
+
+	if let repeatedPattern = skip.repeatedPattern {
+		let skipInstructions = (repeatedPattern.repeat(0...).createInstructions() + [.match])[...]
+		searchInstruction = .function { (input, thread) -> Bool in
+			guard let end = search(input, thread.inputIndex) else { return false }
+			guard let newThread = backtrackingVM(skipInstructions, input: input[..<end],
+			                                     thread: Thread(startAt: skipInstructions.startIndex, withDataFrom: thread)),
+				newThread.inputIndex == end else { return false }
+
+			thread = Thread(startAt: thread.instructionIndex + 1, withDataFrom: newThread)
+			return true
+		}
+	} else {
+		searchInstruction = .search(search)
+	}
+	return Array<Instruction> {
+		$0.reserveCapacity(chars.count + nonIndexMovers.count + remainingInstructions.count + 4)
+		$0 += searchInstruction
+		$0 += .split(first: 1, second: -1, atIndex: 1)
+		$0 += chars
+		$0 += .moveIndex(relative: -chars.count)
+		$0 += nonIndexMovers
+		$0 += remainingInstructions
+		$0 += .cancelLastSplit
 	}
 }
 
@@ -314,13 +251,8 @@ extension Patterns {
 			self.captures = captures
 		}
 
-		init(fullRange: ParsedRange, data: PatternsEngine.ParseData) {
-			let captures = (data.captureBeginnings.map { ($0, $1 ..< $1) } + data.captures).sorted(by: { $0.range < $1.range })
-			self.init(fullRange: fullRange, captures: captures)
-		}
-
 		public var range: ParsedRange {
-			return captures.isEmpty ? fullRange : captures.first!.range.lowerBound ..< captures.last!.range.upperBound
+			captures.isEmpty ? fullRange : captures.first!.range.lowerBound ..< captures.last!.range.upperBound
 		}
 
 		public func description(using text: String) -> String {
@@ -365,22 +297,20 @@ extension Patterns {
 	}
 }
 
-private extension Sequence where Element == TextPattern {
-	func flattenPatterns() -> [TextPattern] {
-		return self.flatMap { (pattern: TextPattern) -> [TextPattern] in
-			if let series = (pattern as? Patterns)?.series,
-				!series.contains(where: { $0 is Capture.Start || $0 is Capture.End }) {
-				return series
-			} else if let capture = pattern as? Capture {
-				return [Capture.Start(name: capture.name)] + capture.patterns + [Capture.End()]
-			}
-			return [pattern]
-		}
-	}
-}
-
 extension Patterns: CustomDebugStringConvertible {
 	public var debugDescription: String {
 		return self.description
+	}
+}
+
+internal extension Sequence where Element == TextPattern {
+	func flattenPatterns() -> [TextPattern] {
+		self.flatMap { (pattern: TextPattern) -> [TextPattern] in
+			(pattern as? Patterns)?.series
+				?? (pattern as? Capture).map {
+					[Capture.Start(name: $0.name)] + $0.patterns + [Capture.End()]
+				}
+				?? [pattern]
+		}
 	}
 }

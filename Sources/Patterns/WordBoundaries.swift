@@ -8,12 +8,12 @@
 public struct Word {
 	public static let boundary = Boundary()
 
-	public struct Boundary: TextPattern {
+	public struct Boundary: VMPattern, RegexConvertible {
 		public let length: Int? = 0
 		public let regex: String = #"\b"#
 		public let description: String = "Word.boundary"
 
-		public func parse(_ input: Input, at index: Input.Index, using data: inout PatternsEngine.ParseData) -> ParsedRange? {
+		func parse(_ input: Input, at index: Input.Index) -> ParsedRange? {
 			let success = index ..< index
 			guard index != input.endIndex, index != input.startIndex else { return success }
 
@@ -63,6 +63,12 @@ public struct Word {
 			if before(extendNumLet), after(aHLetter || numeric || katakana) { return nil }
 
 			return success
+		}
+
+		public func createInstructions() -> [Instruction] {
+			[.checkIndex({ (index, input) -> Bool in
+				self.parse(input, at: index) != nil
+			})]
 		}
 	}
 }

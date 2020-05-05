@@ -79,11 +79,9 @@ class PatternsTests: XCTestCase {
 		assertParseAll(
 			try Patterns(verify: Capture(), Literal("a")),
 			input: "xaa xa", result: "", count: 3)
-		/* // TODO: Awaiting rewrite of Patterns inner workings.
-		 assertParseAll(
-		 	try Patterns(try Patterns(Literal("x"), Capture(), Literal("a")),
-		 	             Literal("a")),
-		 	input: "xaxa xa", count: 3)*/
+		assertParseAll(
+			Patterns(Literal("x"), Capture(), Literal("a")),
+			input: "xaxa xa", result: "", count: 3)
 
 		let text = "This is a test text."
 		assertParseAll(
@@ -126,18 +124,28 @@ class PatternsTests: XCTestCase {
 			             	Skip(),
 			             	letter),
 			             Literal(" ")),
-			input: text, result: ["a"])
+			input: text, result: ["is", "a", "test"])
 		assertParseAll(
 			try Patterns(verify: Literal(" "),
 			             Capture(
 			             	Skip()),
 			             Literal(" ")),
 			input: text, result: ["is", "a", "test"])
+
 		assertParseAll(
-			try Patterns(verify: Literal(" "),
-			             Capture(
-			             	Skip())),
-			input: text, result: ["is a test text."])
+			try Patterns(verify: Line.start, Capture(Skip()), Line.end),
+			input: """
+			1
+			2
+			3
+			""",
+			result: ["1", "2", "3"])
+
+		// undefined (Skip at end)
+		_ = try Patterns(verify: Literal(" "),
+		                 Capture(
+		                 	Skip()))
+			.matches(in: text)
 	}
 
 	func testSkipWithRepeatingPattern() throws {
@@ -152,6 +160,12 @@ class PatternsTests: XCTestCase {
 
 		assertParseAll(
 			try Patterns(verify: Literal("("),
+			             Capture(Skip(whileRepeating: Patterns(ascii, newline.not))),
+			             Line.End()),
+			input: text, result: ["a)", "aaaaa)", "aaabaa)", "woieru", ")"])
+
+		assertParseAll(
+			try Patterns(verify: Literal("("),
 			             Skip(whileRepeating: Literal("a")),
 			             Literal(")")),
 			input: text, result: ["(a)", "(aaaaa)", "()"])
@@ -161,9 +175,10 @@ class PatternsTests: XCTestCase {
 			             	Skip(whileRepeating: Literal("a"))),
 			             Literal(")")),
 			input: text, result: ["a", "aaaaa", ""])
+
 		assertParseAll(
 			try Patterns(verify: Literal("("),
-			             Skip(whileRepeating: newline.not),
+			             Skip(whileRepeating: Patterns(ascii, newline.not)),
 			             Literal(")")),
 			input: text, result: ["(a)", "(aaaaa)", "(aaabaa)", "()"])
 	}
@@ -244,7 +259,7 @@ class PatternsTests: XCTestCase {
 	002F          ; Common # Zs       SPACE
 	"""
 
-	let rangeAndProperty: Patterns = {
+	lazy var rangeAndProperty: Patterns = {
 		let hexNumber = Capture(name: "codePoint", hexDigit.repeat(1...))
 		let hexRange = Patterns("\(hexNumber)..\(hexNumber)") || hexNumber
 		return Patterns("\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) ")
