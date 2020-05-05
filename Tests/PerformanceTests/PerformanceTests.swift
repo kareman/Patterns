@@ -1,5 +1,5 @@
 //
-//  GeneralTests.swift
+//  PerformanceTests.swift
 //  PatternsTests
 //
 //  Created by Kåre Morstøl on 31/05/2019.
@@ -35,6 +35,11 @@ class PerformanceTests: XCTestCase {
 	func testWordBoundaryManyLanguages() throws {
 		let pattern = try Patterns(verify: Word.boundary)
 		try speedTest(pattern, testFile: "Multi-language-short.txt", hits: 49801)
+	}
+
+	func testUppercaseWord() throws {
+		let pattern = try Patterns(verify: Word.boundary, uppercase.repeat(1...), Word.boundary)
+		try speedTest(pattern, textFraction: 8, hits: 887)
 	}
 
 	func testLine() throws {

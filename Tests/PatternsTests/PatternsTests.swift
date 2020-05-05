@@ -137,9 +137,10 @@ class PatternsTests: XCTestCase {
 			input: """
 			1
 			2
+
 			3
 			""",
-			result: ["1", "2", "3"])
+			result: ["1", "2", "", "3"])
 
 		// undefined (Skip at end)
 		_ = try Patterns(verify: Literal(" "),
