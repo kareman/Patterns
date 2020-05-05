@@ -30,7 +30,10 @@ let package = Package(
 			dependencies: ["Patterns"]),
 		.testTarget(
 			name: "PerformanceTests",
-			dependencies: ["Patterns"]),
+			dependencies: ["Patterns"],
+			swiftSettings: [
+				.define("DEBUG", .when(configuration: .debug)),
+				]),
 		.target(
 			name: "unicode_properties",
 			dependencies: ["Patterns", "ArgumentParser"]),
