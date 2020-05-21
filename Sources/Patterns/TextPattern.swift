@@ -8,9 +8,9 @@
 
 import Foundation
 
-public typealias ParsedRange = Range<VMPattern.Input.Index>
+public typealias ParsedRange = Range<TextPattern.Input.Index>
 
-public struct Literal: VMPattern, RegexConvertible {
+public struct Literal: TextPattern, RegexConvertible {
 	public let substring: Input
 	let searchCache: SearchCache<Input.Element>
 
@@ -23,7 +23,7 @@ public struct Literal: VMPattern, RegexConvertible {
 	}
 
 	public init<S: Sequence>(_ sequence: S) where S.Element == Character {
-		self.substring = VMPattern.Input(sequence)
+		self.substring = TextPattern.Input(sequence)
 		self.searchCache = SearchCache(pattern: self.substring)
 		assert(!self.substring.isEmpty, "Cannot have an empty Literal.")
 	}
@@ -43,7 +43,7 @@ extension Literal: ExpressibleByStringLiteral {
 	}
 }
 
-public struct OneOf: VMPattern, RegexConvertible {
+public struct OneOf: TextPattern, RegexConvertible {
 	let group: Group<Input.Element>
 	public let description: String
 	private let _regex: String?
@@ -93,7 +93,7 @@ public struct OneOf: VMPattern, RegexConvertible {
 	}
 }
 
-public struct RepeatPattern: VMPattern, RegexConvertible {
+public struct RepeatPattern: TextPattern, RegexConvertible {
 	public let repeatedPattern: TextPattern
 	public let min: Int
 	public let max: Int?
@@ -137,16 +137,16 @@ public struct RepeatPattern: VMPattern, RegexConvertible {
 }
 
 extension TextPattern {
-	public func `repeat`<R: RangeExpression>(_ range: R) -> TextPattern where R.Bound == Int {
+	public func `repeat`<R: RangeExpression>(_ range: R) -> RepeatPattern where R.Bound == Int {
 		return RepeatPattern(repeatedPattern: self, range: range)
 	}
 
-	public func `repeat`(_ count: Int) -> TextPattern {
+	public func `repeat`(_ count: Int) -> RepeatPattern {
 		return RepeatPattern(repeatedPattern: self, range: count ... count)
 	}
 }
 
-public struct OrPattern: VMPattern, RegexConvertible {
+public struct OrPattern: TextPattern, RegexConvertible {
 	public let pattern1, pattern2: TextPattern
 
 	init(pattern1: TextPattern, pattern2: TextPattern) {
@@ -178,7 +178,7 @@ public func || (p1: TextPattern, p2: TextPattern) -> OrPattern {
 	return OrPattern(pattern1: p1, pattern2: p2)
 }
 
-public struct Line: VMPattern, RegexConvertible {
+public struct Line: TextPattern, RegexConvertible {
 	public let description: String = "line"
 	public let regex: String = "^.*$"
 
@@ -194,7 +194,7 @@ public struct Line: VMPattern, RegexConvertible {
 		pattern.createInstructions()
 	}
 
-	public struct Start: VMPattern, RegexConvertible {
+	public struct Start: TextPattern, RegexConvertible {
 		public init() {}
 
 		public var description: String { "line.start" }
@@ -209,7 +209,7 @@ public struct Line: VMPattern, RegexConvertible {
 		}
 	}
 
-	public struct End: VMPattern, RegexConvertible {
+	public struct End: TextPattern, RegexConvertible {
 		public init() {}
 
 		public var description: String { "line.end" }
@@ -225,7 +225,7 @@ public struct Line: VMPattern, RegexConvertible {
 	}
 }
 
-public struct NotPattern: VMPattern {
+public struct NotPattern: TextPattern {
 	public let pattern: TextPattern
 	public var description: String { "!\(pattern)" }
 
@@ -242,6 +242,10 @@ public struct NotPattern: VMPattern {
 
 extension TextPattern {
 	public var not: NotPattern { NotPattern(pattern: self) }
+
+	public static prefix func ! (me: Self) -> NotPattern {
+		me.not
+	}
 }
 
 public let any = OneOf(description: "any", regex: #"[.\p{Zl}]"#,

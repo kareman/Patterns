@@ -5,16 +5,16 @@
 //  Created by Kåre Morstøl on 18/04/2020.
 //
 
-public protocol VMPattern: CustomStringConvertible {
-	typealias Input = Substring // TODO: remove
+public protocol TextPattern: CustomStringConvertible {
+	typealias Input = Substring
 	func createInstructions() -> [Instruction]
 }
 
 class VMBacktrackEngine: Matcher {
 	let instructionsFrom: Array<Instruction>.SubSequence
 
-	required init(_ series: [VMPattern]) throws {
-		struct Match: VMPattern {
+	required init(_ series: [TextPattern]) throws {
+		struct Match: TextPattern {
 			let description = "match"
 			func createInstructions() -> [Instruction] { [.match] }
 		}

@@ -176,13 +176,13 @@ class TextPatternTests: XCTestCase {
 	func testNotParser() throws {
 		assertParseMarkers(alphanumeric.not, input: #"I| said|,| 3|"#)
 		assertParseAll(
-			Patterns(Word.boundary, digit.not, alphanumeric.repeat(1...)),
+			Patterns(Word.boundary, !digit, alphanumeric.repeat(1...)),
 			input: "123 abc 1ab a32b",
 			result: ["abc", "a32b"])
 
 		assertParseAll(
 			try Patterns(verify: Literal(" "),
-			             OneOf(" ").not.repeat(2),
+			             !OneOf(" ").repeat(2), // test repeating a parser of length 0
 			             Literal("d")),
 			input: " d cd", result: [" d"])
 	}

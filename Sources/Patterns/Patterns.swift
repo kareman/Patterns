@@ -5,13 +5,7 @@
 //  Created by Kåre Morstøl on 23/10/2018.
 //
 
-#if SwiftEngine
-public typealias TextPattern = SwiftPattern
-#else
-public typealias TextPattern = VMPattern
-#endif
-
-public struct Skip: VMPattern, RegexConvertible {
+public struct Skip: TextPattern, RegexConvertible {
 	public let repeatedPattern: TextPattern?
 	public let description: String
 	public var regex: String {
@@ -31,7 +25,7 @@ public struct Skip: VMPattern, RegexConvertible {
 	}
 }
 
-public struct Capture: VMPattern, RegexConvertible {
+public struct Capture: TextPattern, RegexConvertible {
 	public var description: String = "CAPTURE" // TODO: proper description
 	public let name: String?
 	public let patterns: [TextPattern]
@@ -54,7 +48,7 @@ public struct Capture: VMPattern, RegexConvertible {
 		return [.captureStart(name: name)] + patterns.flatMap { $0.createInstructions() } + [.captureEnd]
 	}
 
-	public struct Start: VMPattern, RegexConvertible {
+	public struct Start: TextPattern, RegexConvertible {
 		public var description: String { return "[" }
 		public var regex = "("
 		public let name: String?
@@ -68,7 +62,7 @@ public struct Capture: VMPattern, RegexConvertible {
 		}
 	}
 
-	public struct End: VMPattern, RegexConvertible {
+	public struct End: TextPattern, RegexConvertible {
 		public var description: String { return "]" }
 		public var regex = ")"
 
@@ -85,7 +79,7 @@ protocol Matcher: class {
 	func match(in input: Patterns.Input, from startIndex: Patterns.Input.Index) -> Patterns.Match?
 }
 
-public struct Patterns: VMPattern, RegexConvertible {
+public struct Patterns: TextPattern, RegexConvertible {
 	public enum InitError: Error, CustomStringConvertible {
 		case invalid([TextPattern])
 		case message(String)
@@ -112,7 +106,7 @@ public struct Patterns: VMPattern, RegexConvertible {
 		return series.map { ($0 as! RegexConvertible).regex }.joined()
 	}
 
-	public init(verify series: [VMPattern?]) throws {
+	public init(verify series: [TextPattern?]) throws {
 		self.series = series.compactMap { $0 }
 		self.matcher = try VMBacktrackEngine(self.series)
 		self.description = self.series.map(String.init(describing:)).joined(separator: " ")
@@ -144,7 +138,7 @@ public struct Patterns: VMPattern, RegexConvertible {
 	}
 }
 
-internal extension Sequence where Element == VMPattern {
+internal extension Sequence where Element == TextPattern {
 	func createInstructions() -> [Instruction] {
 		let series = self.flattenPatterns()
 		let splitBySkip = series.splitWhileKeepingSeparators(omittingEmptySubsequences: false, whereSeparator: { $0 is Skip })
