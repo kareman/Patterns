@@ -147,9 +147,9 @@ public struct Patterns: VMPattern, RegexConvertible {
 internal extension Sequence where Element == VMPattern {
 	func createInstructions() -> [Instruction] {
 		let series = self.flattenPatterns()
-		let l = series.splitWhileKeepingSeparators(omittingEmptySubsequences: false, whereSeparator: { $0 is Skip })
-		return l.first!.flatMap { $0.createInstructions() }
-			+ l.dropFirst().flatMap {
+		let splitBySkip = series.splitWhileKeepingSeparators(omittingEmptySubsequences: false, whereSeparator: { $0 is Skip })
+		return (splitBySkip.first?.flatMap { $0.createInstructions() } ?? [])
+			+ splitBySkip.dropFirst().flatMap {
 				prependSkip(skip: $0.first! as! Skip, $0.dropFirst().flatMap { $0.createInstructions() })
 			}
 	}
@@ -237,7 +237,9 @@ internal func prependSkip<C: BidirectionalCollection>(skip: Skip = Skip(), _ ins
 		$0 += .moveIndex(relative: -chars.count)
 		$0 += nonIndexMovers
 		$0 += remainingInstructions
-		$0 += .cancelLastSplit
+		if skip.repeatedPattern != nil {
+			$0 += .cancelLastSplit
+		}
 	}
 }
 

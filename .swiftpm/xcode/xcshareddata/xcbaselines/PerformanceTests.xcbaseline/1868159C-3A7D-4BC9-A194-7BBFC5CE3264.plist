@@ -11,9 +11,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.58448</real>
+					<real>0.61405</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>5 May 2020 at 18:32:42</string>
+					<string>7 May 2020 at 21:25:02</string>
 				</dict>
 			</dict>
 			<key>testContainsClosure()</key>
@@ -21,9 +21,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.47939</real>
+					<real>0.50567</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>5 May 2020 at 18:32:42</string>
+					<string>7 May 2020 at 21:25:02</string>
 				</dict>
 			</dict>
 			<key>testLine()</key>
@@ -31,9 +31,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.25364</real>
+					<real>0.26298</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>5 May 2020 at 18:32:42</string>
+					<string>7 May 2020 at 21:25:02</string>
 				</dict>
 			</dict>
 			<key>testLiteralSearch()</key>
@@ -41,9 +41,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.61798</real>
+					<real>0.65413</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>5 May 2020 at 18:32:42</string>
+					<string>7 May 2020 at 21:25:02</string>
 				</dict>
 			</dict>
 			<key>testNonExistentLiteralSearch()</key>
@@ -51,9 +51,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.65127</real>
+					<real>0.67721</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>5 May 2020 at 18:32:42</string>
+					<string>7 May 2020 at 21:25:02</string>
 				</dict>
 			</dict>
 			<key>testNotNewLine()</key>
@@ -61,9 +61,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.6741</real>
+					<real>0.67932</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>5 May 2020 at 18:32:42</string>
+					<string>7 May 2020 at 21:25:02</string>
 				</dict>
 			</dict>
 			<key>testOneOrMore()</key>
@@ -71,9 +71,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.42867</real>
+					<real>0.43377</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>5 May 2020 at 18:32:42</string>
+					<string>7 May 2020 at 21:25:02</string>
 				</dict>
 			</dict>
 			<key>testOptionalStringFollowedByNonOptionalString()</key>
@@ -81,9 +81,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.68808</real>
+					<real>0.70984</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>5 May 2020 at 18:32:42</string>
+					<string>7 May 2020 at 21:25:02</string>
 				</dict>
 			</dict>
 			<key>testSkipping1()</key>
@@ -91,9 +91,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.26256</real>
+					<real>0.26616</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>5 May 2020 at 18:32:42</string>
+					<string>7 May 2020 at 21:25:02</string>
 				</dict>
 			</dict>
 			<key>testUppercaseWord()</key>
@@ -101,9 +101,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.41869</real>
+					<real>0.43782</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>5 May 2020 at 18:32:42</string>
+					<string>7 May 2020 at 21:25:02</string>
 				</dict>
 			</dict>
 			<key>testWordBoundary()</key>
@@ -111,9 +111,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.40732</real>
+					<real>0.42154</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>5 May 2020 at 18:32:42</string>
+					<string>7 May 2020 at 21:25:02</string>
 				</dict>
 			</dict>
 			<key>testWordBoundaryManyLanguages()</key>
@@ -121,9 +121,9 @@
 				<key>com.apple.XCTPerformanceMetric_WallClockTime</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>0.29614</real>
+					<real>0.30829</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>5 May 2020 at 18:32:42</string>
+					<string>7 May 2020 at 21:25:02</string>
 				</dict>
 			</dict>
 		</dict>

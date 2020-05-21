@@ -11,19 +11,18 @@ public protocol VMPattern: CustomStringConvertible {
 }
 
 class VMBacktrackEngine: Matcher {
-	let instructionsFrom, instructionsAt: Array<Instruction>.SubSequence
+	let instructionsFrom: Array<Instruction>.SubSequence
 
 	required init(_ series: [VMPattern]) throws {
 		struct Match: VMPattern {
 			let description = "match"
 			func createInstructions() -> [Instruction] { [.match] }
 		}
-		instructionsAt = ([Capture.Start()] + series + [Capture.End(), Match()]).createInstructions()[...]
-		instructionsFrom = prependSkip(instructionsAt)[...]
+		instructionsFrom = ([Skip(), Capture.Start()] + series + [Capture.End(), Match()]).createInstructions()[...]
 	}
 
 	func match(in input: Patterns.Input, at startindex: Patterns.Input.Index) -> Patterns.Match? {
-		return backtrackingVM(instructionsAt, input: input, startIndex: startindex)
+		return backtrackingVM(instructionsFrom, input: input, startIndex: startindex).flatMap { $0.fullRange.lowerBound == startindex ? $0 : nil }
 	}
 
 	func match(in input: Patterns.Input, from startIndex: Patterns.Input.Index) -> Patterns.Match? {
@@ -94,6 +93,7 @@ public enum Instruction {
 			return true
 		}
 	}
+
 	static func split(first: Int, second: Int) -> Instruction {
 		.split(first: first, second: second, atIndex: 0)
 	}
