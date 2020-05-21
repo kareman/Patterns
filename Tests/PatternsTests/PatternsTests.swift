@@ -10,8 +10,7 @@ import XCTest
 class PatternsTests: XCTestCase {
 	func testPatternsSimple() throws {
 		assertParseAll(
-			try Patterns(verify: Literal("a").repeat(0 ... 1),
-			             Literal("b")),
+			Patterns(Literal("a").repeat(0 ... 1) • "b"),
 			input: "ibiiiiabiii", count: 2)
 		assertParseAll(
 			try Patterns(verify: Literal("a").repeat(0 ... 1),

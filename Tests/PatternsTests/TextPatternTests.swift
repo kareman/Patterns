@@ -31,13 +31,13 @@ class TextPatternTests: XCTestCase {
 
 	func testOptional() throws {
 		assertParseAll(try Patterns(verify: letter, digit.repeat(0...)), input: "123abc123d", count: 4)
-		assertParseAll(try Patterns(verify: digit.repeat(0 ... 1), letter),
+		assertParseAll(try Patterns(verify: digit¿, letter),
 		               input: "123abc", result: ["3a", "b", "c"])
 	}
 
 	func testRepeat() throws {
 		assertParseAll(digit.repeat(2...), input: "123abc123", count: 2)
-		assertParseAll(digit.repeat(1...), input: "123abc", result: "123", count: 1)
+		assertParseAll(digit+, input: "123abc", result: "123", count: 1)
 		assertParseAll(digit.repeat(3...), input: "123abc", result: "123", count: 1)
 		assertParseAll(digit.repeat(4...), input: "123abc", count: 0)
 
@@ -49,15 +49,18 @@ class TextPatternTests: XCTestCase {
 
 		assertParseAll(digit.repeat(2), input: "1234 5 6 78", result: ["12", "34", "78"])
 
+		assertParseAll("a"* • "b", input: "b aabb ab", result: ["b", "aab", "b", "ab"])
+		assertParseAll("a"*, input: "b aabb ab", result: ["", "", "aa", "", "", "", "a", "", ""])
+
 		// !a b == b - a
 		assertParseAll(Patterns(newline.not, ascii).repeat(1...), input: "123\n4567\n89", result: ["123", "4567", "89"])
 		assertParseAll(Patterns(ascii - newline).repeat(1...), input: "123\n4567\n89", result: ["123", "4567", "89"])
 
-		XCTAssertEqual(digit.repeat(1...).description, "digit{1...}")
+		XCTAssertEqual(digit+.description, "digit{1...}")
 	}
 
 	func testOrPattern() {
-		let pattern: TextPattern = Literal("a") || Literal("b")
+		let pattern: TextPattern = "a" || "b"
 		assertParseAll(pattern, input: "bcbd", result: "b", count: 2)
 		assertParseAll(pattern, input: "acdaa", result: "a", count: 3)
 		assertParseAll(pattern, input: "abcdb", count: 3)
@@ -182,7 +185,7 @@ class TextPatternTests: XCTestCase {
 
 		assertParseAll(
 			try Patterns(verify: Literal(" "),
-			             !OneOf(" ").repeat(2), // test repeating a parser of length 0
+			             (!OneOf(" ")).repeat(2), // test repeating a parser of length 0
 			             Literal("d")),
 			input: " d cd", result: [" d"])
 	}

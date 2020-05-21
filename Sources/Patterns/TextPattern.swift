@@ -22,7 +22,7 @@ public struct Literal: TextPattern, RegexConvertible {
 		return NSRegularExpression.escapedPattern(for: String(substring))
 	}
 
-	public init<S: Sequence>(_ sequence: S) where S.Element == Character {
+	public init<S: Sequence>(_ sequence: S) where S.Element == TextPattern.Input.Element {
 		self.substring = TextPattern.Input(sequence)
 		self.searchCache = SearchCache(pattern: self.substring)
 		assert(!self.substring.isEmpty, "Cannot have an empty Literal.")
@@ -41,6 +41,26 @@ extension Literal: ExpressibleByStringLiteral {
 	public init(stringLiteral value: StaticString) {
 		self.init(String(describing: value))
 	}
+}
+
+public func • (lhs: Literal, rhs: TextPattern) -> ConcatenationPattern {
+	ConcatenationPattern(first: lhs, second: rhs)
+}
+
+public func • (lhs: TextPattern, rhs: Literal) -> ConcatenationPattern {
+	ConcatenationPattern(first: lhs, second: rhs)
+}
+
+public func || (p1: Literal, p2: TextPattern) -> OrPattern {
+	return OrPattern(pattern1: p1, pattern2: p2)
+}
+
+public func || (p1: TextPattern, p2: Literal) -> OrPattern {
+	return OrPattern(pattern1: p1, pattern2: p2)
+}
+
+public func || (p1: Literal, p2: Literal) -> OrPattern {
+	return OrPattern(pattern1: p1, pattern2: p2)
 }
 
 public struct OneOf: TextPattern, RegexConvertible {
@@ -145,6 +165,37 @@ extension TextPattern {
 		return RepeatPattern(repeatedPattern: self, range: count ... count)
 	}
 }
+
+postfix operator *
+
+public postfix func *(me: TextPattern) -> RepeatPattern {
+	me.repeat(0...)
+}
+
+public postfix func *(me: Literal) -> RepeatPattern {
+	me.repeat(0...)
+}
+
+postfix operator +
+
+public postfix func +(me: TextPattern) -> RepeatPattern {
+	me.repeat(1...)
+}
+
+public postfix func +(me: Literal) -> RepeatPattern {
+	me.repeat(1...)
+}
+
+postfix operator ¿
+
+public postfix func ¿(me: TextPattern) -> RepeatPattern {
+	me.repeat(0...1)
+}
+
+public postfix func ¿(me: Literal) -> RepeatPattern {
+	me.repeat(0...1)
+}
+
 
 public struct OrPattern: TextPattern, RegexConvertible {
 	public let pattern1, pattern2: TextPattern
