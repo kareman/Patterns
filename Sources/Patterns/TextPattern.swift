@@ -192,10 +192,12 @@ public struct Line: VMPattern, RegexConvertible {
 		public var description: String { "line.start" }
 		public var regex = "^"
 
+		public func parse(_ input: Input, at index: Input.Index) -> Bool {
+			index == input.startIndex || input[input.index(before: index)].isNewline
+		}
+
 		public func createInstructions() -> [Instruction] {
-			[.checkIndex { (index, input) -> Bool in
-				index == input.startIndex || input[input.index(before: index)].isNewline
-			}]
+			[.checkIndex(self.parse(_:at:))]
 		}
 	}
 
@@ -205,10 +207,12 @@ public struct Line: VMPattern, RegexConvertible {
 		public var description: String { "line.end" }
 		public let regex = "$"
 
+		public func parse(_ input: Input, at index: Input.Index) -> Bool {
+			index == input.endIndex || input[index].isNewline
+		}
+
 		public func createInstructions() -> [Instruction] {
-			[.checkIndex { (index, input) -> Bool in
-				index == input.endIndex || input[index].isNewline
-			}]
+			[.checkIndex(self.parse(_:at:))]
 		}
 	}
 }
