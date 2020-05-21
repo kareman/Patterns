@@ -43,26 +43,6 @@ extension Literal: ExpressibleByStringLiteral {
 	}
 }
 
-public func • (lhs: Literal, rhs: TextPattern) -> ConcatenationPattern {
-	ConcatenationPattern(first: lhs, second: rhs)
-}
-
-public func • (lhs: TextPattern, rhs: Literal) -> ConcatenationPattern {
-	ConcatenationPattern(first: lhs, second: rhs)
-}
-
-public func || (p1: Literal, p2: TextPattern) -> OrPattern {
-	return OrPattern(pattern1: p1, pattern2: p2)
-}
-
-public func || (p1: TextPattern, p2: Literal) -> OrPattern {
-	return OrPattern(pattern1: p1, pattern2: p2)
-}
-
-public func || (p1: Literal, p2: Literal) -> OrPattern {
-	return OrPattern(pattern1: p1, pattern2: p2)
-}
-
 public struct OneOf: TextPattern, RegexConvertible {
 	let group: Group<Input.Element>
 	public let description: String
@@ -168,34 +148,55 @@ extension TextPattern {
 
 postfix operator *
 
-public postfix func *(me: TextPattern) -> RepeatPattern {
+public postfix func * (me: TextPattern) -> RepeatPattern {
 	me.repeat(0...)
 }
 
-public postfix func *(me: Literal) -> RepeatPattern {
+public postfix func * (me: Literal) -> RepeatPattern {
 	me.repeat(0...)
 }
 
 postfix operator +
 
-public postfix func +(me: TextPattern) -> RepeatPattern {
+public postfix func + (me: TextPattern) -> RepeatPattern {
 	me.repeat(1...)
 }
 
-public postfix func +(me: Literal) -> RepeatPattern {
+public postfix func + (me: Literal) -> RepeatPattern {
 	me.repeat(1...)
 }
 
 postfix operator ¿
 
-public postfix func ¿(me: TextPattern) -> RepeatPattern {
-	me.repeat(0...1)
+public postfix func ¿ (me: TextPattern) -> RepeatPattern {
+	me.repeat(0 ... 1)
 }
 
-public postfix func ¿(me: Literal) -> RepeatPattern {
-	me.repeat(0...1)
+public postfix func ¿ (me: Literal) -> RepeatPattern {
+	me.repeat(0 ... 1)
 }
 
+extension TextPattern {
+	public func callAsFunction<R: RangeExpression>(range: () -> R) -> RepeatPattern
+		where R.Bound == Int {
+		self.repeat(range())
+	}
+
+	public func callAsFunction(count: () -> Int) -> RepeatPattern {
+		self.repeat(count())
+	}
+}
+
+extension Literal {
+	public func callAsFunction<R: RangeExpression>(range: () -> R) -> RepeatPattern
+		where R.Bound == Int {
+		self.repeat(range())
+	}
+
+	public func callAsFunction(count: () -> Int) -> RepeatPattern {
+		self.repeat(count())
+	}
+}
 
 public struct OrPattern: TextPattern, RegexConvertible {
 	public let pattern1, pattern2: TextPattern
@@ -226,6 +227,18 @@ public struct OrPattern: TextPattern, RegexConvertible {
 }
 
 public func || (p1: TextPattern, p2: TextPattern) -> OrPattern {
+	return OrPattern(pattern1: p1, pattern2: p2)
+}
+
+public func || (p1: Literal, p2: TextPattern) -> OrPattern {
+	return OrPattern(pattern1: p1, pattern2: p2)
+}
+
+public func || (p1: TextPattern, p2: Literal) -> OrPattern {
+	return OrPattern(pattern1: p1, pattern2: p2)
+}
+
+public func || (p1: Literal, p2: Literal) -> OrPattern {
 	return OrPattern(pattern1: p1, pattern2: p2)
 }
 
