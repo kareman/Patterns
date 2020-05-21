@@ -38,21 +38,11 @@ class PatternsTests: XCTestCase {
 			             Literal(" ")),
 			input: text, result: [" is ", " test "])
 
-		/*
-		 assertParseAll(
-		 try Patterns(verify:
-		 SubstringPattern(" "),
-		 Patterns.Skip(),
-		 SubstringPattern("d")),
-		 input: " ab cd", result: [" cd"])
-
-		 assertParseAll(
-		 try Patterns(verify:
-		 SubstringPattern(" "),
-		 OneOfPattern(Group(contentsOf: " ").inverted()).repeat(min: 1),
-		 SubstringPattern("d")),
-		 input: " ab cd", result: [" cd"])
-		 */
+		assertParseAll(
+			try Patterns(verify: Literal(" "),
+			             Skip(),
+			             Literal("d")),
+			input: " ad d", result: [" ad", " d"])
 	}
 
 	func testPatternsWithRepeat() throws {

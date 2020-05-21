@@ -13,31 +13,29 @@ public struct Group<Element> {
 	}
 
 	func contains<S: Sequence>(contentsOf s: S) -> Bool where S.Element == Element {
-		return s.allSatisfy(contains)
+		s.allSatisfy(contains)
 	}
 }
 
 public extension Group {
 	func union(_ other: Group) -> Group {
-		return Group {
-			self.contains($0) || other.contains($0)
-		}
+		Group { self.contains($0) || other.contains($0) }
 	}
 
 	static func || (a: Group, b: Group) -> Group {
-		return a.union(b)
+		a.union(b)
 	}
 
 	func intersection(_ other: Group) -> Group {
-		return Group {
-			self.contains($0) && other.contains($0)
-		}
+		Group { self.contains($0) && other.contains($0) }
+	}
+
+	func subtracting(_ other: Group) -> Group {
+		Group { self.contains($0) && !other.contains($0) }
 	}
 
 	func inverted() -> Group<Element> {
-		return Group {
-			!self.contains($0)
-		}
+		Group { !self.contains($0) }
 	}
 }
 
@@ -50,18 +48,3 @@ public extension Group where Element: Hashable {
 		self.init(contentsOf: Set(sequence))
 	}
 }
-
-/*
- import Foundation
-
- public extension Group where Element == Character {
- init(description: String, characterSet: CharacterSet) {
- 	self.description = description
- 	regex = "[\(characterSet.map(String.init(describing:)).joined())]"
- 	self.contains = { c in
- 		guard c.unicodeScalars.count == 1 else { return false }
- 		return c.unicodeScalars.first.map(characterSet.contains) ?? false
- 	}
- }
- }
- */
