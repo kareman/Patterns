@@ -48,7 +48,10 @@ class TextPatternTests: XCTestCase {
 		assertParseAll(try Patterns(verify: digit.repeat(1 ... 2)), input: "123abc09d48", result: ["12", "3", "09", "48"])
 
 		assertParseAll(digit.repeat(2), input: "1234 5 6 78", result: ["12", "34", "78"])
+
+		// !a b == b - a
 		assertParseAll(Patterns(newline.not, ascii).repeat(1...), input: "123\n4567\n89", result: ["123", "4567", "89"])
+		assertParseAll(Patterns(ascii - newline).repeat(1...), input: "123\n4567\n89", result: ["123", "4567", "89"])
 
 		XCTAssertEqual(digit.repeat(1...).description, "digit{1...}")
 	}
@@ -176,5 +179,11 @@ class TextPatternTests: XCTestCase {
 			Patterns(Word.boundary, digit.not, alphanumeric.repeat(1...)),
 			input: "123 abc 1ab a32b",
 			result: ["abc", "a32b"])
+
+		assertParseAll(
+			try Patterns(verify: Literal(" "),
+			             OneOf(" ").not.repeat(2),
+			             Literal("d")),
+			input: " d cd", result: [" d"])
 	}
 }

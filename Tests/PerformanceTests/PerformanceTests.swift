@@ -50,7 +50,7 @@ class PerformanceTests: XCTestCase {
 	func testNotNewLine() throws {
 		let any = OneOf(description: "any", contains: { _ in true })
 		let pattern = try Patterns(verify: Literal(","),
-		                           Capture(Skip(whileRepeating: Patterns(newline.not, any))),
+		                           Capture(Skip(whileRepeating: Patterns(any - newline))),
 		                           Line.end)
 		try speedTest(pattern, textFraction: 8, hits: 1413)
 	}

@@ -44,44 +44,52 @@ extension Literal: ExpressibleByStringLiteral {
 }
 
 public struct OneOf: VMPattern, RegexConvertible {
-	public let set: Group<Input.Element>
+	let group: Group<Input.Element>
 	public let description: String
 	private let _regex: String?
 	public var regex: String {
-		return _regex ?? fatalError("Regex not provided for '\(description)'")
+		_regex ?? fatalError("Regex not provided for '\(description)'")
 	}
 
-	public init(description: String, regex: String? = nil, set: Group<Input.Element>) {
-		self.set = set
+	public init(description: String, regex: String? = nil, group: Group<Input.Element>) {
+		self.group = group
 		self.description = description
 		self._regex = regex
 	}
 
 	public init(description: String, regex: String? = nil, contains: @escaping (Input.Element) -> Bool) {
-		self.init(description: description, regex: regex, set: Group(contains: contains))
+		self.init(description: description, regex: regex, group: Group(contains: contains))
 	}
 
 	public init<S: Sequence>(_ characters: S) where S.Element == Input.Element {
-		set = Group(contentsOf: characters)
-		description = "\"\(set)\""
+		group = Group(contentsOf: characters)
+		description = "\"\(group)\""
 		_regex = "[\(NSRegularExpression.escapedPattern(for: characters.map(String.init(describing:)).joined()))]"
 	}
 
 	public static let basePatterns: [OneOf] = [
-		alphanumeric, letter, lowercase, uppercase, punctuation, whitespace, newline, hexDigit, digit, ascii,
-		symbol, mathSymbol, currencySymbol,
+		any, alphanumeric, letter, lowercase, uppercase, punctuation, whitespace, newline, hexDigit, digit,
+		ascii, symbol, mathSymbol, currencySymbol,
 	]
 
 	public static func patterns(for c: Input.Element) -> [TextPattern] {
-		return OneOf.basePatterns.filter { $0.set.contains(c) }
+		OneOf.basePatterns.filter { $0.group.contains(c) }
 	}
 
 	public static func patterns<S: Sequence>(for s: S) -> [TextPattern] where S.Element == Input.Element {
-		return OneOf.basePatterns.filter { $0.set.contains(contentsOf: s) }
+		OneOf.basePatterns.filter { $0.group.contains(contentsOf: s) }
 	}
 
 	public func createInstructions() -> [Instruction] {
-		return [.checkCharacter(set.contains)]
+		[.checkCharacter(group.contains)]
+	}
+
+	public static func + (lhs: OneOf, rhs: OneOf) -> OneOf {
+		OneOf(description: "\(lhs) + \(rhs)", group: lhs.group.union(rhs.group))
+	}
+
+	public static func - (lhs: OneOf, rhs: OneOf) -> OneOf {
+		OneOf(description: "\(lhs) - \(rhs)", group: lhs.group.subtracting(rhs.group))
 	}
 }
 
@@ -236,6 +244,8 @@ extension TextPattern {
 	public var not: NotPattern { NotPattern(pattern: self) }
 }
 
+public let any = OneOf(description: "any", regex: #"[.\p{Zl}]"#,
+                       contains: { _ in true })
 public let alphanumeric = OneOf(description: "alphanumeric", regex: #"(?:\p{Alphabetic}|\p{Nd})"#,
                                 contains: { $0.isWholeNumber || $0.isLetter })
 public let digit = OneOf(description: "digit", regex: #"\p{Nd}"#,
@@ -254,15 +264,11 @@ public let uppercase = OneOf(description: "uppercase", regex: #"\p{Lu}"#,
                              contains: \Character.isUppercase)
 public let whitespace = OneOf(description: "whitespace", regex: #"\p{White_Space}"#,
                               contains: \Character.isWhitespace)
-
 public let hexDigit = OneOf(description: "hexDigit", regex: #"\p{Hex_Digit}"#,
                             contains: \Character.isHexDigit)
-
 public let ascii = OneOf(description: "ascii", regex: #"[[:ascii:]]"#,
                          contains: \Character.isASCII) // regex might also be [ -~] or [\x00-\x7F]
-
 public let mathSymbol = OneOf(description: "mathSymbol", regex: #"\p{Sm}"#,
                               contains: \Character.isMathSymbol)
-
 public let currencySymbol = OneOf(description: "currencySymbol", regex: #"\p{Sc}"#,
                                   contains: \Character.isCurrencySymbol)
