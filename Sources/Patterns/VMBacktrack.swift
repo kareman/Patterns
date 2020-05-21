@@ -74,7 +74,7 @@ public struct Thread {
 public enum Instruction {
 	case literal(Character)
 	case checkCharacter((Character) -> Bool)
-	case checkIndex((Patterns.Input.Index, Patterns.Input) -> Bool)
+	case checkIndex((Patterns.Input, Patterns.Input.Index) -> Bool)
 	case moveIndex(relative: Int)
 	case function((Patterns.Input, inout Thread) -> Bool)
 	case captureStart(name: String?)
@@ -122,7 +122,7 @@ func backtrackingVM(_ instructions: Array<Instruction>.SubSequence, input: Patte
 				input.formIndex(after: &thread.inputIndex)
 				thread.instructionIndex += 1
 			case let .checkIndex(test):
-				guard test(thread.inputIndex, input) else { break loop }
+				guard test(input, thread.inputIndex) else { break loop }
 				thread.instructionIndex += 1
 			case let .moveIndex(relative: distance):
 				guard input.formIndexSafely(&thread.inputIndex, offsetBy: distance) else { break loop }

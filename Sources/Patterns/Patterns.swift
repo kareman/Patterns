@@ -100,7 +100,7 @@ public struct Patterns: VMPattern, RegexConvertible {
 		}
 	}
 
-	let series: [TextPattern]
+	public let series: [TextPattern]
 	public let description: String
 	#if SwiftEngine
 	let matcher: PatternsEngine
@@ -193,8 +193,8 @@ internal func prependSkip<C: BidirectionalCollection>(skip: Skip = Skip(), _ ins
 		switch nonIndexMovers.popFirst(where: isCheckIndex(_:)) {
 		case let .checkIndex(function):
 			search = { input, index in
-				input[index...].indices.first(where: { function($0, input) })
-					?? (function(input.endIndex, input) ? input.endIndex : nil)
+				input[index...].indices.first(where: { function(input, $0) })
+					?? (function(input, input.endIndex) ? input.endIndex : nil)
 			}
 		default:
 			return skip.createInstructions() + instructions
