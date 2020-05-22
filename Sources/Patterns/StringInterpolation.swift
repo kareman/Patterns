@@ -5,7 +5,7 @@
 //  Created by Kåre Morstøl on 11/08/2019.
 //
 
-extension Patterns: ExpressibleByStringInterpolation {
+extension ConcatenationPattern: ExpressibleByStringInterpolation {
 	public struct StringInterpolation: StringInterpolationProtocol {
 		var patterns = [TextPattern]()
 
@@ -25,10 +25,23 @@ extension Patterns: ExpressibleByStringInterpolation {
 	}
 
 	public init(stringLiteral value: String) {
-		self.init(Literal(value))
+		self.init(first: Literal(value), second: Literal(""))
 	}
 
 	public init(stringInterpolation: StringInterpolation) {
-		self.init(stringInterpolation.patterns)
+		var patterns = stringInterpolation.patterns[...]
+		guard let first = patterns.popFirst() else {
+			self.init(first: Literal(""), second: Literal(""))
+			return
+		}
+		guard let second = patterns.popFirst() else {
+			self.init(first: first, second: Literal(""))
+			return
+		}
+		var result = first • second
+		while let next = patterns.popFirst() {
+			result = result • next
+		}
+		self = result
 	}
 }

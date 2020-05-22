@@ -216,8 +216,8 @@ class PatternsTests: XCTestCase {
 
 	lazy var rangeAndProperty: Patterns = {
 		let hexNumber = Capture(name: "codePoint", hexDigit.repeat(1...))
-		let hexRange = Patterns("\(hexNumber)..\(hexNumber)") || hexNumber
-		return Patterns("\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) ")
+		let hexRange = ConcatenationPattern("\(hexNumber)..\(hexNumber)") || hexNumber
+		return Patterns(ConcatenationPattern("\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) "))
 	}()
 
 	func testStringInterpolation() throws {
@@ -255,7 +255,7 @@ class PatternsTests: XCTestCase {
 		let text = "This is a point: (43,7), so is (0,5). But my final point is (3,-1)."
 
 		let number = OneOf("+-").repeat(0 ... 1) • digit.repeat(1...)
-		let point: Patterns = "(\(Capture(name: "x", number)),\(Capture(name: "y", number)))"
+		let point = Patterns(ConcatenationPattern("(\(Capture(name: "x", number)),\(Capture(name: "y", number)))"))
 
 		let pointsAsSubstrings = point.matches(in: text).map { match in
 			(text[match[one: "x"]!], text[match[one: "y"]!])

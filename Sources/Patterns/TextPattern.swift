@@ -25,7 +25,6 @@ public struct Literal: TextPattern, RegexConvertible {
 	public init<S: Sequence>(_ sequence: S) where S.Element == TextPattern.Input.Element {
 		self.substring = TextPattern.Input(sequence)
 		self.searchCache = SearchCache(pattern: self.substring)
-		assert(!self.substring.isEmpty, "Cannot have an empty Literal.")
 	}
 
 	public init(_ character: Character) {
