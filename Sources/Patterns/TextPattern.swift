@@ -201,8 +201,8 @@ public struct OrPattern: TextPattern, RegexConvertible {
 	public let pattern1, pattern2: TextPattern
 
 	init(pattern1: TextPattern, pattern2: TextPattern) {
-		self.pattern1 = pattern1 is Capture ? Patterns(pattern1) : pattern1
-		self.pattern2 = pattern2 is Capture ? Patterns(pattern2) : pattern2
+		self.pattern1 = pattern1
+		self.pattern2 = pattern2 
 	}
 
 	public var description: String {
@@ -250,7 +250,7 @@ public struct Line: TextPattern, RegexConvertible {
 	public static let end = End()
 
 	public init() {
-		pattern = Patterns(Start(), Skip(), End())
+		pattern = Start() • Skip() • End()
 	}
 
 	public func createInstructions() -> [Instruction] {

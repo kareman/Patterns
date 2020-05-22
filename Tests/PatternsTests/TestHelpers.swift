@@ -21,7 +21,7 @@ extension XCTestCase {
 	func assertParseAll(_ pattern: TextPattern, input: String, result: [String],
 	                    file: StaticString = #file, line: UInt = #line) {
 		do {
-			let pattern = try (pattern as? Patterns) ?? Patterns(verify: pattern)
+			let pattern = try (pattern as? Patterns) ?? Patterns(pattern)
 			let parsed = pattern.ranges(in: input).map { String(input[$0]) }
 			XCTAssertEqual(parsed, result, "\nThe differences are: \n"
 				+ parsed.difference(from: result).sorted().joined(separator: "\n"), file: file, line: line)
@@ -33,7 +33,7 @@ extension XCTestCase {
 	func assertParseAll(_ pattern: TextPattern, input: String, result: String? = nil, count: Int,
 	                    file: StaticString = #file, line: UInt = #line) {
 		do {
-			let pattern = try (pattern as? Patterns) ?? Patterns(verify: pattern)
+			let pattern = try (pattern as? Patterns) ?? Patterns(pattern)
 			if let result = result {
 				assertParseAll(pattern, input: input, result: Array(repeating: result, count: count), file: file, line: line)
 				return
@@ -59,7 +59,7 @@ extension XCTestCase {
 
 	func assertParseMarkers(_ pattern: TextPattern, input: String,
 	                        file: StaticString = #file, line: UInt = #line) {
-		assertParseMarkers(Patterns(pattern), input: input, file: file, line: line)
+		assertParseMarkers(try! Patterns(pattern), input: input, file: file, line: line)
 	}
 
 	func assertParseMarkers(_ pattern: Patterns, input: String,
@@ -83,7 +83,7 @@ extension XCTestCase {
 
 	func assertCaptures(_ pattern: TextPattern, input: String, result: [[String]],
 	                    file: StaticString = #file, line: UInt = #line) {
-		assertCaptures(Patterns(pattern), input: input, result: result, file: file, line: line)
+		assertCaptures(try! Patterns(pattern), input: input, result: result, file: file, line: line)
 	}
 
 	func assertCaptures(_ pattern: Patterns, input: String, result: [[String]],

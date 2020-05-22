@@ -13,19 +13,19 @@ public protocol TextPattern: CustomStringConvertible {
 class VMBacktrackEngine: Matcher {
 	let instructionsFrom: Array<Instruction>.SubSequence
 
-	required init(_ series: [TextPattern]) throws {
+	required init(_ pattern: TextPattern) throws {
 		struct Match: TextPattern {
 			let description = "match"
 			func createInstructions() -> [Instruction] { [.match] }
 		}
-		instructionsFrom = ([Skip(), Capture.Start()] + series + [Capture.End(), Match()]).createInstructions()[...]
+		instructionsFrom = ([Skip(), Capture.Start(), pattern, Capture.End(), Match()]).createInstructions()[...]
 	}
 
-	func match(in input: Patterns.Input, at startindex: Patterns.Input.Index) -> Patterns.Match? {
+	func match(in input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> Patterns.Match? {
 		return backtrackingVM(instructionsFrom, input: input, startIndex: startindex).flatMap { $0.fullRange.lowerBound == startindex ? $0 : nil }
 	}
 
-	func match(in input: Patterns.Input, from startIndex: Patterns.Input.Index) -> Patterns.Match? {
+	func match(in input: TextPattern.Input, from startIndex: TextPattern.Input.Index) -> Patterns.Match? {
 		return backtrackingVM(instructionsFrom, input: input, startIndex: startIndex)
 	}
 }
@@ -74,9 +74,9 @@ public struct Thread {
 public enum Instruction {
 	case literal(Character)
 	case checkCharacter((Character) -> Bool)
-	case checkIndex((Patterns.Input, Patterns.Input.Index) -> Bool)
+	case checkIndex((TextPattern.Input, TextPattern.Input.Index) -> Bool)
 	case moveIndex(relative: Int)
-	case function((Patterns.Input, inout Thread) -> Bool)
+	case function((TextPattern.Input, inout Thread) -> Bool)
 	case captureStart(name: String?)
 	case captureEnd
 	case jump(relative: Int)
@@ -85,7 +85,7 @@ public enum Instruction {
 	case match
 
 	static let any = Self.checkCharacter { _ in true }
-	static func search(_ f: @escaping (Patterns.Input, Patterns.Input.Index) -> Patterns.Input.Index?) -> Instruction {
+	static func search(_ f: @escaping (TextPattern.Input, TextPattern.Input.Index) -> TextPattern.Input.Index?) -> Instruction {
 		.function { (input, thread) -> Bool in
 			guard let index = f(input, thread.inputIndex) else { return false }
 			thread.inputIndex = index
@@ -99,13 +99,13 @@ public enum Instruction {
 	}
 }
 
-func backtrackingVM(_ instructions: Array<Instruction>.SubSequence, input: Patterns.Input, startIndex: Patterns.Input.Index? = nil) -> Patterns.Match? {
+func backtrackingVM(_ instructions: Array<Instruction>.SubSequence, input: TextPattern.Input, startIndex: TextPattern.Input.Index? = nil) -> Patterns.Match? {
 	let thread = Thread(instructionIndex: instructions.startIndex, inputIndex: startIndex ?? input.startIndex)
 	return backtrackingVM(instructions, input: input, thread: thread)
 		.map { Patterns.Match($0, instructions: instructions) }
 }
 
-func backtrackingVM(_ instructions: Array<Instruction>.SubSequence, input: Patterns.Input, thread: Thread) -> Thread? {
+func backtrackingVM(_ instructions: Array<Instruction>.SubSequence, input: TextPattern.Input, thread: Thread) -> Thread? {
 	var currentThreads = ContiguousArray<Thread>()[...]
 
 	currentThreads.append(thread)

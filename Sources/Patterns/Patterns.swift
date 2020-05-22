@@ -106,31 +106,15 @@ public struct Patterns: TextPattern, RegexConvertible {
 		return series.map { ($0 as! RegexConvertible).regex }.joined()
 	}
 
-	public init(verify series: [TextPattern?]) throws {
-		self.series = series.compactMap { $0 }
-		self.matcher = try VMBacktrackEngine(self.series)
+	public init(_ pattern: TextPattern) throws {
+		self.series = [pattern]
+		self.matcher = try VMBacktrackEngine(self.series.first!)
 		self.description = self.series.map(String.init(describing:)).joined(separator: " ")
 	}
 
-	public init(verify series: TextPattern?...) throws {
-		try self.init(verify: series)
-	}
-
-	public init(_ series: [TextPattern?]) {
-		try! self.init(verify: series)
-	}
-
-	public init(_ series: TextPattern?...) {
-		self.init(series)
-	}
-
-	public func ranges<S: StringProtocol>(in input: S, from startindex: Input.Index? = nil)
-		-> AnySequence<ParsedRange> where S.SubSequence == Input {
+	public func ranges<S: StringProtocol>(in input: S, from startindex: TextPattern.Input.Index? = nil)
+		-> AnySequence<ParsedRange> where S.SubSequence == TextPattern.Input {
 		return AnySequence(matches(in: input, from: startindex).lazy.map(\.range))
-	}
-
-	public func appending(_ pattern: TextPattern) throws -> Patterns {
-		return try Patterns(verify: self.series + [pattern])
 	}
 
 	public func createInstructions() -> [Instruction] {
@@ -140,7 +124,7 @@ public struct Patterns: TextPattern, RegexConvertible {
 
 internal extension Sequence where Element == TextPattern {
 	func createInstructions() -> [Instruction] {
-		let series = self.flattenPatterns()
+		let series = Array(self)
 		let splitBySkip = series.splitWhileKeepingSeparators(omittingEmptySubsequences: false, whereSeparator: { $0 is Skip })
 		return (splitBySkip.first?.flatMap { $0.createInstructions() } ?? [])
 			+ splitBySkip.dropFirst().flatMap {
@@ -175,7 +159,7 @@ internal func prependSkip<C: BidirectionalCollection>(skip: Skip = Skip(), _ ins
 		nonIndexMovers.append(.moveIndex(relative: chars.count - lastMoveTo))
 	}
 
-	let search: (Patterns.Input, Patterns.Input.Index) -> Patterns.Input.Index?
+	let search: (TextPattern.Input, TextPattern.Input.Index) -> TextPattern.Input.Index?
 	let searchInstruction: Instruction
 
 	switch chars.first {
@@ -269,19 +253,19 @@ extension Patterns {
 		public var names: Set<String> { Set(captures.compactMap(\.name)) }
 	}
 
-	internal func match(in input: Input, at startindex: Input.Index) -> Match? {
+	internal func match(in input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> Match? {
 		return matcher.match(in: input, at: startindex)
 	}
 
-	internal func match(in input: Input, from startIndex: Input.Index) -> Match? {
+	internal func match(in input: TextPattern.Input, from startIndex: TextPattern.Input.Index) -> Match? {
 		return matcher.match(in: input, from: startIndex)
 	}
 
-	public func matches<S: StringProtocol>(in input: S, from startindex: Input.Index? = nil)
-		-> UnfoldSequence<Match, Input.Index> where S.SubSequence == Substring {
+	public func matches<S: StringProtocol>(in input: S, from startindex: TextPattern.Input.Index? = nil)
+		-> UnfoldSequence<Match, TextPattern.Input.Index> where S.SubSequence == Substring {
 		let input = input[...]
 		var previousRange: ParsedRange?
-		return sequence(state: startindex ?? input.startIndex, next: { (index: inout Input.Index) in
+		return sequence(state: startindex ?? input.startIndex, next: { (index: inout TextPattern.Input.Index) in
 			guard let match = self.match(in: input, from: index),
 				match.range != previousRange else { return nil }
 			let range = match.range
@@ -299,14 +283,3 @@ extension Patterns: CustomDebugStringConvertible {
 	}
 }
 
-internal extension Sequence where Element == TextPattern {
-	func flattenPatterns() -> [TextPattern] {
-		self.flatMap { (pattern: TextPattern) -> [TextPattern] in
-			(pattern as? Patterns)?.series
-				?? (pattern as? Capture).map {
-					[Capture.Start(name: $0.name)] + $0.patterns + [Capture.End()]
-				}
-				?? [pattern]
-		}
-	}
-}
