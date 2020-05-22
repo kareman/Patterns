@@ -100,7 +100,7 @@ class PatternsTests: XCTestCase {
 			result: ["1", "2", "", "3"])
 
 		// undefined (Skip at end)
-		_ = try Patterns(" " • Capture(Skip()))
+		_ = try Parser(" " • Capture(Skip()))
 			.matches(in: text)
 	}
 
@@ -147,7 +147,7 @@ class PatternsTests: XCTestCase {
 
 		"""
 
-		XCTAssertEqual(try Patterns(Line()).matches(in: text).map { text[$0.fullRange] },
+		XCTAssertEqual(try Parser(Line()).matches(in: text).map { text[$0.fullRange] },
 		               ["line 1", "", "line 3", "line 4", ""])
 	}
 
@@ -158,7 +158,7 @@ class PatternsTests: XCTestCase {
 		cera user
 		dilled10 io
 		"""
-		let pattern = try Patterns(Line.start • Capture())
+		let pattern = try Parser(Line.start • Capture())
 		let m = Array(pattern.matches(in: text))
 
 		XCTAssertEqual(m.map { text[$0.captures[0].range.lowerBound] }, ["a", "b", "c", "d"].map(Character.init))
@@ -174,12 +174,12 @@ class PatternsTests: XCTestCase {
 
 		"""
 
-		var pattern = try Patterns(Line.end • Capture())
+		var pattern = try Parser(Line.end • Capture())
 		var m = pattern.matches(in: text)
 		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].range.lowerBound] },
 		               Array(repeating: Character("\n"), count: 4))
 
-		pattern = try Patterns(Capture() • Line.end)
+		pattern = try Parser(Capture() • Line.end)
 		m = pattern.matches(in: text)
 		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].range.lowerBound] },
 		               Array(repeating: Character("\n"), count: 4))
@@ -201,7 +201,7 @@ class PatternsTests: XCTestCase {
 
 		assertCaptures(pattern, input: text, result: twoFirstWords)
 
-		let matches = Array(try Patterns(pattern).matches(in: text))
+		let matches = Array(try Parser(pattern).matches(in: text))
 		XCTAssertEqual(matches.map { text[$0[one: "word"]!] }, ["There", "Whose", "She", "In", "And"])
 		XCTAssertEqual(matches.map { $0[multiple: "word"].map { String(text[$0]) } }, twoFirstWords)
 		XCTAssertNil(matches.first![one: "not a name"])
@@ -214,10 +214,10 @@ class PatternsTests: XCTestCase {
 	002F          ; Common # Zs       SPACE
 	"""
 
-	lazy var rangeAndProperty: Patterns = {
+	lazy var rangeAndProperty: Parser = {
 		let hexNumber = Capture(name: "codePoint", hexDigit.repeat(1...))
 		let hexRange = ConcatenationPattern("\(hexNumber)..\(hexNumber)") || hexNumber
-		return try! Patterns(ConcatenationPattern("\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) "))
+		return try! Parser(ConcatenationPattern("\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) "))
 	}()
 
 	func testStringInterpolation() throws {
@@ -255,7 +255,7 @@ class PatternsTests: XCTestCase {
 		let text = "This is a point: (43,7), so is (0,5). But my final point is (3,-1)."
 
 		let number = OneOf("+-").repeat(0 ... 1) • digit.repeat(1...)
-		let point = try Patterns(ConcatenationPattern("(\(Capture(name: "x", number)),\(Capture(name: "y", number)))"))
+		let point = try Parser(ConcatenationPattern("(\(Capture(name: "x", number)),\(Capture(name: "y", number)))"))
 
 		let pointsAsSubstrings = point.matches(in: text).map { match in
 			(text[match[one: "x"]!], text[match[one: "y"]!])

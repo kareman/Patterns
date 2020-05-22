@@ -12,7 +12,7 @@ import XCTest
 // It's just there to notify us when the number of hits changes.
 
 class PerformanceTests: XCTestCase {
-	func speedTest(_ pattern: Patterns, testFile: String = "Long.txt", textFraction: Int = 1, hits: Int, file: StaticString = #file, line: UInt = #line) throws {
+	func speedTest(_ pattern: Parser, testFile: String = "Long.txt", textFraction: Int = 1, hits: Int, file: StaticString = #file, line: UInt = #line) throws {
 		let fulltext = try String(contentsOf: getLocalURL(for: testFile))
 		let text = fulltext.prefix(fulltext.count / textFraction)
 		var result = 0
@@ -28,56 +28,55 @@ class PerformanceTests: XCTestCase {
 	}
 
 	func testWordBoundary() throws {
-		let pattern = try Patterns(verify: Word.boundary)
+		let pattern = try Parser(Word.boundary)
 		try speedTest(pattern, textFraction: 16, hits: 79081)
 	}
 
 	func testWordBoundaryManyLanguages() throws {
-		let pattern = try Patterns(verify: Word.boundary)
+		let pattern = try Parser(Word.boundary)
 		try speedTest(pattern, testFile: "Multi-language-short.txt", hits: 49801)
 	}
 
 	func testUppercaseWord() throws {
-		let pattern = try Patterns(verify: Word.boundary, uppercase.repeat(1...), Word.boundary)
+		let pattern = try Parser(Word.boundary • uppercase+ • Word.boundary)
 		try speedTest(pattern, textFraction: 8, hits: 887)
 	}
 
 	func testLine() throws {
-		let pattern = try Patterns(verify: [Line.start, Capture(Skip()), Line.end])
+		let pattern = try Parser(Line.start • Capture(Skip()) • Line.end)
 		try speedTest(pattern, textFraction: 6, hits: 2550)
 	}
 
 	func testNotNewLine() throws {
 		let any = OneOf(description: "any", contains: { _ in true })
-		let pattern = try Patterns(verify: Literal(","),
-		                           Capture(Skip(whileRepeating: Patterns(any - newline))),
-		                           Line.end)
+		let pattern = try Parser(
+			"," • Capture(Skip(whileRepeating: any - newline)) • Line.end)
 		try speedTest(pattern, textFraction: 8, hits: 1413)
 	}
 
 	func testLiteralSearch() throws {
-		let pattern = try Patterns(verify: Literal("Prince"))
+		let pattern = try Parser(Literal("Prince"))
 		try speedTest(pattern, textFraction: 1, hits: 2168)
 	}
 
 	func testNonExistentLiteralSearch() throws {
-		let pattern = try Patterns(verify: Literal("\n"), Skip(), Literal("DOESN'T EXIST"))
+		let pattern = try Parser("\n" • Skip() • "DOESN'T EXIST")
 		try speedTest(pattern, textFraction: 60, hits: 0)
 	}
 
 	func testOptionalStringFollowedByNonOptionalString() throws {
-		let pattern = try Patterns(verify: Literal("\"").repeat(0 ... 1), Literal("I"))
+		let pattern = try Parser(Literal("\"")¿ • "I")
 		try speedTest(pattern, textFraction: 8, hits: 1136)
 	}
 
 	func testOneOrMore() throws {
-		let pattern = try Patterns(verify: Capture(ascii.repeat(1...)))
+		let pattern = try Parser(Capture(ascii+))
 		try speedTest(pattern, textFraction: 8, hits: 6041)
 	}
 
 	func testSkipping1() throws {
 		// [ word.boundary ] * " " * ":" * " " * " " * " " * "{" * Line.end
-		let pattern = try Patterns(verify: Skip(), Literal("."), Skip(), Literal(" "), Skip(), Literal(" "))
+		let pattern = try Parser(Skip() • "." • Skip() • " " • Skip() • " ")
 		try speedTest(pattern, textFraction: 6, hits: 4779)
 	}
 
@@ -91,16 +90,18 @@ class PerformanceTests: XCTestCase {
 		 ([eE][+-]?\d+)?
 		 */
 
-		let digits = digit.repeat(1...)
-		let pattern = try Patterns(verify: OneOf("+-").repeat(0 ... 1),
-		                           Patterns(digits, Patterns(Literal("."), digits).repeat(0 ... 1))
-		                           	|| Patterns(Literal("."), digits),
-		                           Patterns(OneOf("eE"), OneOf("+-").repeat(0 ... 1), digits).repeat(0 ... 1))
+		let digits = digit+
+		let pattern = try Parser(
+			OneOf("+-")¿
+				• (digits • ("." • digits)¿)
+				||
+				("." • digits)
+				• (OneOf("eE") • OneOf("+-")¿ • digits)¿)
 		try speedTest(pattern, textFraction: 16, hits: 11)
 	}
 
 	func testContainsClosure() throws {
-		let pattern = try Patterns(verify: Word.boundary, alphanumeric || OneOf(description: "isSymbol", contains: \.isSymbol))
+		let pattern = try Parser(Word.boundary • (alphanumeric || symbol))
 		try speedTest(pattern, textFraction: 16, hits: 35643)
 	}
 }

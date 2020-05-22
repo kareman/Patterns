@@ -5,7 +5,7 @@
 //  Created by Kåre Morstøl on 14/08/2019.
 //
 
-extension Patterns {
+extension Parser {
 	public func decode<T>(_ type: [T].Type, from string: String) throws -> [T] where T: Decodable {
 		try matches(in: string).map { try $0.decode(type.Element.self, from: string) }
 	}
@@ -15,19 +15,19 @@ extension Patterns {
 	}
 }
 
-extension Patterns.Match {
+extension Parser.Match {
 	public func decode<T>(_ type: T.Type, from string: String) throws -> T where T: Decodable {
 		return try type.init(from: MatchDecoder(match: self, string: string))
 	}
 
 	public struct MatchDecoder: Decoder {
-		let match: Patterns.Match
+		let match: Parser.Match
 		let string: String
 
 		public let codingPath: [CodingKey]
 		public var userInfo: [CodingUserInfoKey: Any] { return [:] }
 
-		init(match: Patterns.Match, string: String, codingPath: [CodingKey] = []) {
+		init(match: Parser.Match, string: String, codingPath: [CodingKey] = []) {
 			let namePrefix = codingPath.first.map(\.stringValue)
 			let captures = namePrefix.map { namePrefix in
 				match.captures.flatMap { name, range in
@@ -35,7 +35,7 @@ extension Patterns.Match {
 				}
 			} ?? match.captures
 
-			self.match = Patterns.Match(fullRange: match.fullRange, captures: captures)
+			self.match = Parser.Match(fullRange: match.fullRange, captures: captures)
 			self.string = string
 			self.codingPath = codingPath
 		}

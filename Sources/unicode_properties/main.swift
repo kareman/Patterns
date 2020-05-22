@@ -6,8 +6,8 @@ import Patterns
 
 func unicodeProperty(fromDataFile text: String) -> [(range: ClosedRange<UInt32>, property: Substring)] {
 	let hexNumber = Capture(name: "hexNumber", hexDigit.repeat(1...))
-	let hexRange = Patterns("\(hexNumber)..\(hexNumber)") || hexNumber
-	let rangeAndProperty: Patterns = "\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) "
+	let hexRange = Parser("\(hexNumber)..\(hexNumber)") || hexNumber
+	let rangeAndProperty: Parser = "\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) "
 
 	return rangeAndProperty.matches(in: text).map { match in
 		let propertyName = text[match[one: "property"]!]

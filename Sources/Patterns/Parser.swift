@@ -75,11 +75,11 @@ public struct Capture: TextPattern, RegexConvertible {
 }
 
 protocol Matcher: class {
-	func match(in input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> Patterns.Match?
-	func match(in input: TextPattern.Input, from startIndex: TextPattern.Input.Index) -> Patterns.Match?
+	func match(in input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> Parser.Match?
+	func match(in input: TextPattern.Input, from startIndex: TextPattern.Input.Index) -> Parser.Match?
 }
 
-public struct Patterns: TextPattern, RegexConvertible {
+public struct Parser {
 	public enum InitError: Error, CustomStringConvertible {
 		case invalid([TextPattern])
 		case message(String)
@@ -94,31 +94,17 @@ public struct Patterns: TextPattern, RegexConvertible {
 		}
 	}
 
-	public let series: [TextPattern]
-	public let description: String
-	#if SwiftEngine
-	let matcher: PatternsEngine
-	#else
+	public let pattern: TextPattern
 	let matcher: VMBacktrackEngine
-	#endif
-
-	public var regex: String {
-		return series.map { ($0 as! RegexConvertible).regex }.joined()
-	}
 
 	public init(_ pattern: TextPattern) throws {
-		self.series = [pattern]
-		self.matcher = try VMBacktrackEngine(self.series.first!)
-		self.description = self.series.map(String.init(describing:)).joined(separator: " ")
+		self.pattern = pattern
+		self.matcher = try VMBacktrackEngine(self.pattern)
 	}
 
 	public func ranges<S: StringProtocol>(in input: S, from startindex: TextPattern.Input.Index? = nil)
 		-> AnySequence<ParsedRange> where S.SubSequence == TextPattern.Input {
 		return AnySequence(matches(in: input, from: startindex).lazy.map(\.range))
-	}
-
-	public func createInstructions() -> [Instruction] {
-		series.createInstructions()
 	}
 }
 
@@ -221,7 +207,7 @@ internal func prependSkip<C: BidirectionalCollection>(skip: Skip = Skip(), _ ins
 	}
 }
 
-extension Patterns {
+extension Parser {
 	public struct Match {
 		public let fullRange: ParsedRange
 		public let captures: [(name: String?, range: ParsedRange)]
@@ -238,7 +224,8 @@ extension Patterns {
 		public func description(using text: String) -> String {
 			return """
 			fullRange: \(text[fullRange])
-			captures: \(captures.map { "\($0.name ?? "")\t\t\(text[$0.range])\n" })
+			captures: \(captures.map { "\($0.name ?? "")    \(text[$0.range])" })
+			
 			"""
 		}
 
@@ -276,10 +263,3 @@ extension Patterns {
 		})
 	}
 }
-
-extension Patterns: CustomDebugStringConvertible {
-	public var debugDescription: String {
-		return self.description
-	}
-}
-

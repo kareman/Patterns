@@ -21,16 +21,16 @@ class VMBacktrackEngine: Matcher {
 		instructionsFrom = ([Skip(), Capture.Start(), pattern, Capture.End(), Match()]).createInstructions()[...]
 	}
 
-	func match(in input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> Patterns.Match? {
+	func match(in input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> Parser.Match? {
 		return backtrackingVM(instructionsFrom, input: input, startIndex: startindex).flatMap { $0.fullRange.lowerBound == startindex ? $0 : nil }
 	}
 
-	func match(in input: TextPattern.Input, from startIndex: TextPattern.Input.Index) -> Patterns.Match? {
+	func match(in input: TextPattern.Input, from startIndex: TextPattern.Input.Index) -> Parser.Match? {
 		return backtrackingVM(instructionsFrom, input: input, startIndex: startIndex)
 	}
 }
 
-extension Patterns.Match {
+extension Parser.Match {
 	init(_ thread: Thread, instructions: Array<Instruction>.SubSequence) {
 		var captures = [(name: String?, range: ParsedRange)]()
 		captures.reserveCapacity(thread.captures.count / 2)
@@ -99,10 +99,10 @@ public enum Instruction {
 	}
 }
 
-func backtrackingVM(_ instructions: Array<Instruction>.SubSequence, input: TextPattern.Input, startIndex: TextPattern.Input.Index? = nil) -> Patterns.Match? {
+func backtrackingVM(_ instructions: Array<Instruction>.SubSequence, input: TextPattern.Input, startIndex: TextPattern.Input.Index? = nil) -> Parser.Match? {
 	let thread = Thread(instructionIndex: instructions.startIndex, inputIndex: startIndex ?? input.startIndex)
 	return backtrackingVM(instructions, input: input, thread: thread)
-		.map { Patterns.Match($0, instructions: instructions) }
+		.map { Parser.Match($0, instructions: instructions) }
 }
 
 func backtrackingVM(_ instructions: Array<Instruction>.SubSequence, input: TextPattern.Input, thread: Thread) -> Thread? {

@@ -21,7 +21,7 @@ extension XCTestCase {
 	func assertParseAll(_ pattern: TextPattern, input: String, result: [String],
 	                    file: StaticString = #file, line: UInt = #line) {
 		do {
-			let pattern = try (pattern as? Patterns) ?? Patterns(pattern)
+			let pattern = try Parser(pattern)
 			let parsed = pattern.ranges(in: input).map { String(input[$0]) }
 			XCTAssertEqual(parsed, result, "\nThe differences are: \n"
 				+ parsed.difference(from: result).sorted().joined(separator: "\n"), file: file, line: line)
@@ -33,12 +33,11 @@ extension XCTestCase {
 	func assertParseAll(_ pattern: TextPattern, input: String, result: String? = nil, count: Int,
 	                    file: StaticString = #file, line: UInt = #line) {
 		do {
-			let pattern = try (pattern as? Patterns) ?? Patterns(pattern)
 			if let result = result {
 				assertParseAll(pattern, input: input, result: Array(repeating: result, count: count), file: file, line: line)
 				return
 			} else {
-				let parsed = pattern.ranges(in: input).array()
+				let parsed = try Parser(pattern).ranges(in: input).array()
 				XCTAssertEqual(parsed.count, count, "Incorrect count.", file: file, line: line)
 			}
 		} catch {
@@ -59,10 +58,10 @@ extension XCTestCase {
 
 	func assertParseMarkers(_ pattern: TextPattern, input: String,
 	                        file: StaticString = #file, line: UInt = #line) {
-		assertParseMarkers(try! Patterns(pattern), input: input, file: file, line: line)
+		assertParseMarkers(try! Parser(pattern), input: input, file: file, line: line)
 	}
 
-	func assertParseMarkers(_ pattern: Patterns, input: String,
+	func assertParseMarkers(_ pattern: Parser, input: String,
 	                        file: StaticString = #file, line: UInt = #line) {
 		let (string, correct) = processMarkers(input)
 		let parsedRanges = pattern.ranges(in: string).array()
@@ -83,10 +82,10 @@ extension XCTestCase {
 
 	func assertCaptures(_ pattern: TextPattern, input: String, result: [[String]],
 	                    file: StaticString = #file, line: UInt = #line) {
-		assertCaptures(try! Patterns(pattern), input: input, result: result, file: file, line: line)
+		assertCaptures(try! Parser(pattern), input: input, result: result, file: file, line: line)
 	}
 
-	func assertCaptures(_ pattern: Patterns, input: String, result: [[String]],
+	func assertCaptures(_ pattern: Parser, input: String, result: [[String]],
 	                    file: StaticString = #file, line: UInt = #line) {
 		let matches = Array(pattern.matches(in: input))
 		let output = matches.map { match in match.captures.map { String(input[$0.range]) } }
