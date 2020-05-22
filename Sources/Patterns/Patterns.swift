@@ -75,8 +75,8 @@ public struct Capture: TextPattern, RegexConvertible {
 }
 
 protocol Matcher: class {
-	func match(in input: Patterns.Input, at startindex: Patterns.Input.Index) -> Patterns.Match?
-	func match(in input: Patterns.Input, from startIndex: Patterns.Input.Index) -> Patterns.Match?
+	func match(in input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> Patterns.Match?
+	func match(in input: TextPattern.Input, from startIndex: TextPattern.Input.Index) -> Patterns.Match?
 }
 
 public struct Patterns: TextPattern, RegexConvertible {

@@ -81,6 +81,11 @@ extension XCTestCase {
 		}
 	}
 
+	func assertCaptures(_ pattern: TextPattern, input: String, result: [[String]],
+	                    file: StaticString = #file, line: UInt = #line) {
+		assertCaptures(Patterns(pattern), input: input, result: result, file: file, line: line)
+	}
+
 	func assertCaptures(_ pattern: Patterns, input: String, result: [[String]],
 	                    file: StaticString = #file, line: UInt = #line) {
 		let matches = Array(pattern.matches(in: input))
