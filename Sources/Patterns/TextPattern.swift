@@ -197,24 +197,21 @@ extension Literal {
 	}
 }
 
-public struct OrPattern: TextPattern, RegexConvertible {
-	public let pattern1, pattern2: TextPattern
+public struct OrPattern<First: TextPattern, Second: TextPattern>: TextPattern {
+	public let first: First
+	public let second: Second
 
-	init(pattern1: TextPattern, pattern2: TextPattern) {
-		self.pattern1 = pattern1
-		self.pattern2 = pattern2
+	init(_ first: First, or second: Second) {
+		self.first = first
+		self.second = second
 	}
 
 	public var description: String {
-		return "(\(pattern1) || \(pattern2))"
-	}
-
-	public var regex: String {
-		return (pattern1 as! RegexConvertible).regex + "|" + (pattern2 as! RegexConvertible).regex
+		return "(\(first) / \(second))"
 	}
 
 	public func createInstructions() -> [Instruction] {
-		let (inst1, inst2) = (pattern1.createInstructions(), pattern2.createInstructions())
+		let (inst1, inst2) = (first.createInstructions(), second.createInstructions())
 		return Array<Instruction> {
 			$0 += .split(first: 1, second: inst1.count + 3)
 			$0 += inst1
@@ -225,20 +222,26 @@ public struct OrPattern: TextPattern, RegexConvertible {
 	}
 }
 
-public func / (p1: TextPattern, p2: TextPattern) -> OrPattern {
-	return OrPattern(pattern1: p1, pattern2: p2)
+extension OrPattern: RegexConvertible where First: RegexConvertible, Second: RegexConvertible {
+	public var regex: String {
+		return first.regex + "|" + second.regex
+	}
 }
 
-public func / (p1: Literal, p2: TextPattern) -> OrPattern {
-	return OrPattern(pattern1: p1, pattern2: p2)
+public func / <First: TextPattern, Second: TextPattern>(p1: First, p2: Second) -> OrPattern<First, Second> {
+	return OrPattern(p1, or: p2)
 }
 
-public func / (p1: TextPattern, p2: Literal) -> OrPattern {
-	return OrPattern(pattern1: p1, pattern2: p2)
+public func / <Second: TextPattern>(p1: Literal, p2: Second) -> OrPattern<Literal, Second> {
+	return OrPattern(p1, or: p2)
 }
 
-public func / (p1: Literal, p2: Literal) -> OrPattern {
-	return OrPattern(pattern1: p1, pattern2: p2)
+public func / <First: TextPattern>(p1: First, p2: Literal) -> OrPattern<First, Literal> {
+	return OrPattern(p1, or: p2)
+}
+
+public func / (p1: Literal, p2: Literal) -> OrPattern<Literal, Literal> {
+	return OrPattern(p1, or: p2)
 }
 
 public struct Line: TextPattern, RegexConvertible {
