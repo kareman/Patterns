@@ -216,8 +216,8 @@ class PatternsTests: XCTestCase {
 
 	lazy var rangeAndProperty: Parser = {
 		let hexNumber = Capture(name: "codePoint", hexDigit.repeat(1...))
-		let hexRange = ConcatenationPattern("\(hexNumber)..\(hexNumber)") / hexNumber
-		return try! Parser(ConcatenationPattern("\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) "))
+		let hexRange = AnyPattern("\(hexNumber)..\(hexNumber)") / hexNumber
+		return try! Parser(AnyPattern("\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) "))
 	}()
 
 	func testStringInterpolation() throws {
@@ -255,7 +255,7 @@ class PatternsTests: XCTestCase {
 		let text = "This is a point: (43,7), so is (0,5). But my final point is (3,-1)."
 
 		let number = OneOf("+-").repeat(0 ... 1) • digit.repeat(1...)
-		let point = try Parser(ConcatenationPattern("(\(Capture(name: "x", number)),\(Capture(name: "y", number)))"))
+		let point = try Parser(AnyPattern("(\(Capture(name: "x", number)),\(Capture(name: "y", number)))"))
 
 		let pointsAsSubstrings = point.matches(in: text).map { match in
 			(text[match[one: "x"]!], text[match[one: "y"]!])
@@ -269,5 +269,12 @@ class PatternsTests: XCTestCase {
 
 		assertCaptures(point, input: text, result: [["43", "7"], ["0", "5"], ["3", "-1"]])
 		_ = (pointsAsSubstrings, points)
+	}
+
+	func testOperatorPrecedence() throws {
+		let p1 = "a" • Skip() • letter • !alphanumeric • "b"+
+		XCTAssert(type(of: p1.right.left) == Skip.self)
+
+		XCTAssert(type(of: "a" • "b" / "c" • "d") == OrPattern.self, #"`/` should have lower precedence than `•`"#)
 	}
 }

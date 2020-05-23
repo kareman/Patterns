@@ -5,7 +5,26 @@
 //  Created by Kåre Morstøl on 11/08/2019.
 //
 
-extension ConcatenationPattern: ExpressibleByStringInterpolation {
+public struct AnyPattern: TextPattern {
+	private let _instructions: () -> [Instruction]
+	public func createInstructions() -> [Instruction] {
+		_instructions()
+	}
+
+	private let _description: () -> String
+	public var description: String { _description() }
+
+	init(_ p: TextPattern) {
+		_instructions = { p.createInstructions() }
+		_description = { p.description }
+	}
+
+	init(_ p: AnyPattern) {
+		self = p
+	}
+}
+
+extension AnyPattern: ExpressibleByStringInterpolation {
 	public struct StringInterpolation: StringInterpolationProtocol {
 		var patterns = [TextPattern]()
 
@@ -25,23 +44,23 @@ extension ConcatenationPattern: ExpressibleByStringInterpolation {
 	}
 
 	public init(stringLiteral value: String) {
-		self.init(first: Literal(value), second: Literal(""))
+		self.init(Literal(value))
 	}
 
 	public init(stringInterpolation: StringInterpolation) {
 		var patterns = stringInterpolation.patterns[...]
 		guard let first = patterns.popFirst() else {
-			self.init(first: Literal(""), second: Literal(""))
+			self.init(Literal(""))
 			return
 		}
 		guard let second = patterns.popFirst() else {
-			self.init(first: first, second: Literal(""))
+			self.init(first)
 			return
 		}
-		var result = first • second
+		var result = AnyPattern(first) • AnyPattern(second)
 		while let next = patterns.popFirst() {
-			result = result • next
+			result = AnyPattern(result) • AnyPattern(next)
 		}
-		self = result
+		self.init(result)
 	}
 }

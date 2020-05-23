@@ -94,14 +94,14 @@ class PerformanceTests: XCTestCase {
 		let pattern = try Parser(
 			OneOf("+-")¿
 				• (digits • ("." • digits)¿)
-				||
+				/
 				("." • digits)
 				• (OneOf("eE") • OneOf("+-")¿ • digits)¿)
 		try speedTest(pattern, textFraction: 16, hits: 11)
 	}
 
 	func testContainsClosure() throws {
-		let pattern = try Parser(Word.boundary • (alphanumeric || symbol))
+		let pattern = try Parser(Word.boundary • (alphanumeric / symbol))
 		try speedTest(pattern, textFraction: 16, hits: 35643)
 	}
 }
