@@ -273,7 +273,7 @@ class PatternsTests: XCTestCase {
 
 	func testOperatorPrecedence() throws {
 		let p1 = "a" • Skip() • letter • !alphanumeric • "b"+
-		XCTAssert(type(of: p1.right.left) == Skip.self)
+		XCTAssert(type(of: p1.right.left) == Skip<AnyPattern>.self)
 
 		XCTAssert(type(of: "a" • "b" / "c" • "d") == OrPattern.self, #"`/` should have lower precedence than `•`"#)
 	}

@@ -18,10 +18,11 @@ class VMBacktrackEngine: Matcher {
 			let description = "match"
 			func createInstructions() -> [Instruction] { [.match] }
 		}
-		instructionsFrom = ([Skip(), Capture.Start(), pattern, Capture.End(), Match()]).createInstructions()[...]
+		instructionsFrom = prependSkip(skip: Skip(), (Capture(pattern) • Match()).createInstructions())[...]
 	}
 
 	func match(in input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> Parser.Match? {
+		// TODO: make more efficient.
 		return backtrackingVM(instructionsFrom, input: input, startIndex: startindex).flatMap { $0.fullRange.lowerBound == startindex ? $0 : nil }
 	}
 

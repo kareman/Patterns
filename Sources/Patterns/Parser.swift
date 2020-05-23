@@ -5,16 +5,16 @@
 //  Created by Kåre Morstøl on 23/10/2018.
 //
 
-public struct Skip: TextPattern, RegexConvertible {
-	public let repeatedPattern: TextPattern?
+public struct Skip<Repeated: TextPattern>: TextPattern, RegexConvertible {
+	public let repeatedPattern: Repeated?
 	public let description: String
 	public var regex: String {
 		return repeatedPattern.map { "(?:\(($0 as! RegexConvertible).regex))*?" } ?? ".*?"
 	}
 
-	public init(whileRepeating repeatedPattern: TextPattern? = nil) {
+	public init(whileRepeating repeatedPattern: Repeated) {
 		self.repeatedPattern = repeatedPattern
-		self.description = "\(repeatedPattern.map(String.init(describing:)) ?? "")*"
+		self.description = "Skip(\(repeatedPattern))"
 	}
 
 	public func createInstructions() -> [Instruction] {
@@ -22,6 +22,13 @@ public struct Skip: TextPattern, RegexConvertible {
 		return [.split(first: reps.count + 2, second: 1)]
 			+ reps
 			+ [.jump(relative: -reps.count - 1)]
+	}
+}
+
+extension Skip where Repeated == AnyPattern {
+	public init() {
+		self.description = "Skip()"
+		self.repeatedPattern = nil
 	}
 }
 
@@ -108,18 +115,11 @@ public struct Parser {
 	}
 }
 
-internal extension Sequence where Element == TextPattern {
-	func createInstructions() -> [Instruction] {
-		let series = Array(self)
-		let splitBySkip = series.splitWhileKeepingSeparators(omittingEmptySubsequences: false, whereSeparator: { $0 is Skip })
-		return (splitBySkip.first?.flatMap { $0.createInstructions() } ?? [])
-			+ splitBySkip.dropFirst().flatMap {
-				prependSkip(skip: $0.first! as! Skip, $0.dropFirst().flatMap { $0.createInstructions() })
-			}
-	}
+internal func prependSkip<C: BidirectionalCollection>(_ instructions: C) -> [Instruction] where C.Element == Instruction {
+	prependSkip(skip: Skip(), instructions)
 }
 
-internal func prependSkip<C: BidirectionalCollection>(skip: Skip = Skip(), _ instructions: C)
+internal func prependSkip<C: BidirectionalCollection, Repeated: TextPattern>(skip: Skip<Repeated>, _ instructions: C)
 	-> [Instruction] where C.Element == Instruction {
 	var remainingInstructions = instructions[...]
 	var chars = [Instruction]()[...]
@@ -225,7 +225,7 @@ extension Parser {
 			return """
 			fullRange: \(text[fullRange])
 			captures: \(captures.map { "\($0.name ?? "")    \(text[$0.range])" })
-			
+
 			"""
 		}
 
