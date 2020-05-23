@@ -291,8 +291,8 @@ public struct Line: TextPattern, RegexConvertible {
 	}
 }
 
-public struct NotPattern: TextPattern {
-	public let pattern: TextPattern
+public struct NotPattern<Wrapped: TextPattern>: TextPattern {
+	public let pattern: Wrapped
 	public var description: String { "!\(pattern)" }
 
 	public func createInstructions() -> [Instruction] {
@@ -307,14 +307,14 @@ public struct NotPattern: TextPattern {
 }
 
 extension TextPattern {
-	public var not: NotPattern { NotPattern(pattern: self) }
+	public var not: NotPattern<Self> { NotPattern(pattern: self) }
 
-	public static prefix func ! (me: Self) -> NotPattern {
+	public static prefix func ! (me: Self) -> NotPattern<Self> {
 		me.not
 	}
 }
 
-public prefix func ! (me: Literal) -> NotPattern {
+public prefix func ! (me: Literal) -> NotPattern<Literal> {
 	me.not
 }
 

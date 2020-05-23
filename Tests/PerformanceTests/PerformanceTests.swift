@@ -81,8 +81,7 @@ class PerformanceTests: XCTestCase {
 	}
 
 	func testAnyNumeral() throws {
-		/* An advanced regular expression that matches any numeral is
-
+		/* An advanced regular expression that matches any numeral:
 		 [+-]?
 		 	(\d+(\.\d+)?)
 		 	|
