@@ -64,7 +64,7 @@ class TextPatternTests: XCTestCase {
 	}
 
 	func testOrPattern() {
-		let pattern = "a" || "b"
+		let pattern = "a" / "b"
 		assertParseAll(pattern, input: "bcbd", result: "b", count: 2)
 		assertParseAll(pattern, input: "acdaa", result: "a", count: 3)
 		assertParseAll(pattern, input: "abcdb", count: 3)
@@ -85,7 +85,7 @@ class TextPatternTests: XCTestCase {
 			$0.unicodeScalars.first!.properties.isHexDigit
 		})
 		let hexNumber = Capture(hexDigit.repeat(1...))
-		let hexRange = (hexNumber • ".." • hexNumber) || hexNumber
+		let hexRange = (hexNumber • ".." • hexNumber) / hexNumber
 		let rangeAndProperty = Line.start • hexRange • Skip() • "; " • Capture(Skip()) • " "
 
 		assertCaptures(rangeAndProperty, input: text,
@@ -119,7 +119,7 @@ class TextPatternTests: XCTestCase {
 		 XCTAssertThrowsError(
 		 	[Line.start, Skip(), Line.start]))
 		 */
-		XCTAssertNoThrow(Line.start • Skip(whileRepeating: alphanumeric || "\n") • Line.start)
+		XCTAssertNoThrow(Line.start • Skip(whileRepeating: alphanumeric / "\n") • Line.start)
 	}
 
 	func testLineEnd() throws {
@@ -154,7 +154,7 @@ class TextPatternTests: XCTestCase {
 		 */
 
 		XCTAssertNoThrow(
-			Line.end • Skip(whileRepeating: alphanumeric || "\n") • Line.end)
+			Line.end • Skip(whileRepeating: alphanumeric / "\n") • Line.end)
 
 		assertParseAll(
 			Line.end,

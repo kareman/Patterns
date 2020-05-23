@@ -202,7 +202,7 @@ public struct OrPattern: TextPattern, RegexConvertible {
 
 	init(pattern1: TextPattern, pattern2: TextPattern) {
 		self.pattern1 = pattern1
-		self.pattern2 = pattern2 
+		self.pattern2 = pattern2
 	}
 
 	public var description: String {
@@ -225,19 +225,19 @@ public struct OrPattern: TextPattern, RegexConvertible {
 	}
 }
 
-public func || (p1: TextPattern, p2: TextPattern) -> OrPattern {
+public func / (p1: TextPattern, p2: TextPattern) -> OrPattern {
 	return OrPattern(pattern1: p1, pattern2: p2)
 }
 
-public func || (p1: Literal, p2: TextPattern) -> OrPattern {
+public func / (p1: Literal, p2: TextPattern) -> OrPattern {
 	return OrPattern(pattern1: p1, pattern2: p2)
 }
 
-public func || (p1: TextPattern, p2: Literal) -> OrPattern {
+public func / (p1: TextPattern, p2: Literal) -> OrPattern {
 	return OrPattern(pattern1: p1, pattern2: p2)
 }
 
-public func || (p1: Literal, p2: Literal) -> OrPattern {
+public func / (p1: Literal, p2: Literal) -> OrPattern {
 	return OrPattern(pattern1: p1, pattern2: p2)
 }
 
@@ -309,6 +309,10 @@ extension TextPattern {
 	public static prefix func ! (me: Self) -> NotPattern {
 		me.not
 	}
+}
+
+public prefix func ! (me: Literal) -> NotPattern {
+	me.not
 }
 
 public let any = OneOf(description: "any", regex: #"[.\p{Zl}]"#,

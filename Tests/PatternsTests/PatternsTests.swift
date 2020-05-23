@@ -72,7 +72,7 @@ class PatternsTests: XCTestCase {
 
 	func testRepeatOrThenEndOfLine() throws {
 		assertParseAll(
-			(alphanumeric || OneOf(" ")).repeat(1...) • Line.end,
+			(alphanumeric / OneOf(" ")).repeat(1...) • Line.end,
 			input: "FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S",
 			result: ["FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S"])
 	}
@@ -216,7 +216,7 @@ class PatternsTests: XCTestCase {
 
 	lazy var rangeAndProperty: Parser = {
 		let hexNumber = Capture(name: "codePoint", hexDigit.repeat(1...))
-		let hexRange = ConcatenationPattern("\(hexNumber)..\(hexNumber)") || hexNumber
+		let hexRange = ConcatenationPattern("\(hexNumber)..\(hexNumber)") / hexNumber
 		return try! Parser(ConcatenationPattern("\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) "))
 	}()
 
