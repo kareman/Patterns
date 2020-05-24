@@ -12,9 +12,9 @@ import XCTest
 // It's just there to notify us when the number of hits changes.
 
 class PerformanceTests: XCTestCase {
-	func speedTest(_ pattern: Parser, testFile: String = "Long.txt", textFraction: Int = 1, hits: Int, file: StaticString = #file, line: UInt = #line) throws {
+	func speedTest(_ pattern: Parser<String>, testFile: String = "Long.txt", textFraction: Int = 1, hits: Int, file: StaticString = #file, line: UInt = #line) throws {
 		let fulltext = try String(contentsOf: getLocalURL(for: testFile))
-		let text = fulltext.prefix(fulltext.count / textFraction)
+		let text = String(fulltext.prefix(fulltext.count / textFraction))
 		var result = 0
 		let block = {
 			result = pattern.matches(in: text).reduce(into: 0) { c, _ in c += 1 }

@@ -6,36 +6,34 @@
 //
 
 public protocol TextPattern: CustomStringConvertible {
-	typealias Input = Substring
-	func createInstructions() -> [Instruction]
+	typealias Input = String
+	typealias ParsedRange = Range<Input.Index>
+
+	func createInstructions() -> [Instruction<Input>]
 }
 
-class VMBacktrackEngine: Matcher {
-	let instructionsFrom: Array<Instruction>.SubSequence
+class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Equatable {
+	let instructionsFrom: Array<Instruction<Input>>.SubSequence
 
-	required init(_ pattern: TextPattern) throws {
-		struct Match: TextPattern {
-			let description = "match"
-			func createInstructions() -> [Instruction] { [.match] }
-		}
-		instructionsFrom = prependSkip(skip: Skip(), (Capture(pattern) • Match()).createInstructions())[...]
+	required init<P: TextPattern>(_ pattern: P) throws where Input == P.Input {
+		instructionsFrom = Skip().prependSkip(Capture(pattern).createInstructions() + [Instruction<Input>.match])[...]
 	}
 
-	func match(in input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> Parser.Match? {
+	func match(in input: Input, at startindex: Input.Index) -> Parser<Input>.Match? {
 		// TODO: make more efficient.
 		return backtrackingVM(instructionsFrom, input: input, startIndex: startindex).flatMap { $0.fullRange.lowerBound == startindex ? $0 : nil }
 	}
 
-	func match(in input: TextPattern.Input, from startIndex: TextPattern.Input.Index) -> Parser.Match? {
+	func match(in input: Input, from startIndex: Input.Index) -> Parser<Input>.Match? {
 		return backtrackingVM(instructionsFrom, input: input, startIndex: startIndex)
 	}
 }
 
 extension Parser.Match {
-	init(_ thread: Thread, instructions: Array<Instruction>.SubSequence) {
-		var captures = [(name: String?, range: ParsedRange)]()
+	init(_ thread: Thread<Input>, instructions: Array<Instruction<Input>>.SubSequence) {
+		var captures = [(name: String?, range: Range<Input.Index>)]()
 		captures.reserveCapacity(thread.captures.count / 2)
-		var captureBeginnings = [(name: String?, start: String.Index)]()
+		var captureBeginnings = [(name: String?, start: Input.Index)]()
 		captureBeginnings.reserveCapacity(captures.capacity)
 		for capture in thread.captures {
 			switch instructions[capture.instruction] {
@@ -54,10 +52,10 @@ extension Parser.Match {
 	}
 }
 
-public struct Thread {
-	var instructionIndex: Array<Instruction>.SubSequence.Index
-	var inputIndex: String.Index
-	var captures: ContiguousArray<(index: String.Index, instruction: Array<Instruction>.Index)>
+public struct Thread<Input: BidirectionalCollection> where Input.Element: Equatable {
+	var instructionIndex: Array<Instruction<Input>>.SubSequence.Index
+	var inputIndex: Input.Index
+	var captures: ContiguousArray<(index: Input.Index, instruction: Array<Instruction<Input>>.Index)>
 
 	init(startAt instructionIndex: Int, withDataFrom other: Thread) {
 		self.instructionIndex = instructionIndex
@@ -65,19 +63,19 @@ public struct Thread {
 		self.captures = other.captures
 	}
 
-	init(instructionIndex: Array<Instruction>.SubSequence.Index, inputIndex: String.Index) {
+	init(instructionIndex: Array<Instruction<Input>>.SubSequence.Index, inputIndex: Input.Index) {
 		self.instructionIndex = instructionIndex
 		self.inputIndex = inputIndex
 		self.captures = []
 	}
 }
 
-public enum Instruction {
-	case literal(Character)
-	case checkCharacter((Character) -> Bool)
-	case checkIndex((TextPattern.Input, TextPattern.Input.Index) -> Bool)
+public enum Instruction<Input: BidirectionalCollection> where Input.Element: Equatable {
+	case literal(Input.Element)
+	case checkCharacter((Input.Element) -> Bool)
+	case checkIndex((Input, Input.Index) -> Bool)
 	case moveIndex(relative: Int)
-	case function((TextPattern.Input, inout Thread) -> Bool)
+	case function((Input, inout Thread<Input>) -> Bool)
 	case captureStart(name: String?)
 	case captureEnd
 	case jump(relative: Int)
@@ -85,8 +83,8 @@ public enum Instruction {
 	case cancelLastSplit
 	case match
 
-	static let any = Self.checkCharacter { _ in true }
-	static func search(_ f: @escaping (TextPattern.Input, TextPattern.Input.Index) -> TextPattern.Input.Index?) -> Instruction {
+	static var any: Instruction { Self.checkCharacter { _ in true } }
+	static func search(_ f: @escaping (Input, Input.Index) -> Input.Index?) -> Instruction {
 		.function { (input, thread) -> Bool in
 			guard let index = f(input, thread.inputIndex) else { return false }
 			thread.inputIndex = index
@@ -100,14 +98,14 @@ public enum Instruction {
 	}
 }
 
-func backtrackingVM(_ instructions: Array<Instruction>.SubSequence, input: TextPattern.Input, startIndex: TextPattern.Input.Index? = nil) -> Parser.Match? {
-	let thread = Thread(instructionIndex: instructions.startIndex, inputIndex: startIndex ?? input.startIndex)
+func backtrackingVM<Input: BidirectionalCollection>(_ instructions: Array<Instruction<Input>>.SubSequence, input: Input, startIndex: Input.Index? = nil) -> Parser<Input>.Match? where Input.Element: Equatable {
+	let thread = Thread<Input>(instructionIndex: instructions.startIndex, inputIndex: startIndex ?? input.startIndex)
 	return backtrackingVM(instructions, input: input, thread: thread)
 		.map { Parser.Match($0, instructions: instructions) }
 }
 
-func backtrackingVM(_ instructions: Array<Instruction>.SubSequence, input: TextPattern.Input, thread: Thread) -> Thread? {
-	var currentThreads = ContiguousArray<Thread>()[...]
+func backtrackingVM<Input: BidirectionalCollection>(_ instructions: Array<Instruction<Input>>.SubSequence, input: Input, thread: Thread<Input>) -> Thread<Input>? where Input.Element: Equatable {
+	var currentThreads = ContiguousArray<Thread<Input>>()[...]
 
 	currentThreads.append(thread)
 	while var thread = currentThreads.popLast() {

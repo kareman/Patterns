@@ -65,7 +65,7 @@ public struct Word {
 			return success
 		}
 
-		public func createInstructions() -> [Instruction] {
+		public func createInstructions() -> [Instruction<Input>]  {
 			[.checkIndex { (input, index) -> Bool in
 				self.parse(input, at: index) != nil
 			}]

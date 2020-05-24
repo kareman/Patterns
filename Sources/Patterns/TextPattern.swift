@@ -8,8 +8,6 @@
 
 import Foundation
 
-public typealias ParsedRange = Range<TextPattern.Input.Index>
-
 public struct Literal: TextPattern, RegexConvertible {
 	public let substring: Input
 	let searchCache: SearchCache<Input.Element>
@@ -31,7 +29,7 @@ public struct Literal: TextPattern, RegexConvertible {
 		self.init(String(character))
 	}
 
-	public func createInstructions() -> [Instruction] {
+	public func createInstructions() -> [Instruction<Input>]  {
 		return substring.map(Instruction.literal)
 	}
 }
@@ -79,7 +77,7 @@ public struct OneOf: TextPattern, RegexConvertible {
 		OneOf.basePatterns.filter { $0.group.contains(contentsOf: s) }
 	}
 
-	public func createInstructions() -> [Instruction] {
+	public func createInstructions() -> [Instruction<Input>]  {
 		[.checkCharacter(group.contains)]
 	}
 
@@ -112,7 +110,7 @@ public struct RepeatPattern<Repeated: TextPattern>: TextPattern, RegexConvertibl
 		"(?:\((repeatedPattern as! RegexConvertible).regex){\(min),\(max.map(String.init(describing:)) ?? "")}"
 	}
 
-	public func createInstructions() -> [Instruction] {
+	public func createInstructions() -> [Instruction<Input>]  {
 		let repeatedInstructions = repeatedPattern.createInstructions()
 		var result = (0 ..< min).flatMap { _ in repeatedInstructions }
 		if let max = max {
@@ -210,7 +208,7 @@ public struct OrPattern<First: TextPattern, Second: TextPattern>: TextPattern {
 		return "(\(first) / \(second))"
 	}
 
-	public func createInstructions() -> [Instruction] {
+	public func createInstructions() -> [Instruction<Input>]  {
 		let (inst1, inst2) = (first.createInstructions(), second.createInstructions())
 		return Array<Instruction> {
 			$0 += .split(first: 1, second: inst1.count + 3)
@@ -256,7 +254,7 @@ public struct Line: TextPattern, RegexConvertible {
 		pattern = Start() • Skip() • End()
 	}
 
-	public func createInstructions() -> [Instruction] {
+	public func createInstructions() -> [Instruction<Input>]  {
 		pattern.createInstructions()
 	}
 
@@ -270,7 +268,7 @@ public struct Line: TextPattern, RegexConvertible {
 			index == input.startIndex || input[input.index(before: index)].isNewline
 		}
 
-		public func createInstructions() -> [Instruction] {
+		public func createInstructions() -> [Instruction<Input>]  {
 			[.checkIndex(self.parse(_:at:))]
 		}
 	}
@@ -285,7 +283,7 @@ public struct Line: TextPattern, RegexConvertible {
 			index == input.endIndex || input[index].isNewline
 		}
 
-		public func createInstructions() -> [Instruction] {
+		public func createInstructions() -> [Instruction<Input>]  {
 			[.checkIndex(self.parse(_:at:))]
 		}
 	}
@@ -295,7 +293,7 @@ public struct NotPattern<Wrapped: TextPattern>: TextPattern {
 	public let pattern: Wrapped
 	public var description: String { "!\(pattern)" }
 
-	public func createInstructions() -> [Instruction] {
+	public func createInstructions() -> [Instruction<Input>]  {
 		let instructions = pattern.createInstructions()
 		return Array<Instruction> {
 			$0 += .split(first: 1, second: instructions.count + 3)

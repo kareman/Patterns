@@ -8,7 +8,6 @@
 precedencegroup PatternConcatenationPrecedence {
 	associativity: right // so allmost all `Skip` will be to the left and we can see what comes after.
 	higherThan: MultiplicationPrecedence // `/` has this
-
 }
 
 infix operator •: PatternConcatenationPrecedence
@@ -23,7 +22,7 @@ public struct ConcatenationPattern<Left: TextPattern, Right: TextPattern>: TextP
 		self.right = right
 	}
 
-	public func createInstructions() -> [Instruction] {
+	public func createInstructions() -> [Instruction<Input>] {
 		left.createInstructions() + right.createInstructions()
 	}
 }
@@ -43,4 +42,3 @@ public func • <Left>(lhs: Left, rhs: Literal) -> ConcatenationPattern<Left, Li
 public func • (lhs: Literal, rhs: Literal) -> ConcatenationPattern<Literal, Literal> {
 	ConcatenationPattern(left: lhs, right: rhs)
 }
-

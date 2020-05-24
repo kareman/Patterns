@@ -6,8 +6,8 @@
 //
 
 public struct AnyPattern: TextPattern {
-	private let _instructions: () -> [Instruction]
-	public func createInstructions() -> [Instruction] {
+	private let _instructions: () -> [Instruction<Input>]
+	public func createInstructions() -> [Instruction<Input>]  {
 		_instructions()
 	}
 

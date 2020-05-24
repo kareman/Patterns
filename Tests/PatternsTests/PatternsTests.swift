@@ -214,7 +214,7 @@ class PatternsTests: XCTestCase {
 	002F          ; Common # Zs       SPACE
 	"""
 
-	lazy var rangeAndProperty: Parser = {
+	lazy var rangeAndProperty: Parser<String> = {
 		let hexNumber = Capture(name: "codePoint", hexDigit.repeat(1...))
 		let hexRange = AnyPattern("\(hexNumber)..\(hexNumber)") / hexNumber
 		return try! Parser(AnyPattern("\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) "))
@@ -276,6 +276,6 @@ class PatternsTests: XCTestCase {
 		XCTAssert(type(of: p1.right.left) == Skip<AnyPattern>.self)
 		XCTAssert(type(of: "a" • "b" / "c" • "d")
 			== OrPattern<ConcatenationPattern<Literal, Literal>, ConcatenationPattern<Literal, Literal>>.self,
-							#"`/` should have lower precedence than `•`"#)
+		          #"`/` should have lower precedence than `•`"#)
 	}
 }

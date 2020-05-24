@@ -5,17 +5,17 @@
 //  Created by Kåre Morstøl on 14/08/2019.
 //
 
-extension Parser {
+extension Parser where Input == String {
 	public func decode<T>(_ type: [T].Type, from string: String) throws -> [T] where T: Decodable {
 		try matches(in: string).map { try $0.decode(type.Element.self, from: string) }
 	}
 
 	public func decodeFirst<T>(_ type: T.Type, from string: String) throws -> T? where T: Decodable {
-		try match(in: string[...], from: string.startIndex).map { try $0.decode(type.self, from: string) }
+		try match(in: string, from: string.startIndex).map { try $0.decode(type.self, from: string) }
 	}
 }
 
-extension Parser.Match {
+extension Parser.Match where Input == String {
 	public func decode<T>(_ type: T.Type, from string: String) throws -> T where T: Decodable {
 		return try type.init(from: MatchDecoder(match: self, string: string))
 	}
@@ -59,7 +59,7 @@ extension Parser.Match {
 
 		struct UDC: UnkeyedDecodingContainer {
 			var codingPath: [CodingKey]
-			let values: [ParsedRange]
+			let values: [TextPattern.ParsedRange]
 			let string: String
 
 			var count: Int? { values.count }

@@ -17,11 +17,99 @@ public struct Skip<Repeated: TextPattern>: TextPattern, RegexConvertible {
 		self.description = "Skip(\(repeatedPattern))"
 	}
 
-	public func createInstructions() -> [Instruction] {
+	public func createInstructions() -> [Instruction<Input>] {
 		let reps = repeatedPattern?.repeat(0...).createInstructions() ?? [.any]
 		return [.split(first: reps.count + 2, second: 1)]
 			+ reps
 			+ [.jump(relative: -reps.count - 1)]
+	}
+
+	internal func prependSkip<C: BidirectionalCollection>(_ instructions: C)
+		-> [Instruction<Input>] where C.Element == Instruction<Input> {
+		var remainingInstructions = instructions[...]
+		var chars = [Instruction<Input>]()[...]
+		var nonIndexMovers = [Instruction<Input>]()[...]
+		var lastMoveTo = 0
+		loop: while let inst = remainingInstructions.popFirst() {
+			switch inst {
+			case .literal, .checkCharacter:
+				chars.append(inst)
+			case .checkIndex, .captureStart, .captureEnd, .cancelLastSplit:
+				let moveBy = chars.count - lastMoveTo
+				if moveBy > 0 {
+					nonIndexMovers.append(.moveIndex(relative: moveBy))
+					lastMoveTo = chars.count
+				}
+				nonIndexMovers.append(inst)
+			case .jump, .split, .match, .moveIndex, .function:
+				remainingInstructions = instructions[instructions.index(before: remainingInstructions.startIndex)...]
+				break loop
+			}
+		}
+		if chars.count - lastMoveTo != 0 {
+			nonIndexMovers.append(.moveIndex(relative: chars.count - lastMoveTo))
+		}
+
+		let search: (Input, Input.Index) -> Input.Index?
+		let searchInstruction: Instruction<Input>
+
+		switch chars.first {
+		case nil:
+			func isCheckIndex(_ inst: Instruction<Input>) -> Bool {
+				if case .checkIndex = inst { return true } else { return false }
+			}
+
+			switch nonIndexMovers.popFirst(where: isCheckIndex(_:)) {
+			case let .checkIndex(function):
+				search = { input, index in
+					input[index...].indices.first(where: { function(input, $0) })
+						?? (function(input, input.endIndex) ? input.endIndex : nil)
+				}
+			default:
+				return self.createInstructions() + instructions
+			}
+		case let .checkCharacter(test):
+			search = { input, index in input[index...].firstIndex(where: test) }
+		case .literal:
+			// TODO: mapWhile
+			let cs: [Character] = chars.prefix(while: { if case .literal = $0 { return true } else { return false } })
+				.map { if case let .literal(c) = $0 { return c } else { fatalError() } }
+			if cs.count == 1 {
+				search = { input, index in input[index...].firstIndex(of: cs[0]) }
+			} else {
+				let cache = SearchCache(pattern: cs)
+				search = { input, index in input.range(of: cs, from: index, cache: cache)?.lowerBound }
+			}
+		default:
+			fatalError()
+		}
+
+		if let repeatedPattern = self.repeatedPattern {
+			let skipInstructions = (repeatedPattern.repeat(0...).createInstructions() + [.match])[...]
+			searchInstruction = .function { (input, thread) -> Bool in
+				guard let end = search(input, thread.inputIndex) else { return false }
+				guard let newThread = backtrackingVM(skipInstructions, input: String(input.prefix(upTo: end)),
+				                                     thread: Thread(startAt: skipInstructions.startIndex, withDataFrom: thread)),
+					newThread.inputIndex == end else { return false }
+
+				thread = Thread(startAt: thread.instructionIndex + 1, withDataFrom: newThread)
+				return true
+			}
+		} else {
+			searchInstruction = .search(search)
+		}
+		return Array<Instruction> {
+			$0.reserveCapacity(chars.count + nonIndexMovers.count + remainingInstructions.count + 4)
+			$0 += searchInstruction
+			$0 += .split(first: 1, second: -1, atIndex: 1)
+			$0 += chars
+			$0 += .moveIndex(relative: -chars.count)
+			$0 += nonIndexMovers
+			$0 += remainingInstructions
+			if self.repeatedPattern != nil {
+				$0 += .cancelLastSplit
+			}
+		}
 	}
 }
 
@@ -32,27 +120,23 @@ extension Skip where Repeated == AnyPattern {
 	}
 }
 
-public struct Capture: TextPattern, RegexConvertible {
+public struct Capture<Wrapped: TextPattern>: TextPattern {
 	public var description: String = "CAPTURE" // TODO: proper description
 	public let name: String?
-	public let patterns: [TextPattern]
-
-	public var regex: String {
-		let capturedRegex = patterns.map { ($0 as! RegexConvertible).regex }.joined()
-		return name.map { "(?<\($0)>\(capturedRegex))" } ?? "(\(capturedRegex))"
-	}
-
-	public init(name: String? = nil, _ patterns: [TextPattern]) {
+	public let patterns: Wrapped?
+	/* TODO:
+	 public var regex: String {
+	 	let capturedRegex = patterns.map { ($0 as! RegexConvertible).regex }.joined()
+	 	return name.map { "(?<\($0)>\(capturedRegex))" } ?? "(\(capturedRegex))"
+	 }
+	 */
+	public init(name: String? = nil, _ patterns: Wrapped) {
 		self.patterns = patterns
 		self.name = name
 	}
 
-	public init(name: String? = nil, _ patterns: TextPattern...) {
-		self.init(name: name, patterns)
-	}
-
-	public func createInstructions() -> [Instruction] {
-		return [.captureStart(name: name)] + patterns.flatMap { $0.createInstructions() } + [.captureEnd]
+	public func createInstructions() -> [Instruction<Input>] {
+		return [.captureStart(name: name)] + (patterns?.createInstructions() ?? []) + [.captureEnd]
 	}
 
 	public struct Start: TextPattern, RegexConvertible {
@@ -64,7 +148,7 @@ public struct Capture: TextPattern, RegexConvertible {
 			self.name = name
 		}
 
-		public func createInstructions() -> [Instruction] {
+		public func createInstructions() -> [Instruction<Input>] {
 			return [.captureStart(name: name)]
 		}
 	}
@@ -75,18 +159,20 @@ public struct Capture: TextPattern, RegexConvertible {
 
 		public init() {}
 
-		public func createInstructions() -> [Instruction] {
+		public func createInstructions() -> [Instruction<Input>] {
 			return [.captureEnd]
 		}
 	}
 }
 
-protocol Matcher: class {
-	func match(in input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> Parser.Match?
-	func match(in input: TextPattern.Input, from startIndex: TextPattern.Input.Index) -> Parser.Match?
+extension Capture where Wrapped == AnyPattern {
+	public init(name: String? = nil) {
+		self.patterns = nil
+		self.name = name
+	}
 }
 
-public struct Parser {
+public struct Parser<Input: BidirectionalCollection> where Input.Element: Equatable {
 	public enum InitError: Error, CustomStringConvertible {
 		case invalid([TextPattern])
 		case message(String)
@@ -101,158 +187,61 @@ public struct Parser {
 		}
 	}
 
-	public let pattern: TextPattern
-	let matcher: VMBacktrackEngine
+	let matcher: VMBacktrackEngine<Input>
 
-	public init(_ pattern: TextPattern) throws {
-		self.pattern = pattern
-		self.matcher = try VMBacktrackEngine(self.pattern)
+	public init<P: TextPattern>(_ pattern: P) throws where P.Input == Input {
+		self.matcher = try VMBacktrackEngine(pattern)
 	}
 
-	public func ranges<S: StringProtocol>(in input: S, from startindex: TextPattern.Input.Index? = nil)
-		-> AnySequence<ParsedRange> where S.SubSequence == TextPattern.Input {
+	public func ranges(in input: Input, from startindex: Input.Index? = nil)
+		-> AnySequence<Range<Input.Index>> {
 		return AnySequence(matches(in: input, from: startindex).lazy.map(\.range))
 	}
-}
 
-internal func prependSkip<C: BidirectionalCollection>(_ instructions: C) -> [Instruction] where C.Element == Instruction {
-	prependSkip(skip: Skip(), instructions)
-}
-
-internal func prependSkip<C: BidirectionalCollection, Repeated: TextPattern>(skip: Skip<Repeated>, _ instructions: C)
-	-> [Instruction] where C.Element == Instruction {
-	var remainingInstructions = instructions[...]
-	var chars = [Instruction]()[...]
-	var nonIndexMovers = [Instruction]()[...]
-	var lastMoveTo = 0
-	loop: while let inst = remainingInstructions.popFirst() {
-		switch inst {
-		case .literal, .checkCharacter:
-			chars.append(inst)
-		case .checkIndex, .captureStart, .captureEnd, .cancelLastSplit:
-			let moveBy = chars.count - lastMoveTo
-			if moveBy > 0 {
-				nonIndexMovers.append(.moveIndex(relative: moveBy))
-				lastMoveTo = chars.count
-			}
-			nonIndexMovers.append(inst)
-		case .jump, .split, .match, .moveIndex, .function:
-			remainingInstructions = instructions[instructions.index(before: remainingInstructions.startIndex)...]
-			break loop
-		}
-	}
-	if chars.count - lastMoveTo != 0 {
-		nonIndexMovers.append(.moveIndex(relative: chars.count - lastMoveTo))
-	}
-
-	let search: (TextPattern.Input, TextPattern.Input.Index) -> TextPattern.Input.Index?
-	let searchInstruction: Instruction
-
-	switch chars.first {
-	case nil:
-		func isCheckIndex(_ inst: Instruction) -> Bool {
-			if case .checkIndex = inst { return true } else { return false }
-		}
-
-		switch nonIndexMovers.popFirst(where: isCheckIndex(_:)) {
-		case let .checkIndex(function):
-			search = { input, index in
-				input[index...].indices.first(where: { function(input, $0) })
-					?? (function(input, input.endIndex) ? input.endIndex : nil)
-			}
-		default:
-			return skip.createInstructions() + instructions
-		}
-	case let .checkCharacter(test):
-		search = { input, index in input[index...].firstIndex(where: test) }
-	case .literal:
-		// TODO: mapWhile
-		let cs: [Character] = chars.prefix(while: { if case .literal = $0 { return true } else { return false } })
-			.map { if case let .literal(c) = $0 { return c } else { fatalError() } }
-		if cs.count == 1 {
-			search = { input, index in input[index...].firstIndex(of: cs[0]) }
-		} else {
-			let cache = SearchCache(pattern: cs)
-			search = { input, index in input.range(of: cs, from: index, cache: cache)?.lowerBound }
-		}
-	default:
-		fatalError()
-	}
-
-	if let repeatedPattern = skip.repeatedPattern {
-		let skipInstructions = (repeatedPattern.repeat(0...).createInstructions() + [.match])[...]
-		searchInstruction = .function { (input, thread) -> Bool in
-			guard let end = search(input, thread.inputIndex) else { return false }
-			guard let newThread = backtrackingVM(skipInstructions, input: input[..<end],
-			                                     thread: Thread(startAt: skipInstructions.startIndex, withDataFrom: thread)),
-				newThread.inputIndex == end else { return false }
-
-			thread = Thread(startAt: thread.instructionIndex + 1, withDataFrom: newThread)
-			return true
-		}
-	} else {
-		searchInstruction = .search(search)
-	}
-	return Array<Instruction> {
-		$0.reserveCapacity(chars.count + nonIndexMovers.count + remainingInstructions.count + 4)
-		$0 += searchInstruction
-		$0 += .split(first: 1, second: -1, atIndex: 1)
-		$0 += chars
-		$0 += .moveIndex(relative: -chars.count)
-		$0 += nonIndexMovers
-		$0 += remainingInstructions
-		if skip.repeatedPattern != nil {
-			$0 += .cancelLastSplit
-		}
-	}
-}
-
-extension Parser {
 	public struct Match {
-		public let fullRange: ParsedRange
-		public let captures: [(name: String?, range: ParsedRange)]
+		public let fullRange: Range<Input.Index>
+		public let captures: [(name: String?, range: Range<Input.Index>)]
 
-		init(fullRange: ParsedRange, captures: [(name: String?, range: ParsedRange)]) {
+		init(fullRange: Range<Input.Index>, captures: [(name: String?, range: Range<Input.Index>)]) {
 			self.fullRange = fullRange
 			self.captures = captures
 		}
 
-		public var range: ParsedRange {
+		public var range: Range<Input.Index> {
 			captures.isEmpty ? fullRange : captures.first!.range.lowerBound ..< captures.last!.range.upperBound
 		}
 
-		public func description(using text: String) -> String {
+		public func description(using input: Input) -> String {
 			return """
-			fullRange: \(text[fullRange])
-			captures: \(captures.map { "\($0.name ?? "")    \(text[$0.range])" })
+			fullRange: \(input[fullRange])
+			captures: \(captures.map { "\($0.name ?? "")    \(input[$0.range])" })
 
 			"""
 		}
 
-		public subscript(one name: String) -> ParsedRange? {
+		public subscript(one name: String) -> Range<Input.Index>? {
 			return captures.first(where: { $0.name == name })?.range
 		}
 
-		public subscript(multiple name: String) -> [ParsedRange] {
+		public subscript(multiple name: String) -> [Range<Input.Index>] {
 			return captures.filter { $0.name == name }.map(\.range)
 		}
 
 		public var names: Set<String> { Set(captures.compactMap(\.name)) }
 	}
 
-	internal func match(in input: TextPattern.Input, at startindex: TextPattern.Input.Index) -> Match? {
+	internal func match(in input: Input, at startindex: Input.Index) -> Match? {
 		return matcher.match(in: input, at: startindex)
 	}
 
-	internal func match(in input: TextPattern.Input, from startIndex: TextPattern.Input.Index) -> Match? {
+	internal func match(in input: Input, from startIndex: Input.Index) -> Match? {
 		return matcher.match(in: input, from: startIndex)
 	}
 
-	public func matches<S: StringProtocol>(in input: S, from startindex: TextPattern.Input.Index? = nil)
-		-> UnfoldSequence<Match, TextPattern.Input.Index> where S.SubSequence == Substring {
-		let input = input[...]
-		var previousRange: ParsedRange?
-		return sequence(state: startindex ?? input.startIndex, next: { (index: inout TextPattern.Input.Index) in
+	public func matches(in input: Input, from startindex: Input.Index? = nil)
+		-> UnfoldSequence<Match, Input.Index> {
+		var previousRange: Range<Input.Index>?
+		return sequence(state: startindex ?? input.startIndex, next: { (index: inout Input.Index) in
 			guard let match = self.match(in: input, from: index),
 				match.range != previousRange else { return nil }
 			let range = match.range
