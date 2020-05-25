@@ -17,7 +17,7 @@ class PerformanceTests: XCTestCase {
 		let text = String(fulltext.prefix(fulltext.count / textFraction))
 		var result = 0
 		let block = {
-			result = pattern.matches(in: String(text)).reduce(into: 0) { c, _ in c += 1 }
+			result = pattern.matches(in: text).reduce(into: 0) { c, _ in c += 1 }
 		}
 		#if DEBUG
 		block()
