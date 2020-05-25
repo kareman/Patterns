@@ -5,13 +5,6 @@
 //  Created by Kåre Morstøl on 18/04/2020.
 //
 
-public protocol TextPattern: CustomStringConvertible {
-	typealias Input = String
-	typealias ParsedRange = Range<Input.Index>
-
-	func createInstructions() -> [Instruction<Input>]
-}
-
 class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Equatable {
 	let instructionsFrom: Array<Instruction<Input>>.SubSequence
 
