@@ -19,11 +19,13 @@ class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Equ
 		instructionsFrom = Skip().prependSkip(Capture(pattern).createInstructions() + [Instruction<Input>.match])[...]
 	}
 
+	@usableFromInline
 	func match(in input: Input, at startindex: Input.Index) -> Parser<Input>.Match? {
 		// TODO: make more efficient.
 		return backtrackingVM(instructionsFrom, input: input, startIndex: startindex).flatMap { $0.fullRange.lowerBound == startindex ? $0 : nil }
 	}
 
+	@usableFromInline
 	func match(in input: Input, from startIndex: Input.Index) -> Parser<Input>.Match? {
 		return backtrackingVM(instructionsFrom, input: input, startIndex: startIndex)
 	}
@@ -52,6 +54,7 @@ extension Parser.Match {
 	}
 }
 
+// TODO: private
 public struct Thread<Input: BidirectionalCollection> where Input.Element: Equatable {
 	var instructionIndex: Array<Instruction<Input>>.SubSequence.Index
 	var inputIndex: Input.Index
@@ -98,12 +101,14 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Equ
 	}
 }
 
+@usableFromInline
 func backtrackingVM<Input: BidirectionalCollection>(_ instructions: Array<Instruction<Input>>.SubSequence, input: Input, startIndex: Input.Index? = nil) -> Parser<Input>.Match? where Input.Element: Equatable {
 	let thread = Thread<Input>(instructionIndex: instructions.startIndex, inputIndex: startIndex ?? input.startIndex)
 	return backtrackingVM(instructions, input: input, thread: thread)
 		.map { Parser.Match($0, instructions: instructions) }
 }
 
+@usableFromInline
 func backtrackingVM<Input: BidirectionalCollection>(_ instructions: Array<Instruction<Input>>.SubSequence, input: Input, thread: Thread<Input>) -> Thread<Input>? where Input.Element: Equatable {
 	var currentThreads = ContiguousArray<Thread<Input>>()[...]
 

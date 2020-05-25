@@ -209,6 +209,7 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Equata
 			self.captures = captures
 		}
 
+		@inlinable
 		public var range: Range<Input.Index> {
 			captures.isEmpty ? fullRange : captures.first!.range.lowerBound ..< captures.last!.range.upperBound
 		}
@@ -221,10 +222,12 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Equata
 			"""
 		}
 
+		@inlinable
 		public subscript(one name: String) -> Range<Input.Index>? {
 			return captures.first(where: { $0.name == name })?.range
 		}
 
+		@inlinable
 		public subscript(multiple name: String) -> [Range<Input.Index>] {
 			return captures.filter { $0.name == name }.map(\.range)
 		}
@@ -232,14 +235,17 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Equata
 		public var names: Set<String> { Set(captures.compactMap(\.name)) }
 	}
 
+	@usableFromInline
 	internal func match(in input: Input, at startindex: Input.Index) -> Match? {
 		return matcher.match(in: input, at: startindex)
 	}
 
+	@usableFromInline
 	internal func match(in input: Input, from startIndex: Input.Index) -> Match? {
 		return matcher.match(in: input, from: startIndex)
 	}
 
+	@inlinable
 	public func matches(in input: Input, from startindex: Input.Index? = nil)
 		-> UnfoldSequence<Match, Input.Index> {
 		var previousRange: Range<Input.Index>?
