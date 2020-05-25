@@ -12,7 +12,7 @@ public struct Skip<Repeated: TextPattern>: TextPattern, RegexConvertible {
 		return repeatedPattern.map { "(?:\(($0 as! RegexConvertible).regex))*?" } ?? ".*?"
 	}
 
-	public init(whileRepeating repeatedPattern: Repeated) {
+	public init(_ repeatedPattern: Repeated) {
 		self.repeatedPattern = repeatedPattern
 		self.description = "Skip(\(repeatedPattern))"
 	}
@@ -123,20 +123,15 @@ extension Skip where Repeated == AnyPattern {
 public struct Capture<Wrapped: TextPattern>: TextPattern {
 	public var description: String = "CAPTURE" // TODO: proper description
 	public let name: String?
-	public let patterns: Wrapped?
-	/* TODO:
-	 public var regex: String {
-	 	let capturedRegex = patterns.map { ($0 as! RegexConvertible).regex }.joined()
-	 	return name.map { "(?<\($0)>\(capturedRegex))" } ?? "(\(capturedRegex))"
-	 }
-	 */
+	public let wrapped: Wrapped?
+
 	public init(name: String? = nil, _ patterns: Wrapped) {
-		self.patterns = patterns
+		self.wrapped = patterns
 		self.name = name
 	}
 
 	public func createInstructions() -> [Instruction<Input>] {
-		return [.captureStart(name: name)] + (patterns?.createInstructions() ?? []) + [.captureEnd]
+		return [.captureStart(name: name)] + (wrapped?.createInstructions() ?? []) + [.captureEnd]
 	}
 
 	public struct Start: TextPattern, RegexConvertible {
@@ -167,8 +162,15 @@ public struct Capture<Wrapped: TextPattern>: TextPattern {
 
 extension Capture where Wrapped == AnyPattern {
 	public init(name: String? = nil) {
-		self.patterns = nil
+		self.wrapped = nil
 		self.name = name
+	}
+}
+
+extension Capture: RegexConvertible where Wrapped: RegexConvertible {
+	public var regex: String {
+		let capturedRegex = wrapped?.regex ?? ""
+		return name.map { "(?<\($0)>\(capturedRegex))" } ?? "(\(capturedRegex))"
 	}
 }
 

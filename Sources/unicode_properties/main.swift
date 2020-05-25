@@ -5,7 +5,7 @@ import Foundation
 import Patterns
 
 func unicodeProperty(fromDataFile text: String) -> [(range: ClosedRange<UInt32>, property: Substring)] {
-	let hexNumber = Capture(name: "hexNumber", hexDigit.repeat(1...))
+	let hexNumber = Capture(name: "hexNumber", hexDigit+)
 	let hexRange = AnyPattern("\(hexNumber)..\(hexNumber)") / hexNumber
 	let rangeAndProperty: AnyPattern = "\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) "
 
