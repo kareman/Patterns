@@ -39,7 +39,7 @@ class TextPatternTests: XCTestCase {
 		assertParseAll(digit.repeat(2...), input: "123abc123", count: 2)
 		assertParseAll(digit+, input: "123abc", result: "123", count: 1)
 		assertParseAll(digit.repeat(3...), input: "123abc", result: "123", count: 1)
-		assertParseAll(digit { 4... }, input: "123abc", count: 0)
+		assertParseAll(digit.repeat(4...), input: "123abc", count: 0)
 
 		assertParseAll(digit+, input: "a123abc123d", result: "123", count: 2)
 		assertParseAll(digit+, input: "123abc09d4 8", count: 4)
@@ -47,7 +47,7 @@ class TextPatternTests: XCTestCase {
 
 		assertParseAll(digit.repeat(1 ... 2), input: "123abc09d48", result: ["12", "3", "09", "48"])
 
-		assertParseAll(digit { 2 }, input: "1234 5 6 78", result: ["12", "34", "78"])
+		assertParseAll(digit.repeat(2), input: "1234 5 6 78", result: ["12", "34", "78"])
 
 		assertParseAll("a"* • "b", input: "b aabb ab", result: ["b", "aab", "b", "ab"])
 		assertParseAll("a"*, input: "b aabb ab", result: ["", "", "aa", "", "", "", "a", "", ""])
