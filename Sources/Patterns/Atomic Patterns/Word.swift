@@ -8,9 +8,8 @@
 public struct Word {
 	public static let boundary = Boundary()
 
-	public struct Boundary: VMPattern, RegexConvertible {
+	public struct Boundary: Pattern {
 		public let length: Int? = 0
-		public let regex: String = #"\b"#
 		public let description: String = "Word.boundary"
 
 		public func parse(_ input: Input, at index: Input.Index) -> ParsedRange? {
@@ -65,7 +64,7 @@ public struct Word {
 			return success
 		}
 
-		public func createInstructions() -> [Instruction] {
+		public func createInstructions() -> [Instruction<Input>]  {
 			[.checkIndex { (input, index) -> Bool in
 				self.parse(input, at: index) != nil
 			}]
