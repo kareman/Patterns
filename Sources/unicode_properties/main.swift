@@ -6,10 +6,10 @@ import Patterns
 
 func unicodeProperty(fromDataFile text: String) -> [(range: ClosedRange<UInt32>, property: Substring)] {
 	let hexNumber = Capture(name: "hexNumber", hexDigit.repeat(1...))
-	let hexRange = Parser("\(hexNumber)..\(hexNumber)") || hexNumber
-	let rangeAndProperty: Parser = "\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) "
+	let hexRange = AnyPattern("\(hexNumber)..\(hexNumber)") / hexNumber
+	let rangeAndProperty: AnyPattern = "\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) "
 
-	return rangeAndProperty.matches(in: text).map { match in
+	return try! Parser(rangeAndProperty).matches(in: text).map { match in
 		let propertyName = text[match[one: "property"]!]
 		let oneOrTwoNumbers = match[multiple: "hexNumber"].map { UInt32(text[$0], radix: 16)! }
 		let range = oneOrTwoNumbers.first! ... oneOrTwoNumbers.last!
