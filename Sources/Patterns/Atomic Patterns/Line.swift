@@ -5,10 +5,10 @@
 //  Created by Kåre Morstøl on 25/05/2020.
 //
 
-public struct Line: TextPattern {
+public struct Line: Pattern {
 	public let description: String = "line"
 
-	public let pattern: TextPattern
+	public let pattern: Pattern
 	public static let start = Start()
 	public static let end = End()
 
@@ -20,7 +20,7 @@ public struct Line: TextPattern {
 		pattern.createInstructions()
 	}
 
-	public struct Start: TextPattern {
+	public struct Start: Pattern {
 		public init() {}
 
 		public var description: String { "line.start" }
@@ -34,7 +34,7 @@ public struct Line: TextPattern {
 		}
 	}
 
-	public struct End: TextPattern {
+	public struct End: Pattern {
 		public init() {}
 
 		public var description: String { "line.end" }

@@ -7,15 +7,15 @@
 
 import Foundation
 
-public struct Literal: TextPattern {
+public struct Literal: Pattern {
 	public let substring: Input
 
 	public var description: String {
 		return #""\#(String(substring).replacingOccurrences(of: "\n", with: "\\n"))""#
 	}
 
-	public init<S: Sequence>(_ sequence: S) where S.Element == TextPattern.Input.Element {
-		self.substring = TextPattern.Input(sequence)
+	public init<S: Sequence>(_ sequence: S) where S.Element == Pattern.Input.Element {
+		self.substring = Pattern.Input(sequence)
 	}
 
 	public init(_ character: Character) {

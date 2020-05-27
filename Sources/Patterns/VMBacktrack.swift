@@ -8,7 +8,7 @@
 class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Equatable {
 	let instructionsFrom: Array<Instruction<Input>>.SubSequence
 
-	required init<P: TextPattern>(_ pattern: P) throws where Input == P.Input {
+	required init<P: Pattern>(_ pattern: P) throws where Input == P.Input {
 		instructionsFrom = Skip().prependSkip(Capture(pattern).createInstructions() + [Instruction<Input>.match])[...]
 	}
 

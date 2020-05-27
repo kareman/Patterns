@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct OrPattern<First: TextPattern, Second: TextPattern>: TextPattern {
+public struct OrPattern<First: Pattern, Second: Pattern>: Pattern {
 	public let first: First
 	public let second: Second
 
@@ -33,15 +33,15 @@ public struct OrPattern<First: TextPattern, Second: TextPattern>: TextPattern {
 	}
 }
 
-public func / <First: TextPattern, Second: TextPattern>(p1: First, p2: Second) -> OrPattern<First, Second> {
+public func / <First: Pattern, Second: Pattern>(p1: First, p2: Second) -> OrPattern<First, Second> {
 	return OrPattern(p1, or: p2)
 }
 
-public func / <Second: TextPattern>(p1: Literal, p2: Second) -> OrPattern<Literal, Second> {
+public func / <Second: Pattern>(p1: Literal, p2: Second) -> OrPattern<Literal, Second> {
 	return OrPattern(p1, or: p2)
 }
 
-public func / <First: TextPattern>(p1: First, p2: Literal) -> OrPattern<First, Literal> {
+public func / <First: Pattern>(p1: First, p2: Literal) -> OrPattern<First, Literal> {
 	return OrPattern(p1, or: p2)
 }
 

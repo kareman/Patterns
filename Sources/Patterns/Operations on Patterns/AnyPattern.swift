@@ -5,7 +5,7 @@
 //  Created by Kåre Morstøl on 11/08/2019.
 //
 
-public struct AnyPattern: TextPattern {
+public struct AnyPattern: Pattern {
 	private let _instructions: () -> [Instruction<Input>]
 	public func createInstructions() -> [Instruction<Input>]  {
 		_instructions()
@@ -14,7 +14,7 @@ public struct AnyPattern: TextPattern {
 	private let _description: () -> String
 	public var description: String { _description() }
 
-	init(_ p: TextPattern) {
+	init(_ p: Pattern) {
 		_instructions = { p.createInstructions() }
 		_description = { p.description }
 	}
@@ -26,7 +26,7 @@ public struct AnyPattern: TextPattern {
 
 extension AnyPattern: ExpressibleByStringInterpolation {
 	public struct StringInterpolation: StringInterpolationProtocol {
-		var patterns = [TextPattern]()
+		var patterns = [Pattern]()
 
 		public init(literalCapacity: Int, interpolationCount: Int) {
 			patterns.reserveCapacity(literalCapacity + interpolationCount)
@@ -38,7 +38,7 @@ extension AnyPattern: ExpressibleByStringInterpolation {
 			}
 		}
 
-		public mutating func appendInterpolation(_ newpatterns: TextPattern...) {
+		public mutating func appendInterpolation(_ newpatterns: Pattern...) {
 			patterns.append(contentsOf: newpatterns)
 		}
 	}

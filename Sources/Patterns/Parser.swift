@@ -5,7 +5,7 @@
 //  Created by Kåre Morstøl on 23/10/2018.
 //
 
-public protocol TextPattern: CustomStringConvertible {
+public protocol Pattern: CustomStringConvertible {
 	typealias Input = String
 	typealias ParsedRange = Range<Input.Index>
 
@@ -14,7 +14,7 @@ public protocol TextPattern: CustomStringConvertible {
 
 public struct Parser<Input: BidirectionalCollection> where Input.Element: Equatable {
 	public enum InitError: Error, CustomStringConvertible {
-		case invalid([TextPattern])
+		case invalid([Pattern])
 		case message(String)
 
 		public var description: String {
@@ -29,7 +29,7 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Equata
 
 	let matcher: VMBacktrackEngine<Input>
 
-	public init<P: TextPattern>(_ pattern: P) throws where P.Input == Input {
+	public init<P: Pattern>(_ pattern: P) throws where P.Input == Input {
 		self.matcher = try VMBacktrackEngine(pattern)
 	}
 

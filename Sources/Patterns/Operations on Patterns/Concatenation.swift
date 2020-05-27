@@ -12,7 +12,7 @@ precedencegroup PatternConcatenationPrecedence {
 
 infix operator •: PatternConcatenationPrecedence
 
-public struct ConcatenationPattern<Left: TextPattern, Right: TextPattern>: TextPattern {
+public struct ConcatenationPattern<Left: Pattern, Right: Pattern>: Pattern {
 	public let left: Left
 	public let right: Right
 	public var description: String { "\(left) \(right)" }

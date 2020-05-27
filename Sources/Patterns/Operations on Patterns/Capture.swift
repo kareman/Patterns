@@ -5,7 +5,7 @@
 //  Created by Kåre Morstøl on 25/05/2020.
 //
 
-public struct Capture<Wrapped: TextPattern>: TextPattern {
+public struct Capture<Wrapped: Pattern>: Pattern {
 	public var description: String = "CAPTURE" // TODO: proper description
 	public let name: String?
 	public let wrapped: Wrapped?
@@ -19,7 +19,7 @@ public struct Capture<Wrapped: TextPattern>: TextPattern {
 		return [.captureStart(name: name)] + (wrapped?.createInstructions() ?? []) + [.captureEnd]
 	}
 
-	public struct Start: TextPattern {
+	public struct Start: Pattern {
 		public var description: String { return "[" }
 		public let name: String?
 
@@ -32,7 +32,7 @@ public struct Capture<Wrapped: TextPattern>: TextPattern {
 		}
 	}
 
-	public struct End: TextPattern {
+	public struct End: Pattern {
 		public var description: String { return "]" }
 
 		public init() {}

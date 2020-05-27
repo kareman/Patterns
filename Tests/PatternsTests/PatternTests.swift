@@ -1,16 +1,15 @@
 //
-//  TextPatternTests.swift
+//  PatternTests.swift
 //  Patterns
 //
 //  Created by Kåre Morstøl on 20/03/2017.
 //
 //
 
-import Foundation
 import Patterns
 import XCTest
 
-class TextPatternTests: XCTestCase {
+class PatternTests: XCTestCase {
 	func testLiteral() {
 		assertParseAll(Literal("a"), input: "abcd", result: "a", count: 1)
 		assertParseAll(Literal("b"), input: "abcdb", result: "b", count: 2)

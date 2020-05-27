@@ -5,7 +5,7 @@
 //  Created by Kåre Morstøl on 25/05/2020.
 //
 
-public struct NotPattern<Wrapped: TextPattern>: TextPattern {
+public struct NotPattern<Wrapped: Pattern>: Pattern {
 	public let pattern: Wrapped
 	public var description: String { "!\(pattern)" }
 
@@ -20,7 +20,7 @@ public struct NotPattern<Wrapped: TextPattern>: TextPattern {
 	}
 }
 
-extension TextPattern {
+extension Pattern {
 	public var not: NotPattern<Self> { NotPattern(pattern: self) }
 
 	public static prefix func ! (me: Self) -> NotPattern<Self> {

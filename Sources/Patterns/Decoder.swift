@@ -59,7 +59,7 @@ extension Parser.Match where Input == String {
 
 		struct UDC: UnkeyedDecodingContainer {
 			var codingPath: [CodingKey]
-			let values: [TextPattern.ParsedRange]
+			let values: [Pattern.ParsedRange]
 			let string: String
 
 			var count: Int? { values.count }

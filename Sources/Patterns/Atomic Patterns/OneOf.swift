@@ -7,7 +7,7 @@
 
 import Foundation.NSRegularExpression
 
-public struct OneOf: TextPattern, RegexConvertible {
+public struct OneOf: Pattern, RegexConvertible {
 	let group: Group<Input.Element>
 	public let description: String
 	private let _regex: String?
@@ -36,11 +36,11 @@ public struct OneOf: TextPattern, RegexConvertible {
 		ascii, symbol, mathSymbol, currencySymbol,
 	]
 
-	public static func patterns(for c: Input.Element) -> [TextPattern] {
+	public static func patterns(for c: Input.Element) -> [Pattern] {
 		OneOf.basePatterns.filter { $0.group.contains(c) }
 	}
 
-	public static func patterns<S: Sequence>(for s: S) -> [TextPattern] where S.Element == Input.Element {
+	public static func patterns<S: Sequence>(for s: S) -> [Pattern] where S.Element == Input.Element {
 		OneOf.basePatterns.filter { $0.group.contains(contentsOf: s) }
 	}
 

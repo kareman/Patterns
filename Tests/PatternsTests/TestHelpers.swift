@@ -5,7 +5,6 @@
 //  Created by Kåre Morstøl on 29.07.2018.
 //
 
-import Foundation
 import Patterns
 import XCTest
 
@@ -18,7 +17,7 @@ extension Array where Element: Hashable {
 }
 
 extension XCTestCase {
-	func assertParseAll<P: TextPattern>(_ pattern: P, input: String, result: [String],
+	func assertParseAll<P: Patterns.Pattern>(_ pattern: P, input: String, result: [String],
 	                                    file: StaticString = #file, line: UInt = #line) {
 		do {
 			let parser = try Parser(pattern)
@@ -30,7 +29,7 @@ extension XCTestCase {
 		}
 	}
 
-	func assertParseAll<P: TextPattern>(_ pattern: P, input: String, result: String? = nil, count: Int,
+	func assertParseAll<P: Patterns.Pattern>(_ pattern: P, input: String, result: String? = nil, count: Int,
 	                                    file: StaticString = #file, line: UInt = #line) {
 		do {
 			if let result = result {
@@ -56,7 +55,7 @@ extension XCTestCase {
 		return (string, indices)
 	}
 
-	func assertParseMarkers<P: TextPattern>(_ pattern: P, input: String,
+	func assertParseMarkers<P: Patterns.Pattern>(_ pattern: P, input: String,
 	                                        file: StaticString = #file, line: UInt = #line) {
 		assertParseMarkers(try! Parser(pattern), input: input, file: file, line: line)
 	}
@@ -80,7 +79,7 @@ extension XCTestCase {
 		}
 	}
 
-	func assertCaptures<P: TextPattern>(_ pattern: P, input: String, result: [[String]],
+	func assertCaptures<P: Patterns.Pattern>(_ pattern: P, input: String, result: [[String]],
 	                                    file: StaticString = #file, line: UInt = #line) {
 		assertCaptures(try! Parser(pattern), input: input, result: result, file: file, line: line)
 	}

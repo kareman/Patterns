@@ -5,7 +5,7 @@
 //  Created by Kåre Morstøl on 25/05/2020.
 //
 
-public struct Skip<Repeated: TextPattern>: TextPattern {
+public struct Skip<Repeated: Pattern>: Pattern {
 	public let repeatedPattern: Repeated?
 	public let description: String
 

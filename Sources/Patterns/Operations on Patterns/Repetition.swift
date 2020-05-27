@@ -5,7 +5,7 @@
 //  Created by Kåre Morstøl on 25/05/2020.
 //
 
-public struct RepeatPattern<Repeated: TextPattern>: TextPattern {
+public struct RepeatPattern<Repeated: Pattern>: Pattern {
 	public let repeatedPattern: Repeated
 	public let min: Int
 	public let max: Int?
@@ -44,7 +44,7 @@ public struct RepeatPattern<Repeated: TextPattern>: TextPattern {
 	}
 }
 
-extension TextPattern {
+extension Pattern {
 	public func `repeat`<R: RangeExpression>(_ range: R) -> RepeatPattern<Self> where R.Bound == Int {
 		return RepeatPattern(repeatedPattern: self, range: range)
 	}
@@ -56,7 +56,7 @@ extension TextPattern {
 
 postfix operator *
 
-public postfix func * <P: TextPattern>(me: P) -> RepeatPattern<P> {
+public postfix func * <P: Pattern>(me: P) -> RepeatPattern<P> {
 	me.repeat(0...)
 }
 
@@ -66,7 +66,7 @@ public postfix func * (me: Literal) -> RepeatPattern<Literal> {
 
 postfix operator +
 
-public postfix func + <P: TextPattern>(me: P) -> RepeatPattern<P> {
+public postfix func + <P: Pattern>(me: P) -> RepeatPattern<P> {
 	me.repeat(1...)
 }
 
@@ -76,7 +76,7 @@ public postfix func + (me: Literal) -> RepeatPattern<Literal> {
 
 postfix operator ¿
 
-public postfix func ¿ <P: TextPattern>(me: P) -> RepeatPattern<P> {
+public postfix func ¿ <P: Pattern>(me: P) -> RepeatPattern<P> {
 	me.repeat(0 ... 1)
 }
 
