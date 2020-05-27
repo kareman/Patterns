@@ -5,7 +5,7 @@
 //  Created by Kåre Morstøl on 18/04/2020.
 //
 
-import Foundation.NSRegularExpression
+import Foundation
 
 public protocol RegexConvertible {
 	var regex: String { get }

@@ -5,7 +5,7 @@
 //  Created by Kåre Morstøl on 25/05/2020.
 //
 
-import Foundation.NSRegularExpression
+import Foundation
 
 public struct OneOf: Pattern, RegexConvertible {
 	let group: Group<Input.Element>
