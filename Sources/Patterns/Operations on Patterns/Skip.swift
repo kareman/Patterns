@@ -116,3 +116,10 @@ extension Skip where Repeated == AnyPattern {
 		self.repeatedPattern = nil
 	}
 }
+
+extension Skip where Repeated == Literal {
+	public init(_ repeatedPattern: Literal) {
+		self.repeatedPattern = repeatedPattern
+		self.description = "Skip(\(repeatedPattern))"
+	}
+}

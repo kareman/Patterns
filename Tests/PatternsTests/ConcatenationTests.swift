@@ -57,6 +57,9 @@ class ConcatenationTests: XCTestCase {
 		assertParseAll(
 			letter • Capture() • " ",
 			input: text, result: "", count: 4)
+		assertParseAll(
+			" " • Capture("te"),
+			input: text, count: 2)
 	}
 
 	func testRepeatOrThenEndOfLine() throws {
@@ -78,7 +81,7 @@ class ConcatenationTests: XCTestCase {
 	}
 
 	/*
-	func testSkipWithRepeatingPattern() throws {
+	func testSkipWithRepeatedPattern() throws {
 		let text = """
 		yes (a)
 		yes (aaaaa)
@@ -110,6 +113,8 @@ class ConcatenationTests: XCTestCase {
 				• Skip(ascii • newline.not)
 				• ")",
 			input: text, result: ["(a)", "(aaaaa)", "(aaabaa)", "()"])
+
+		// TODO: Skip("literal")
 	}
 */
 

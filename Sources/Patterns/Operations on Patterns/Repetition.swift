@@ -83,14 +83,3 @@ public postfix func ¿ <P: Pattern>(me: P) -> RepeatPattern<P> {
 public postfix func ¿ (me: Literal) -> RepeatPattern<Literal> {
 	me.repeat(0 ... 1)
 }
-
-extension Literal {
-	public func callAsFunction<R: RangeExpression>(range: () -> R) -> RepeatPattern<Literal>
-		where R.Bound == Int {
-		self.repeat(range())
-	}
-
-	public func callAsFunction(count: () -> Int) -> RepeatPattern<Literal> {
-		self.repeat(count())
-	}
-}

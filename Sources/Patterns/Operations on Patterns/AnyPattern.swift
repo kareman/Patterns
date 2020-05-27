@@ -22,6 +22,11 @@ public struct AnyPattern: Pattern {
 	init(_ p: AnyPattern) {
 		self = p
 	}
+
+	init(_ p: Literal) {
+		_instructions = { p.createInstructions() }
+		_description = { p.description }
+	}
 }
 
 extension AnyPattern: ExpressibleByStringInterpolation {

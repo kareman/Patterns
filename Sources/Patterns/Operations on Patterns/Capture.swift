@@ -49,3 +49,10 @@ extension Capture where Wrapped == AnyPattern {
 		self.name = name
 	}
 }
+
+extension Capture where Wrapped == Literal {
+	public init(name: String? = nil, _ patterns: Literal) {
+		self.wrapped = patterns
+		self.name = name
+	}
+}
