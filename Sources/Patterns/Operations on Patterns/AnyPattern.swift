@@ -7,16 +7,19 @@
 
 public struct AnyPattern: Pattern {
 	private let _instructions: () -> [Instruction<Input>]
-	public func createInstructions() -> [Instruction<Input>]  {
+	public func createInstructions() -> [Instruction<Input>] {
 		_instructions()
 	}
 
 	private let _description: () -> String
 	public var description: String { _description() }
 
+	public let wrapped: Any
+
 	init(_ p: Pattern) {
 		_instructions = { p.createInstructions() }
 		_description = { p.description }
+		wrapped = p
 	}
 
 	init(_ p: AnyPattern) {
@@ -26,6 +29,7 @@ public struct AnyPattern: Pattern {
 	init(_ p: Literal) {
 		_instructions = { p.createInstructions() }
 		_description = { p.description }
+		wrapped = p
 	}
 }
 

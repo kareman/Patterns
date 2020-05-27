@@ -6,12 +6,26 @@
 //
 
 public struct Capture<Wrapped: Pattern>: Pattern {
-	public var description: String = "CAPTURE" // TODO: proper description
+	public var description: String {
+		let result: String
+		switch (name, wrapped) {
+		case (nil, nil):
+			result = ""
+		case let (name?, wrapped?):
+			result = "name: " + name + ", " + wrapped.description
+		case let (name?, nil):
+			result = "name: " + name
+		case let (nil, wrapped?):
+			result = wrapped.description
+		}
+		return "Capture(\(result))"
+	}
+
 	public let name: String?
 	public let wrapped: Wrapped?
 
-	public init(name: String? = nil, _ patterns: Wrapped) {
-		self.wrapped = patterns
+	public init(name: String? = nil, _ pattern: Wrapped) {
+		self.wrapped = pattern
 		self.name = name
 	}
 
