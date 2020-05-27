@@ -5,7 +5,7 @@
 //  Created by Kåre Morstøl on 25/05/2020.
 //
 
-public struct RepeatPattern<Repeated: TextPattern>: TextPattern, RegexConvertible {
+public struct RepeatPattern<Repeated: TextPattern>: TextPattern {
 	public let repeatedPattern: Repeated
 	public let min: Int
 	public let max: Int?
@@ -19,10 +19,6 @@ public struct RepeatPattern<Repeated: TextPattern>: TextPattern, RegexConvertibl
 
 	public var description: String {
 		"\(repeatedPattern){\(min)...\(max.map(String.init) ?? "")}"
-	}
-
-	public var regex: String {
-		"(?:\((repeatedPattern as! RegexConvertible).regex){\(min),\(max.map(String.init(describing:)) ?? "")}"
 	}
 
 	public func createInstructions() -> [Instruction<Input>] {

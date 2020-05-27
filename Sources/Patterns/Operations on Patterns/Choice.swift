@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 public struct OrPattern<First: TextPattern, Second: TextPattern>: TextPattern {
 	public let first: First
 	public let second: Second
@@ -34,12 +33,6 @@ public struct OrPattern<First: TextPattern, Second: TextPattern>: TextPattern {
 	}
 }
 
-extension OrPattern: RegexConvertible where First: RegexConvertible, Second: RegexConvertible {
-	public var regex: String {
-		return first.regex + "|" + second.regex
-	}
-}
-
 public func / <First: TextPattern, Second: TextPattern>(p1: First, p2: Second) -> OrPattern<First, Second> {
 	return OrPattern(p1, or: p2)
 }
@@ -55,4 +48,3 @@ public func / <First: TextPattern>(p1: First, p2: Literal) -> OrPattern<First, L
 public func / (p1: Literal, p2: Literal) -> OrPattern<Literal, Literal> {
 	return OrPattern(p1, or: p2)
 }
-

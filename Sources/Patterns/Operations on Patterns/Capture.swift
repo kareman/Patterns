@@ -19,9 +19,8 @@ public struct Capture<Wrapped: TextPattern>: TextPattern {
 		return [.captureStart(name: name)] + (wrapped?.createInstructions() ?? []) + [.captureEnd]
 	}
 
-	public struct Start: TextPattern, RegexConvertible {
+	public struct Start: TextPattern {
 		public var description: String { return "[" }
-		public var regex = "("
 		public let name: String?
 
 		public init(name: String? = nil) {
@@ -33,9 +32,8 @@ public struct Capture<Wrapped: TextPattern>: TextPattern {
 		}
 	}
 
-	public struct End: TextPattern, RegexConvertible {
+	public struct End: TextPattern {
 		public var description: String { return "]" }
-		public var regex = ")"
 
 		public init() {}
 
@@ -49,12 +47,5 @@ extension Capture where Wrapped == AnyPattern {
 	public init(name: String? = nil) {
 		self.wrapped = nil
 		self.name = name
-	}
-}
-
-extension Capture: RegexConvertible where Wrapped: RegexConvertible {
-	public var regex: String {
-		let capturedRegex = wrapped?.regex ?? ""
-		return name.map { "(?<\($0)>\(capturedRegex))" } ?? "(\(capturedRegex))"
 	}
 }

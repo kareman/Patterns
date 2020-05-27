@@ -5,12 +5,9 @@
 //  Created by Kåre Morstøl on 25/05/2020.
 //
 
-public struct Skip<Repeated: TextPattern>: TextPattern, RegexConvertible {
+public struct Skip<Repeated: TextPattern>: TextPattern {
 	public let repeatedPattern: Repeated?
 	public let description: String
-	public var regex: String {
-		return repeatedPattern.map { "(?:\(($0 as! RegexConvertible).regex))*?" } ?? ".*?"
-	}
 
 	public init(_ repeatedPattern: Repeated) {
 		self.repeatedPattern = repeatedPattern
