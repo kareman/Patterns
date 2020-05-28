@@ -49,7 +49,7 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Equata
 	}
 
 	public struct Match {
-		// TODO: replace with the end index of where pattern matched. So we can remove the outer capture from VMBacktrackEngine.init .
+		// TODO: replace fullRange with the end index of where pattern matched. So we can remove the outer capture from VMBacktrackEngine.init .
 		public let fullRange: Range<Input.Index>
 		public let captures: [(name: String?, range: Range<Input.Index>)]
 
@@ -60,6 +60,8 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Equata
 
 		@inlinable
 		public var range: Range<Input.Index> {
+			// TODO: Is `captures.last!.range.upperBound` always the highest captured index?
+			// What if there is one large range and a smaller inside that?
 			captures.isEmpty ? fullRange : captures.first!.range.lowerBound ..< captures.last!.range.upperBound
 		}
 

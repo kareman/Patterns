@@ -39,7 +39,7 @@ public class Grammar: Pattern {
 		var instructions = finalInstructions
 		let startIndex = instructions.endIndex
 		instructions.append(.openCall(name: firstPattern.onNil(fatalError("Grammar is empty"))))
-		instructions.append(.jump(relative: .max)) // replaced later
+		instructions.append(.jump(offset: .max)) // replaced later
 		var callTable = [String: Instructions.Index]()
 		var currentIndex = instructions.endIndex
 		for (name, pattern) in patterns {
@@ -52,10 +52,10 @@ public class Grammar: Pattern {
 
 		for i in instructions.indices[startIndex...] {
 			if case let .openCall(name) = instructions[i] {
-				instructions[i] = .call(address: callTable[name].onNil(fatalError("Pattern '\(name)' not found.")) - i)
+				instructions[i] = .call(offset: callTable[name].onNil(fatalError("Pattern '\(name)' not found.")) - i)
 			}
 		}
-		instructions[startIndex + 1] = .jump(relative: instructions.endIndex - startIndex - 1)
+		instructions[startIndex + 1] = .jump(offset: instructions.endIndex - startIndex - 1)
 
 		finalInstructions = instructions
 	}

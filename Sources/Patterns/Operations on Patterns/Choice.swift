@@ -26,7 +26,7 @@ public struct OrPattern<First: Pattern, Second: Pattern>: Pattern {
 		instructions.append(.split(first: 1, second: inst1.count + 3))
 		instructions.append(contentsOf: inst1)
 		instructions.append(.cancelLastSplit)
-		instructions.append(.jump(relative: inst2.count + 1))
+		instructions.append(.jump(offset: inst2.count + 1))
 		instructions.append(contentsOf: inst2)
 	}
 }

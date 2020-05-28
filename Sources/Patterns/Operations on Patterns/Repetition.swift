@@ -38,7 +38,7 @@ public struct RepeatPattern<Repeated: Pattern>: Pattern {
 				$0 += .split(first: 1, second: repeatedInstructions.count + 3)
 				$0 += repeatedInstructions
 				$0 += .cancelLastSplit
-				$0 += .jump(relative: -repeatedInstructions.count - 2)
+				$0 += .jump(offset: -repeatedInstructions.count - 2)
 			}
 		}
 	}

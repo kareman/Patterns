@@ -81,19 +81,20 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Equ
 	case literal(Input.Element)
 	case checkCharacter((Input.Element) -> Bool)
 	case checkIndex((Input, Input.Index) -> Bool)
-	case moveIndex(relative: Distance)
-	case function((Input, inout Thread<Input>) -> Bool)
+	case moveIndex(offset: Distance)
+	case function((Input, inout Thread<Input>) -> Bool) // TODO: remove
 	case captureStart(name: String?)
 	case captureEnd
-	case jump(relative: Distance)
+	case jump(offset: Distance)
 	case split(first: Distance, second: Distance, atIndex: Int)
 	case cancelLastSplit
 	case openCall(name: String) // will be replaced by .call in preprocessing.
-	case call(address: Int)
+	case call(offset: Int)
 	case `return`
 	case fail
 	case match
 
+	// TODO: make its own instruction
 	static var any: Instruction { Self.checkCharacter { _ in true } }
 	static func search(_ f: @escaping (Input, Input.Index) -> Input.Index?) -> Instruction {
 		.function { (input, thread) -> Bool in
@@ -129,7 +130,6 @@ extension VMBacktrackEngine {
 			}
 
 			loop: while true {
-				assert(thread.instructionIndex < instructions.endIndex, "Tried reaching instruction past end.")
 				switch instructions[thread.instructionIndex] {
 				case let .literal(char):
 					guard thread.inputIndex != input.endIndex, input[thread.inputIndex] == char else { break loop }
@@ -142,12 +142,12 @@ extension VMBacktrackEngine {
 				case let .checkIndex(test):
 					guard test(input, thread.inputIndex) else { break loop }
 					thread.instructionIndex += 1
-				case let .moveIndex(relative: distance):
+				case let .moveIndex(distance):
 					guard input.formIndexSafely(&thread.inputIndex, offsetBy: distance) else { break loop }
 					thread.instructionIndex += 1
 				case let .function(function):
 					guard function(input, &thread) else { break loop }
-				case let .jump(relative: distance):
+				case let .jump(distance):
 					thread.instructionIndex += distance
 				case .captureStart(_), .captureEnd:
 					thread.captures.append((index: thread.inputIndex, instruction: thread.instructionIndex))
@@ -164,14 +164,15 @@ extension VMBacktrackEngine {
 					assert(entry != nil, "Empty stack during .cancelLastSplit")
 					assert(entry?.isReturnAddress == false, "Missing thread during .cancelLastSplit")
 					thread.instructionIndex += 1
-				case let .call(address):
+				case let .call(offset):
 					var returnAddress = thread
 					returnAddress.instructionIndex += 1
 					returnAddress.isReturnAddress = true
+					returnAddress.captures.removeAll()
 					stack.append(returnAddress)
-					thread.instructionIndex += address
+					thread.instructionIndex += offset
 				case .return:
-					guard let entry = stack.popLast() else { fatalError("Missing return address in call.") }
+					guard let entry = stack.popLast() else { fatalError("Missing return address upon .return.") }
 					assert(entry.isReturnAddress, "Unexpected uncommited thread in stack.")
 					thread.instructionIndex = entry.instructionIndex
 				case .fail:

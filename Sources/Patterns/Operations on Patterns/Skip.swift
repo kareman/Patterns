@@ -18,7 +18,7 @@ public struct Skip<Repeated: Pattern>: Pattern {
 		let reps = repeatedPattern?.repeat(0...).createInstructions() ?? [.any]
 		instructions.append(.split(first: reps.count + 2, second: 1))
 		instructions.append(contentsOf: reps)
-		instructions.append(.jump(relative: -reps.count - 1))
+		instructions.append(.jump(offset: -reps.count - 1))
 	}
 
 	internal func prependSkip<C: BidirectionalCollection>(_ instructions: C)
@@ -34,7 +34,7 @@ public struct Skip<Repeated: Pattern>: Pattern {
 			case .checkIndex, .captureStart, .captureEnd, .cancelLastSplit:
 				let moveBy = chars.count - lastMoveTo
 				if moveBy > 0 {
-					nonIndexMovers.append(.moveIndex(relative: moveBy))
+					nonIndexMovers.append(.moveIndex(offset: moveBy))
 					lastMoveTo = chars.count
 				}
 				nonIndexMovers.append(inst)
@@ -44,7 +44,7 @@ public struct Skip<Repeated: Pattern>: Pattern {
 			}
 		}
 		if chars.count - lastMoveTo != 0 {
-			nonIndexMovers.append(.moveIndex(relative: chars.count - lastMoveTo))
+			nonIndexMovers.append(.moveIndex(offset: chars.count - lastMoveTo))
 		}
 
 		let search: (Input, Input.Index) -> Input.Index?
@@ -100,7 +100,7 @@ public struct Skip<Repeated: Pattern>: Pattern {
 			$0 += searchInstruction
 			$0 += .split(first: 1, second: -1, atIndex: 1)
 			$0 += chars
-			$0 += .moveIndex(relative: -chars.count)
+			$0 += .moveIndex(offset: -chars.count)
 			$0 += nonIndexMovers
 			$0 += remainingInstructions
 			if self.repeatedPattern != nil {
