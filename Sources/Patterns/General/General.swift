@@ -213,3 +213,10 @@ extension RangeReplaceableCollection {
 		compose(&self)
 	}
 }
+
+extension Optional {
+	func onNil(_ closure: @autoclosure () -> Never) -> Wrapped {
+		if self == nil { closure() }
+		else { return self! }
+	}
+}

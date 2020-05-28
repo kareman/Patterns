@@ -38,7 +38,7 @@ public struct Skip<Repeated: Pattern>: Pattern {
 					lastMoveTo = chars.count
 				}
 				nonIndexMovers.append(inst)
-			case .jump, .split, .match, .moveIndex, .function:
+			case .jump, .split, .match, .moveIndex, .function, .call, .return, .fail:
 				remainingInstructions = instructions[instructions.index(before: remainingInstructions.startIndex)...]
 				break loop
 			}
@@ -85,7 +85,7 @@ public struct Skip<Repeated: Pattern>: Pattern {
 			let skipInstructions = (repeatedPattern.repeat(0...).createInstructions() + [.match])[...]
 			searchInstruction = .function { (input, thread) -> Bool in
 				guard let end = search(input, thread.inputIndex) else { return false }
-				guard let newThread = backtrackingVM(skipInstructions, input: String(input.prefix(upTo: end)),
+				guard let newThread = VMBacktrackEngine<Input>.backtrackingVM(skipInstructions, input: String(input.prefix(upTo: end)),
 				                                     thread: Thread(startAt: skipInstructions.startIndex, withDataFrom: thread)),
 					newThread.inputIndex == end else { return false }
 
