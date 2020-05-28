@@ -22,8 +22,9 @@ public struct ConcatenationPattern<Left: Pattern, Right: Pattern>: Pattern {
 		self.right = right
 	}
 
-	public func createInstructions() -> [Instruction<Input>] {
-		left.createInstructions() + right.createInstructions()
+	public func createInstructions(_ instructions: inout Instructions) {
+		left.createInstructions(&instructions)
+		right.createInstructions(&instructions)
 	}
 }
 

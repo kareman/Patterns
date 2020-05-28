@@ -8,8 +8,18 @@
 public protocol Pattern: CustomStringConvertible {
 	typealias Input = String
 	typealias ParsedRange = Range<Input.Index>
+	typealias Instructions = ContiguousArray<Instruction<Input>> // TODO: use almost everywhere
 
-	func createInstructions() -> [Instruction<Input>]
+	func createInstructions(_ instructions: inout Instructions)
+	func createInstructions() -> Instructions
+}
+
+extension Pattern {
+	public func createInstructions() -> Instructions {
+		var instructions = Instructions()
+		self.createInstructions(&instructions)
+		return instructions
+	}
 }
 
 public struct Parser<Input: BidirectionalCollection> where Input.Element: Equatable {

@@ -12,8 +12,8 @@ public class Grammar: Pattern {
 		public let grammar: Grammar
 		public let name: String
 
-		public func createInstructions() -> [Instruction<Input>] {
-			[]
+		public func createInstructions(_ instructions: inout Instructions) {
+			instructions.append(.openCall(name: name))
 		}
 	}
 
@@ -26,6 +26,7 @@ public class Grammar: Pattern {
 			}
 		}
 	}
+
 	public fileprivate(set) var firstPattern: String?
 
 	public init() {}
@@ -34,8 +35,8 @@ public class Grammar: Pattern {
 		CallPattern(grammar: self, name: name)
 	}
 
-	public func createInstructions() -> [Instruction<Input>] {
-		[]
+	public func createInstructions(_ instructions: inout Instructions) {
+		//instructions.append()
 	}
 }
 

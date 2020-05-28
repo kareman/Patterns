@@ -12,6 +12,7 @@ public struct Word {
 		public let length: Int? = 0
 		public let description: String = "Word.boundary"
 
+		//TODO: return bool
 		public func parse(_ input: Input, at index: Input.Index) -> ParsedRange? {
 			let success = index ..< index
 			guard index != input.endIndex, index != input.startIndex else { return success }
@@ -64,10 +65,10 @@ public struct Word {
 			return success
 		}
 
-		public func createInstructions() -> [Instruction<Input>]  {
-			[.checkIndex { (input, index) -> Bool in
+		public func createInstructions(_ instructions: inout Instructions) {
+			instructions.append(.checkIndex { (input, index) -> Bool in
 				self.parse(input, at: index) != nil
-			}]
+			})
 		}
 	}
 }

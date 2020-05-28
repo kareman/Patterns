@@ -217,6 +217,6 @@ extension RangeReplaceableCollection {
 extension Optional {
 	func onNil(_ closure: @autoclosure () -> Never) -> Wrapped {
 		if self == nil { closure() }
-		else { return self! }
+		return self.unsafelyUnwrapped
 	}
 }

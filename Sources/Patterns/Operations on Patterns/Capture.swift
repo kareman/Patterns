@@ -29,8 +29,10 @@ public struct Capture<Wrapped: Pattern>: Pattern {
 		self.name = name
 	}
 
-	public func createInstructions() -> [Instruction<Input>] {
-		return [.captureStart(name: name)] + (wrapped?.createInstructions() ?? []) + [.captureEnd]
+	public func createInstructions(_ instructions: inout Instructions) {
+		instructions.append(.captureStart(name: name))
+		wrapped?.createInstructions(&instructions)
+		instructions.append(.captureEnd)
 	}
 
 	public struct Start: Pattern {
@@ -41,8 +43,8 @@ public struct Capture<Wrapped: Pattern>: Pattern {
 			self.name = name
 		}
 
-		public func createInstructions() -> [Instruction<Input>] {
-			return [.captureStart(name: name)]
+		public func createInstructions(_ instructions: inout Instructions) {
+			instructions.append(.captureStart(name: name))
 		}
 	}
 
@@ -51,8 +53,8 @@ public struct Capture<Wrapped: Pattern>: Pattern {
 
 		public init() {}
 
-		public func createInstructions() -> [Instruction<Input>] {
-			return [.captureEnd]
+		public func createInstructions(_ instructions: inout Instructions) {
+			instructions.append(.captureEnd)
 		}
 	}
 }

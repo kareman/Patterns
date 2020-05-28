@@ -16,8 +16,8 @@ public struct Line: Pattern {
 		pattern = Start() • Skip() • End()
 	}
 
-	public func createInstructions() -> [Instruction<Input>] {
-		pattern.createInstructions()
+	public func createInstructions(_ instructions: inout Instructions) {
+		pattern.createInstructions(&instructions)
 	}
 
 	public struct Start: Pattern {
@@ -29,8 +29,8 @@ public struct Line: Pattern {
 			index == input.startIndex || input[input.index(before: index)].isNewline
 		}
 
-		public func createInstructions() -> [Instruction<Input>] {
-			[.checkIndex(self.parse(_:at:))]
+		public func createInstructions(_ instructions: inout Instructions) {
+			instructions.append(.checkIndex(self.parse(_:at:)))
 		}
 	}
 
@@ -43,8 +43,8 @@ public struct Line: Pattern {
 			index == input.endIndex || input[index].isNewline
 		}
 
-		public func createInstructions() -> [Instruction<Input>] {
-			[.checkIndex(self.parse(_:at:))]
+		public func createInstructions(_ instructions: inout Instructions) {
+			instructions.append(.checkIndex(self.parse(_:at:)))
 		}
 	}
 }

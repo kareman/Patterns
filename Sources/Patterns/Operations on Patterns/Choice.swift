@@ -21,15 +21,13 @@ public struct OrPattern<First: Pattern, Second: Pattern>: Pattern {
 		return "(\(first) / \(second))"
 	}
 
-	public func createInstructions() -> [Instruction<Input>] {
+	public func createInstructions(_ instructions: inout Instructions) {
 		let (inst1, inst2) = (first.createInstructions(), second.createInstructions())
-		return Array<Instruction> {
-			$0 += .split(first: 1, second: inst1.count + 3)
-			$0 += inst1
-			$0 += .cancelLastSplit
-			$0 += .jump(relative: inst2.count + 1)
-			$0 += inst2
-		}
+		instructions.append(.split(first: 1, second: inst1.count + 3))
+		instructions.append(contentsOf: inst1)
+		instructions.append(.cancelLastSplit)
+		instructions.append(.jump(relative: inst2.count + 1))
+		instructions.append(contentsOf: inst2)
 	}
 }
 

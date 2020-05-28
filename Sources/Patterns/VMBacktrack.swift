@@ -78,6 +78,7 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Equ
 	case jump(relative: Distance)
 	case split(first: Distance, second: Distance, atIndex: Int)
 	case cancelLastSplit
+	case openCall(name: String) // will be replaced by .call in preprocessing.
 	case call(address: Int)
 	case `return`
 	case fail
@@ -189,6 +190,8 @@ extension VMBacktrackEngine {
 					break loop
 				case .match:
 					return thread
+				case .openCall:
+					fatalError("`.openCall` should be removed by Grammar.")
 				}
 			}
 		}
