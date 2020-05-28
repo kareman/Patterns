@@ -132,14 +132,6 @@ extension BidirectionalCollection {
 	}
 
 	@inlinable
-	func dropLast(while handler: (Element) -> Bool) -> SubSequence {
-		guard let i = self.lastIndex(where: { !handler($0) }) else {
-			return self[..<self.startIndex]
-		}
-		return self[...i]
-	}
-
-	@inlinable
 	func formIndexSafely(_ i: inout Index, offsetBy distance: Int) -> Bool {
 		if distance > 0 {
 			return formIndex(&i, offsetBy: distance, limitedBy: endIndex)
@@ -162,52 +154,6 @@ extension RangeReplaceableCollection where SubSequence == Self, Self: Bidirectio
 			}
 		}
 		removeAll()
-	}
-}
-
-// from https://github.com/apple/swift/blob/da61cc8cdf7aa2bfb3ab03200c52c4d371dc6751/stdlib/public/core/Collection.swift#L1527
-extension Collection {
-	@inlinable
-	__consuming func splitWhileKeepingSeparators(
-		maxSplits: Int = Int.max,
-		omittingEmptySubsequences: Bool = true,
-		whereSeparator isSeparator: (Element) throws -> Bool) rethrows -> [SubSequence] {
-		var result: [SubSequence] = []
-		var subSequenceStart: Index = startIndex
-
-		func appendSubsequence(end: Index) -> Bool {
-			if subSequenceStart == end, omittingEmptySubsequences {
-				return false
-			}
-			result.append(self[subSequenceStart ..< end])
-			return true
-		}
-
-		if maxSplits == 0 || isEmpty {
-			_ = appendSubsequence(end: endIndex)
-			return result
-		}
-
-		var subSequenceEnd = subSequenceStart
-		let cachedEndIndex = endIndex
-		while subSequenceEnd != cachedEndIndex {
-			if try isSeparator(self[subSequenceEnd]) {
-				let didAppend = appendSubsequence(end: subSequenceEnd)
-				subSequenceStart = subSequenceEnd
-				formIndex(after: &subSequenceEnd)
-				if didAppend, result.count == maxSplits {
-					break
-				}
-				continue
-			}
-			formIndex(after: &subSequenceEnd)
-		}
-
-		if subSequenceStart != cachedEndIndex || !omittingEmptySubsequences {
-			result.append(self[subSequenceStart ..< cachedEndIndex])
-		}
-
-		return result
 	}
 }
 
