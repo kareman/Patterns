@@ -25,11 +25,15 @@ class GrammarTests: XCTestCase {
 	}
 
 	func testDirectRecursion() throws {
-		let g = Grammar()
-		g.balancedParentheses <- "(" • (!OneOf("()") • any / g.balancedParentheses)* • ")"
-		assertParseAll(g, input: "((( )( )))", count: 1)
-		assertParseAll(g, input: "( )", count: 1)
-		assertParseAll(g, input: "(( )", count: 0)
+		let g1 = Grammar()
+		g1.a <- "a" / any • g1.a
+		assertParseAll(g1, input: " aa", count: 2)
+
+		let g2 = Grammar()
+		g2.balancedParentheses <- "(" • (!OneOf("()") • any / g2.balancedParentheses)* • ")"
+		assertParseAll(g2, input: "( )", count: 1)
+		assertParseAll(g2, input: "((( )( )))", count: 1)
+		assertParseAll(g2, input: "(( )", count: 0)
 
 	}
 }

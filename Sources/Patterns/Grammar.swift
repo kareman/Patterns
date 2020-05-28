@@ -35,8 +35,29 @@ public class Grammar: Pattern {
 		CallPattern(grammar: self, name: name)
 	}
 
-	public func createInstructions(_ instructions: inout Instructions) {
-		//instructions.append()
+	public func createInstructions(_ finalInstructions: inout Instructions) {
+		var instructions = finalInstructions
+		let startIndex = instructions.endIndex
+		instructions.append(.openCall(name: firstPattern.onNil(fatalError("Grammar is empty"))))
+		instructions.append(.jump(relative: .max)) // replaced later
+		var callTable = [String: Instructions.Index]()
+		var currentIndex = instructions.endIndex
+		for (name, pattern) in patterns {
+			callTable[name] = currentIndex
+			pattern.createInstructions(&instructions)
+			precondition(currentIndex != instructions.endIndex, "Pattern \(name) <- \(pattern) was empty") // should we support this?
+			instructions.append(.return)
+			currentIndex = instructions.endIndex
+		}
+
+		for i in instructions.indices[startIndex...] {
+			if case let .openCall(name) = instructions[i] {
+				instructions[i] = .call(address: callTable[name].onNil(fatalError("Pattern '\(name)' not found.")) - i)
+			}
+		}
+		instructions[startIndex + 1] = .jump(relative: instructions.endIndex - startIndex - 1)
+
+		finalInstructions = instructions
 	}
 }
 

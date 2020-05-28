@@ -5,13 +5,22 @@
 //  Created by Kåre Morstøl on 18/04/2020.
 //
 
+// TODO: struct?
 class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Equatable {
 	let instructionsFrom: Array<Instruction<Input>>.SubSequence
 
 	required init<P: Pattern>(_ pattern: P) throws where Input == P.Input {
-		instructionsFrom = Skip().prependSkip(Capture(pattern).createInstructions() + [Instruction<Input>.match])[...]
+		if pattern is Grammar {
+			instructionsFrom = (Capture(pattern).createInstructions() + [Instruction<Input>.match])[...]
+		} else {
+			instructionsFrom = Skip().prependSkip(Capture(pattern).createInstructions() + [Instruction<Input>.match])[...]
+		}
 	}
 
+	/*	init(_ pattern: Grammar) throws {
+	 	instructionsFrom = (Capture(pattern).createInstructions() + [Instruction<Input>.match])[...]
+	 }
+	 */
 	@usableFromInline
 	func match(in input: Input, at startindex: Input.Index) -> Parser<Input>.Match? {
 		// TODO: make more efficient.
@@ -137,11 +146,13 @@ extension VMBacktrackEngine {
 		stack.append(.thread(thread))
 		while var thread = stack.popLast()?.thread
 			.onNil(fatalError("Stack unexpectedly contains .returnAddress after fail")) {
+				
+			defer { // Fail, when `break loop` is called.
+				stack = stack.dropLast(while: { $0.returnAddress != nil })
+			}
+
 			loop: while true {
-				defer { // Fail, when `break loop` is called.
-					stack = stack.dropLast(while: { $0.returnAddress != nil })
-				}
-				guard thread.instructionIndex < instructions.endIndex else { break loop }
+				guard thread.instructionIndex < instructions.endIndex else { fatalError("Tried reaching instruction past end.") }
 				switch instructions[thread.instructionIndex] {
 				case let .literal(char):
 					guard thread.inputIndex != input.endIndex, input[thread.inputIndex] == char else { break loop }
@@ -172,11 +183,13 @@ extension VMBacktrackEngine {
 					}
 					stack.append(.thread(newThread))
 				case .cancelLastSplit:
-					_ = stack.popLast()
+					let entry = stack.popLast()
+					assert(entry.onNil(fatalError("Empty stack during .cancelLastSplit")).thread != nil ,
+								 "Missing thread during .cancelLastSplit")
 					thread.instructionIndex += 1
 				case let .call(address):
 					stack.append(.returnAddress(thread.instructionIndex + 1))
-					thread.instructionIndex = address
+					thread.instructionIndex += address
 				case .return:
 					switch stack.popLast() {
 					case let .returnAddress(address):
