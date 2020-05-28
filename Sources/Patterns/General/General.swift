@@ -122,6 +122,7 @@ func ?? <T>(b: T?, a: @autoclosure () -> Never) -> T {
 }
 
 extension BidirectionalCollection {
+	@inlinable
 	func validIndex(_ i: Index, offsetBy distance: Int) -> Index? {
 		if distance < 0 {
 			return index(i, offsetBy: distance, limitedBy: startIndex)
@@ -130,6 +131,7 @@ extension BidirectionalCollection {
 		return newI == endIndex ? nil : newI
 	}
 
+	@inlinable
 	func dropLast(while handler: (Element) -> Bool) -> SubSequence {
 		guard let i = self.lastIndex(where: { !handler($0) }) else {
 			return self[..<self.startIndex]
@@ -137,12 +139,29 @@ extension BidirectionalCollection {
 		return self[...i]
 	}
 
+	@inlinable
 	func formIndexSafely(_ i: inout Index, offsetBy distance: Int) -> Bool {
 		if distance > 0 {
 			return formIndex(&i, offsetBy: distance, limitedBy: endIndex)
 		} else {
 			return formIndex(&i, offsetBy: distance, limitedBy: startIndex)
 		}
+	}
+}
+
+extension RangeReplaceableCollection where SubSequence == Self, Self: BidirectionalCollection {
+	mutating func removeSuffix(where predicate: (Element) -> Bool) {
+		guard !isEmpty else { return }
+		var i = index(before: endIndex)
+		guard predicate(self[i]) else { return }
+		while i > startIndex {
+			formIndex(before: &i)
+			if !predicate(self[i]) {
+				self = self[...i]
+				return
+			}
+		}
+		removeAll()
 	}
 }
 

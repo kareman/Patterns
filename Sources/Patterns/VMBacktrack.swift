@@ -120,6 +120,7 @@ extension VMBacktrackEngine {
 		case returnAddress(Int)
 		case thread(Thread<Input>)
 
+		@usableFromInline
 		var returnAddress: Int? {
 			switch self {
 			case let .returnAddress(return: address):
@@ -129,6 +130,7 @@ extension VMBacktrackEngine {
 			}
 		}
 
+		@usableFromInline
 		var thread: Thread<Input>? {
 			switch self {
 			case let .thread(thread):
@@ -136,6 +138,14 @@ extension VMBacktrackEngine {
 			default:
 				return nil
 			}
+		}
+
+		@usableFromInline
+		var isReturnAddress: Bool {
+			if case .returnAddress = self {
+				return true
+			}
+			return false
 		}
 	}
 
@@ -146,13 +156,12 @@ extension VMBacktrackEngine {
 		stack.append(.thread(thread))
 		while var thread = stack.popLast()?.thread
 			.onNil(fatalError("Stack unexpectedly contains .returnAddress after fail")) {
-				
 			defer { // Fail, when `break loop` is called.
-				stack = stack.dropLast(while: { $0.returnAddress != nil })
+				stack.removeSuffix(where: { $0.isReturnAddress })
 			}
 
 			loop: while true {
-				guard thread.instructionIndex < instructions.endIndex else { fatalError("Tried reaching instruction past end.") }
+				assert(thread.instructionIndex < instructions.endIndex, "Tried reaching instruction past end.")
 				switch instructions[thread.instructionIndex] {
 				case let .literal(char):
 					guard thread.inputIndex != input.endIndex, input[thread.inputIndex] == char else { break loop }
@@ -184,8 +193,8 @@ extension VMBacktrackEngine {
 					stack.append(.thread(newThread))
 				case .cancelLastSplit:
 					let entry = stack.popLast()
-					assert(entry.onNil(fatalError("Empty stack during .cancelLastSplit")).thread != nil ,
-								 "Missing thread during .cancelLastSplit")
+					assert(entry.onNil(fatalError("Empty stack during .cancelLastSplit")).thread != nil,
+					       "Missing thread during .cancelLastSplit")
 					thread.instructionIndex += 1
 				case let .call(address):
 					stack.append(.returnAddress(thread.instructionIndex + 1))

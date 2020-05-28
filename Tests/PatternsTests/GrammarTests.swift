@@ -34,6 +34,5 @@ class GrammarTests: XCTestCase {
 		assertParseAll(g2, input: "( )", count: 1)
 		assertParseAll(g2, input: "((( )( )))", count: 1)
 		assertParseAll(g2, input: "(( )", count: 0)
-
 	}
 }
