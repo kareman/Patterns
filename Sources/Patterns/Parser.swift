@@ -49,6 +49,7 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Equata
 	}
 
 	public struct Match {
+		// TODO: replace with the end index of where pattern matched. So we can remove the outer capture from VMBacktrackEngine.init .
 		public let fullRange: Range<Input.Index>
 		public let captures: [(name: String?, range: Range<Input.Index>)]
 

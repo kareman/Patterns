@@ -61,6 +61,7 @@ public struct Thread<Input: BidirectionalCollection> where Input.Element: Equata
 	var instructionIndex: Array<Instruction<Input>>.SubSequence.Index
 	var inputIndex: Input.Index
 	var captures: ContiguousArray<(index: Input.Index, instruction: Array<Instruction<Input>>.Index)>
+	var isReturnAddress: Bool = false
 
 	init(startAt instructionIndex: Int, withDataFrom other: Thread) {
 		self.instructionIndex = instructionIndex
@@ -116,46 +117,13 @@ extension VMBacktrackEngine {
 			.map { Parser.Match($0, instructions: instructions) }
 	}
 
-	enum StackEntry {
-		case returnAddress(Int)
-		case thread(Thread<Input>)
-
-		@usableFromInline
-		var returnAddress: Int? {
-			switch self {
-			case let .returnAddress(return: address):
-				return address
-			default:
-				return nil
-			}
-		}
-
-		@usableFromInline
-		var thread: Thread<Input>? {
-			switch self {
-			case let .thread(thread):
-				return thread
-			default:
-				return nil
-			}
-		}
-
-		@usableFromInline
-		var isReturnAddress: Bool {
-			if case .returnAddress = self {
-				return true
-			}
-			return false
-		}
-	}
-
 	@usableFromInline
 	static func backtrackingVM(_ instructions: Array<Instruction<Input>>.SubSequence, input: Input, thread: Thread<Input>) -> Thread<Input>? {
-		var stack = ContiguousArray<StackEntry>()[...]
+		var stack = ContiguousArray<Thread<Input>>()[...]
 
-		stack.append(.thread(thread))
-		while var thread = stack.popLast()?.thread
-			.onNil(fatalError("Stack unexpectedly contains .returnAddress after fail")) {
+		stack.append(thread)
+		while var thread = stack.popLast() {
+			assert(!thread.isReturnAddress, "Stack unexpectedly contains .returnAddress after fail")
 			defer { // Fail, when `break loop` is called.
 				stack.removeSuffix(where: { $0.isReturnAddress })
 			}
@@ -190,24 +158,22 @@ extension VMBacktrackEngine {
 					if atIndex != 0 {
 						guard input.formIndexSafely(&newThread.inputIndex, offsetBy: atIndex) else { break }
 					}
-					stack.append(.thread(newThread))
+					stack.append(newThread)
 				case .cancelLastSplit:
 					let entry = stack.popLast()
-					assert(entry.onNil(fatalError("Empty stack during .cancelLastSplit")).thread != nil,
-					       "Missing thread during .cancelLastSplit")
+					assert(entry != nil, "Empty stack during .cancelLastSplit")
+					assert(entry?.isReturnAddress == false, "Missing thread during .cancelLastSplit")
 					thread.instructionIndex += 1
 				case let .call(address):
-					stack.append(.returnAddress(thread.instructionIndex + 1))
+					var returnAddress = thread
+					returnAddress.instructionIndex += 1
+					returnAddress.isReturnAddress = true
+					stack.append(returnAddress)
 					thread.instructionIndex += address
 				case .return:
-					switch stack.popLast() {
-					case let .returnAddress(address):
-						thread.instructionIndex = address
-					case .thread:
-						fatalError("Unexpected uncommited thread in stack.")
-					case nil:
-						fatalError("Missing return address in call.")
-					}
+					guard let entry = stack.popLast() else { fatalError("Missing return address in call.") }
+					assert(entry.isReturnAddress, "Unexpected uncommited thread in stack.")
+					thread.instructionIndex = entry.instructionIndex
 				case .fail:
 					break loop
 				case .match:
@@ -217,7 +183,6 @@ extension VMBacktrackEngine {
 				}
 			}
 		}
-
 		return nil
 	}
 }
