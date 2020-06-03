@@ -59,6 +59,12 @@ class PerformanceTests: XCTestCase {
 		try speedTest(pattern, textFraction: 1, hits: 2168)
 	}
 
+	func testGrammarLiteralSearch() throws {
+		let g = Grammar()
+		g.a <- Capture("Prince") / any • g.a
+		try speedTest(Parser(g), textFraction: 13, hits: 260)
+	}
+
 	func testNonExistentLiteralSearch() throws {
 		let pattern = try Parser("\n" • Skip() • "DOESN'T EXIST")
 		try speedTest(pattern, textFraction: 60, hits: 0)

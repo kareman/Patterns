@@ -14,11 +14,11 @@ public struct Skip<Repeated: Pattern>: Pattern {
 		self.description = "Skip(\(repeatedPattern))"
 	}
 
-	public func createInstructions() -> [Instruction<Input>] {
+	public func createInstructions(_ instructions: inout Instructions) {
 		let reps = repeatedPattern?.repeat(0...).createInstructions() ?? [.any]
-		return [.split(first: reps.count + 2, second: 1)]
-			+ reps
-			+ [.jump(relative: -reps.count - 1)]
+		instructions.append(.split(first: reps.count + 2, second: 1))
+		instructions.append(contentsOf: reps)
+		instructions.append(.jump(offset: -reps.count - 1))
 	}
 
 	internal func prependSkip<C: BidirectionalCollection>(_ instructions: C)
@@ -34,17 +34,17 @@ public struct Skip<Repeated: Pattern>: Pattern {
 			case .checkIndex, .captureStart, .captureEnd, .cancelLastSplit:
 				let moveBy = chars.count - lastMoveTo
 				if moveBy > 0 {
-					nonIndexMovers.append(.moveIndex(relative: moveBy))
+					nonIndexMovers.append(.moveIndex(offset: moveBy))
 					lastMoveTo = chars.count
 				}
 				nonIndexMovers.append(inst)
-			case .jump, .split, .match, .moveIndex, .function:
+			case .jump, .split, .match, .moveIndex, .function, .call, .return, .fail, .openCall:
 				remainingInstructions = instructions[instructions.index(before: remainingInstructions.startIndex)...]
 				break loop
 			}
 		}
 		if chars.count - lastMoveTo != 0 {
-			nonIndexMovers.append(.moveIndex(relative: chars.count - lastMoveTo))
+			nonIndexMovers.append(.moveIndex(offset: chars.count - lastMoveTo))
 		}
 
 		let search: (Input, Input.Index) -> Input.Index?
@@ -63,7 +63,7 @@ public struct Skip<Repeated: Pattern>: Pattern {
 						?? (function(input, input.endIndex) ? input.endIndex : nil)
 				}
 			default:
-				return self.createInstructions() + instructions
+				return self.createInstructions().array() + instructions
 			}
 		case let .checkCharacter(test):
 			search = { input, index in input[index...].firstIndex(where: test) }
@@ -85,8 +85,8 @@ public struct Skip<Repeated: Pattern>: Pattern {
 			let skipInstructions = (repeatedPattern.repeat(0...).createInstructions() + [.match])[...]
 			searchInstruction = .function { (input, thread) -> Bool in
 				guard let end = search(input, thread.inputIndex) else { return false }
-				guard let newThread = backtrackingVM(skipInstructions, input: String(input.prefix(upTo: end)),
-				                                     thread: Thread(startAt: skipInstructions.startIndex, withDataFrom: thread)),
+				guard let newThread = VMBacktrackEngine<Input>.backtrackingVM(skipInstructions, input: String(input.prefix(upTo: end)),
+				                                                              thread: Thread(startAt: skipInstructions.startIndex, withDataFrom: thread)),
 					newThread.inputIndex == end else { return false }
 
 				thread = Thread(startAt: thread.instructionIndex + 1, withDataFrom: newThread)
@@ -100,7 +100,7 @@ public struct Skip<Repeated: Pattern>: Pattern {
 			$0 += searchInstruction
 			$0 += .split(first: 1, second: -1, atIndex: 1)
 			$0 += chars
-			$0 += .moveIndex(relative: -chars.count)
+			$0 += .moveIndex(offset: -chars.count)
 			$0 += nonIndexMovers
 			$0 += remainingInstructions
 			if self.repeatedPattern != nil {

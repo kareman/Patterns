@@ -21,11 +21,12 @@ public struct RepeatPattern<Repeated: Pattern>: Pattern {
 		"\(repeatedPattern){\(min)...\(max.map(String.init) ?? "")}"
 	}
 
-	public func createInstructions() -> [Instruction<Input>] {
+	public func createInstructions(_ instructions: inout Instructions) {
 		let repeatedInstructions = repeatedPattern.createInstructions()
-		var result = (0 ..< min).flatMap { _ in repeatedInstructions }
+		for _ in 0 ..< min { instructions.append(contentsOf: repeatedInstructions) }
 		if let max = max {
-			result.append(contentsOf: (min ..< max).flatMap { _ in
+			instructions.append(contentsOf: (min ..< max).flatMap { _ in
+				// TODO: move out of loop
 				Array<Instruction> {
 					$0 += .split(first: 1, second: repeatedInstructions.count + 2)
 					$0 += repeatedInstructions
@@ -33,14 +34,13 @@ public struct RepeatPattern<Repeated: Pattern>: Pattern {
 				}
 			})
 		} else {
-			result.append {
+			instructions.append {
 				$0 += .split(first: 1, second: repeatedInstructions.count + 3)
 				$0 += repeatedInstructions
 				$0 += .cancelLastSplit
-				$0 += .jump(relative: -repeatedInstructions.count - 2)
+				$0 += .jump(offset: -repeatedInstructions.count - 2)
 			}
 		}
-		return result
 	}
 }
 

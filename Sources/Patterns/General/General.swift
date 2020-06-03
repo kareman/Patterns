@@ -122,6 +122,7 @@ func ?? <T>(b: T?, a: @autoclosure () -> Never) -> T {
 }
 
 extension BidirectionalCollection {
+	@inlinable
 	func validIndex(_ i: Index, offsetBy distance: Int) -> Index? {
 		if distance < 0 {
 			return index(i, offsetBy: distance, limitedBy: startIndex)
@@ -130,13 +131,7 @@ extension BidirectionalCollection {
 		return newI == endIndex ? nil : newI
 	}
 
-	func dropLast(while handler: (Element) -> Bool) -> SubSequence {
-		guard let i = self.lastIndex(where: { !handler($0) }) else {
-			return self[..<self.startIndex]
-		}
-		return self[...i]
-	}
-
+	@inlinable
 	func formIndexSafely(_ i: inout Index, offsetBy distance: Int) -> Bool {
 		if distance > 0 {
 			return formIndex(&i, offsetBy: distance, limitedBy: endIndex)
@@ -146,49 +141,19 @@ extension BidirectionalCollection {
 	}
 }
 
-// from https://github.com/apple/swift/blob/da61cc8cdf7aa2bfb3ab03200c52c4d371dc6751/stdlib/public/core/Collection.swift#L1527
-extension Collection {
-	@inlinable
-	__consuming func splitWhileKeepingSeparators(
-		maxSplits: Int = Int.max,
-		omittingEmptySubsequences: Bool = true,
-		whereSeparator isSeparator: (Element) throws -> Bool) rethrows -> [SubSequence] {
-		var result: [SubSequence] = []
-		var subSequenceStart: Index = startIndex
-
-		func appendSubsequence(end: Index) -> Bool {
-			if subSequenceStart == end, omittingEmptySubsequences {
-				return false
+extension RangeReplaceableCollection where SubSequence == Self, Self: BidirectionalCollection {
+	mutating func removeSuffix(where predicate: (Element) -> Bool) {
+		guard !isEmpty else { return }
+		var i = index(before: endIndex)
+		guard predicate(self[i]) else { return }
+		while i > startIndex {
+			formIndex(before: &i)
+			if !predicate(self[i]) {
+				self = self[...i]
+				return
 			}
-			result.append(self[subSequenceStart ..< end])
-			return true
 		}
-
-		if maxSplits == 0 || isEmpty {
-			_ = appendSubsequence(end: endIndex)
-			return result
-		}
-
-		var subSequenceEnd = subSequenceStart
-		let cachedEndIndex = endIndex
-		while subSequenceEnd != cachedEndIndex {
-			if try isSeparator(self[subSequenceEnd]) {
-				let didAppend = appendSubsequence(end: subSequenceEnd)
-				subSequenceStart = subSequenceEnd
-				formIndex(after: &subSequenceEnd)
-				if didAppend, result.count == maxSplits {
-					break
-				}
-				continue
-			}
-			formIndex(after: &subSequenceEnd)
-		}
-
-		if subSequenceStart != cachedEndIndex || !omittingEmptySubsequences {
-			result.append(self[subSequenceStart ..< cachedEndIndex])
-		}
-
-		return result
+		removeAll()
 	}
 }
 
@@ -211,5 +176,12 @@ extension RangeReplaceableCollection {
 
 	mutating func append(compose: (inout Self) -> Void) {
 		compose(&self)
+	}
+}
+
+extension Optional {
+	func onNil(_ closure: @autoclosure () -> Never) -> Wrapped {
+		if self == nil { closure() }
+		return self.unsafelyUnwrapped
 	}
 }

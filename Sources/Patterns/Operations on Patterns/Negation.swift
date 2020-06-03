@@ -6,22 +6,20 @@
 //
 
 public struct NotPattern<Wrapped: Pattern>: Pattern {
-	public let pattern: Wrapped
-	public var description: String { "!\(pattern)" }
+	public let wrapped: Wrapped
+	public var description: String { "!\(wrapped)" }
 
-	public func createInstructions() -> [Instruction<Input>] {
-		let instructions = pattern.createInstructions()
-		return Array<Instruction> {
-			$0 += .split(first: 1, second: instructions.count + 3)
-			$0 += instructions
-			$0 += .cancelLastSplit
-			$0 += .checkIndex { _, _ in false }
-		}
+	public func createInstructions(_ instructions: inout Instructions) {
+		let wrappedInstructions = wrapped.createInstructions()
+		instructions.append(.split(first: 1, second: wrappedInstructions.count + 3))
+		instructions.append(contentsOf: wrappedInstructions)
+		instructions.append(.cancelLastSplit)
+		instructions.append(.checkIndex { _, _ in false })
 	}
 }
 
 extension Pattern {
-	public var not: NotPattern<Self> { NotPattern(pattern: self) }
+	public var not: NotPattern<Self> { NotPattern(wrapped: self) }
 
 	public static prefix func ! (me: Self) -> NotPattern<Self> {
 		me.not

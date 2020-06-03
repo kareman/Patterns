@@ -22,8 +22,8 @@ public struct Literal: Pattern {
 		self.init(String(character))
 	}
 
-	public func createInstructions() -> [Instruction<Input>] {
-		return substring.map(Instruction.literal)
+	public func createInstructions(_ instructions: inout Instructions) {
+		instructions.append(contentsOf: substring.map(Instruction.literal))
 	}
 }
 

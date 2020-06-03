@@ -44,8 +44,8 @@ public struct OneOf: Pattern, RegexConvertible {
 		OneOf.basePatterns.filter { $0.group.contains(contentsOf: s) }
 	}
 
-	public func createInstructions() -> [Instruction<Input>] {
-		[.checkCharacter(group.contains)]
+	public func createInstructions(_ instructions: inout Instructions) {
+		instructions.append(.checkCharacter(group.contains))
 	}
 
 	public static func + (lhs: OneOf, rhs: OneOf) -> OneOf {

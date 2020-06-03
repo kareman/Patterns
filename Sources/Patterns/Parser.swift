@@ -8,8 +8,18 @@
 public protocol Pattern: CustomStringConvertible {
 	typealias Input = String
 	typealias ParsedRange = Range<Input.Index>
+	typealias Instructions = ContiguousArray<Instruction<Input>> // TODO: use almost everywhere
 
-	func createInstructions() -> [Instruction<Input>]
+	func createInstructions(_ instructions: inout Instructions)
+	func createInstructions() -> Instructions
+}
+
+extension Pattern {
+	public func createInstructions() -> Instructions {
+		var instructions = Instructions()
+		self.createInstructions(&instructions)
+		return instructions
+	}
 }
 
 public struct Parser<Input: BidirectionalCollection> where Input.Element: Equatable {
@@ -39,6 +49,7 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Equata
 	}
 
 	public struct Match {
+		// TODO: replace fullRange with the end index of where pattern matched. So we can remove the outer capture from VMBacktrackEngine.init .
 		public let fullRange: Range<Input.Index>
 		public let captures: [(name: String?, range: Range<Input.Index>)]
 
@@ -49,6 +60,8 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Equata
 
 		@inlinable
 		public var range: Range<Input.Index> {
+			// TODO: Is `captures.last!.range.upperBound` always the highest captured index?
+			// What if there is one large range and a smaller inside that?
 			captures.isEmpty ? fullRange : captures.first!.range.lowerBound ..< captures.last!.range.upperBound
 		}
 
