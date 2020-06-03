@@ -21,10 +21,25 @@ public struct ConcatenationPattern<Left: Pattern, Right: Pattern>: Pattern {
 		self.left = left
 		self.right = right
 	}
+}
 
+extension ConcatenationPattern where Left == Skip<AnyPattern> {
+	// Is never called. Don't know why.
 	public func createInstructions(_ instructions: inout Instructions) {
-		left.createInstructions(&instructions)
-		right.createInstructions(&instructions)
+		let rightInstructions = right.createInstructions()
+		instructions.append(contentsOf: left.prependSkip(rightInstructions))
+	}
+}
+
+extension ConcatenationPattern {
+	public func createInstructions(_ instructions: inout Instructions) {
+		if let skip = left as? Skip<AnyPattern> {
+			let rightInstructions = right.createInstructions()
+			instructions.append(contentsOf: skip.prependSkip(rightInstructions))
+		} else {
+			left.createInstructions(&instructions)
+			right.createInstructions(&instructions)
+		}
 	}
 }
 

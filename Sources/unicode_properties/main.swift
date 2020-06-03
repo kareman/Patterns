@@ -9,7 +9,7 @@ func unicodeProperty(fromDataFile text: String) -> [(range: ClosedRange<UInt32>,
 	let hexRange = AnyPattern("\(hexNumber)..\(hexNumber)") / hexNumber
 	let rangeAndProperty: AnyPattern = "\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) "
 
-	return try! Parser(rangeAndProperty).matches(in: text).map { match in
+	return try! Parser(search: rangeAndProperty).matches(in: text).map { match in
 		let propertyName = text[match[one: "property"]!]
 		let oneOrTwoNumbers = match[multiple: "hexNumber"].map { UInt32(text[$0], radix: 16)! }
 		let range = oneOrTwoNumbers.first! ... oneOrTwoNumbers.last!

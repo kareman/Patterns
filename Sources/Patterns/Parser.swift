@@ -43,31 +43,39 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Equata
 		self.matcher = try VMBacktrackEngine(pattern)
 	}
 
+	public init<P: Pattern>(search pattern: P) throws where P.Input == Input {
+		try self.init(Skip() • pattern)
+	}
+
 	public func ranges(in input: Input, from startindex: Input.Index? = nil)
 		-> AnySequence<Range<Input.Index>> {
 		return AnySequence(matches(in: input, from: startindex).lazy.map(\.range))
 	}
 
-	public struct Match {
-		// TODO: replace fullRange with the end index of where pattern matched. So we can remove the outer capture from VMBacktrackEngine.init .
-		public let fullRange: Range<Input.Index>
+	public struct Match: Equatable {
+		public let endIndex: Input.Index
 		public let captures: [(name: String?, range: Range<Input.Index>)]
 
-		init(fullRange: Range<Input.Index>, captures: [(name: String?, range: Range<Input.Index>)]) {
-			self.fullRange = fullRange
-			self.captures = captures
+		@inlinable
+		public static func == (lhs: Parser<Input>.Match, rhs: Parser<Input>.Match) -> Bool {
+			lhs.endIndex == rhs.endIndex
+				&& lhs.captures.elementsEqual(rhs.captures, by: { left, right in
+					left.range == right.range && left.name == right.name
+				})
 		}
 
 		@inlinable
 		public var range: Range<Input.Index> {
 			// TODO: Is `captures.last!.range.upperBound` always the highest captured index?
 			// What if there is one large range and a smaller inside that?
-			captures.isEmpty ? fullRange : captures.first!.range.lowerBound ..< captures.last!.range.upperBound
+			captures.isEmpty
+				? endIndex ..< endIndex
+				: captures.first!.range.lowerBound ..< captures.last!.range.upperBound
 		}
 
 		public func description(using input: Input) -> String {
 			return """
-			fullRange: \(input[fullRange])
+			endIndex: \(input[endIndex])
 			captures: \(captures.map { "\($0.name ?? "")    \(input[$0.range])" })
 
 			"""
@@ -87,11 +95,6 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Equata
 	}
 
 	@usableFromInline
-	internal func match(in input: Input, at startindex: Input.Index) -> Match? {
-		return matcher.match(in: input, at: startindex)
-	}
-
-	@usableFromInline
 	internal func match(in input: Input, from startIndex: Input.Index) -> Match? {
 		return matcher.match(in: input, from: startIndex)
 	}
@@ -99,14 +102,27 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Equata
 	@inlinable
 	public func matches(in input: Input, from startindex: Input.Index? = nil)
 		-> UnfoldSequence<Match, Input.Index> {
-		var previousRange: Range<Input.Index>?
+		var stop = false
+		var lastMatch: Match?
 		return sequence(state: startindex ?? input.startIndex, next: { (index: inout Input.Index) in
-			guard let match = self.match(in: input, from: index),
-				match.range != previousRange else { return nil }
+			guard var match = self.match(in: input, from: index), !stop else { return nil }
+			if match == lastMatch {
+				guard index != input.endIndex else { return nil }
+				input.formIndex(after: &index)
+				guard let newMatch = self.match(in: input, from: index) else { return nil }
+				match = newMatch
+			}
+			lastMatch = match
 			let range = match.range
-			previousRange = range
-			index = (range.isEmpty && range.upperBound != input.endIndex)
-				? input.index(after: range.upperBound) : range.upperBound
+			if range.upperBound == index {
+				guard range.upperBound != input.endIndex else {
+					stop = true
+					return match
+				}
+				input.formIndex(after: &index)
+			} else {
+				index = range.upperBound
+			}
 			return match
 		})
 	}

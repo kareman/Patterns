@@ -28,61 +28,62 @@ class PerformanceTests: XCTestCase {
 	}
 
 	func testWordBoundary() throws {
-		let pattern = try Parser(Word.boundary)
+		let pattern = try Parser(search: Word.boundary)
 		try speedTest(pattern, textFraction: 16, hits: 79081)
 	}
 
 	func testWordBoundaryManyLanguages() throws {
-		let pattern = try Parser(Word.boundary)
+		let pattern = try Parser(search: Word.boundary)
 		try speedTest(pattern, testFile: "Multi-language-short.txt", hits: 49801)
 	}
 
 	func testUppercaseWord() throws {
-		let pattern = try Parser(Word.boundary • uppercase+ • Word.boundary)
+		let pattern = try Parser(search: Word.boundary • uppercase+ • Word.boundary)
 		try speedTest(pattern, textFraction: 8, hits: 887)
 	}
 
 	func testLine() throws {
-		let pattern = try Parser(Line.start • Capture(Skip()) • Line.end)
+		let pattern = try Parser(search: Line.start • Capture(Skip()) • Line.end)
 		try speedTest(pattern, textFraction: 6, hits: 2550)
 	}
 
 	func testNotNewLine() throws {
 		let any = OneOf(description: "any", contains: { _ in true })
 		let pattern = try Parser(
-			"," • Capture(Skip(any - newline)) • Line.end)
+			search: "," • Capture(Skip(any - newline)) • Line.end)
 		try speedTest(pattern, textFraction: 8, hits: 1413)
 	}
 
 	func testLiteralSearch() throws {
-		let pattern = try Parser(Literal("Prince"))
+		let pattern = try Parser(search: Literal("Prince"))
 		try speedTest(pattern, textFraction: 1, hits: 2168)
 	}
 
 	func testGrammarLiteralSearch() throws {
 		let g = Grammar()
 		g.a <- Capture("Prince") / any • g.a
-		try speedTest(Parser(g), textFraction: 13, hits: 260)
+		let pattern = try Parser(g)
+		try speedTest(pattern, textFraction: 13, hits: 260)
 	}
 
 	func testNonExistentLiteralSearch() throws {
-		let pattern = try Parser("\n" • Skip() • "DOESN'T EXIST")
+		let pattern = try Parser(search: "\n" • Skip() • "DOESN'T EXIST")
 		try speedTest(pattern, textFraction: 60, hits: 0)
 	}
 
 	func testOptionalStringFollowedByNonOptionalString() throws {
-		let pattern = try Parser(Literal("\"")¿ • "I")
+		let pattern = try Parser(search: Literal("\"")¿ • "I")
 		try speedTest(pattern, textFraction: 8, hits: 1136)
 	}
 
 	func testOneOrMore() throws {
-		let pattern = try Parser(Capture(ascii+))
+		let pattern = try Parser(search: Capture(ascii+))
 		try speedTest(pattern, textFraction: 8, hits: 6041)
 	}
 
 	func testSkipping1() throws {
 		// [ word.boundary ] * " " * ":" * " " * " " * " " * "{" * Line.end
-		let pattern = try Parser(Skip() • "." • Skip() • " " • Skip() • " ")
+		let pattern = try Parser(search: Skip() • "." • Skip() • " " • Skip() • " ")
 		try speedTest(pattern, textFraction: 6, hits: 4779)
 	}
 
@@ -97,7 +98,7 @@ class PerformanceTests: XCTestCase {
 
 		let digits = digit+
 		let pattern = try Parser(
-			OneOf("+-")¿
+			search: OneOf("+-")¿
 				• (digits • ("." • digits)¿)
 				/
 				("." • digits)
@@ -106,7 +107,7 @@ class PerformanceTests: XCTestCase {
 	}
 
 	func testContainsClosure() throws {
-		let pattern = try Parser(Word.boundary • (alphanumeric / symbol))
+		let pattern = try Parser(search: Word.boundary • (alphanumeric / symbol))
 		try speedTest(pattern, textFraction: 16, hits: 35643)
 	}
 }

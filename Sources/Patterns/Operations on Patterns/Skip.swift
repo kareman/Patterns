@@ -85,8 +85,11 @@ public struct Skip<Repeated: Pattern>: Pattern {
 			let skipInstructions = (repeatedPattern.repeat(0...).createInstructions() + [.match])[...]
 			searchInstruction = .function { (input, thread) -> Bool in
 				guard let end = search(input, thread.inputIndex) else { return false }
-				guard let newThread = VMBacktrackEngine<Input>.backtrackingVM(skipInstructions, input: String(input.prefix(upTo: end)),
-				                                                              thread: Thread(startAt: skipInstructions.startIndex, withDataFrom: thread)),
+				guard
+					let newThread = VMBacktrackEngine<Input>.backtrackingVM(
+						skipInstructions,
+						input: String(input.prefix(upTo: end)),
+						thread: Thread(startAt: skipInstructions.startIndex, withDataFrom: thread)),
 					newThread.inputIndex == end else { return false }
 
 				thread = Thread(startAt: thread.instructionIndex + 1, withDataFrom: newThread)
@@ -103,9 +106,9 @@ public struct Skip<Repeated: Pattern>: Pattern {
 			$0 += .moveIndex(offset: -chars.count)
 			$0 += nonIndexMovers
 			$0 += remainingInstructions
-			if self.repeatedPattern != nil {
+	//		if self.repeatedPattern != nil {
 				$0 += .cancelLastSplit
-			}
+	//		}
 		}
 	}
 }
@@ -123,3 +126,4 @@ extension Skip where Repeated == Literal {
 		self.description = "Skip(\(repeatedPattern))"
 	}
 }
+
