@@ -15,7 +15,7 @@ class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Equ
 
 	@usableFromInline
 	func match(in input: Input, from startIndex: Input.Index) -> Parser<Input>.Match? {
-		return VMBacktrackEngine<Input>.backtrackingVM(instructionsFrom, input: input, startIndex: startIndex)
+		VMBacktrackEngine<Input>.backtrackingVM(instructionsFrom, input: input, startIndex: startIndex)
 	}
 }
 

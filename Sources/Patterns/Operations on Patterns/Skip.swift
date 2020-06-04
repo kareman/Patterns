@@ -106,9 +106,9 @@ public struct Skip<Repeated: Pattern>: Pattern {
 			$0 += .moveIndex(offset: -chars.count)
 			$0 += nonIndexMovers
 			$0 += remainingInstructions
-	//		if self.repeatedPattern != nil {
-				$0 += .cancelLastSplit
-	//		}
+			//		if self.repeatedPattern != nil {
+			$0 += .cancelLastSplit
+			//		}
 		}
 	}
 }
@@ -126,4 +126,3 @@ extension Skip where Repeated == Literal {
 		self.description = "Skip(\(repeatedPattern))"
 	}
 }
-

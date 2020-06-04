@@ -23,11 +23,11 @@ public struct Word {
 			if char1Before.isNewline || char1After.isNewline { return success }
 
 			func before(_ b1: Group<UInt32>) -> Bool {
-				return b1.contains(char1Before)
+				b1.contains(char1Before)
 			}
 
 			func after(_ a1: Group<UInt32>) -> Bool {
-				return a1.contains(char1After)
+				a1.contains(char1After)
 			}
 
 			if before(wSegSpace), after(wSegSpace) { return nil }
@@ -35,12 +35,12 @@ public struct Word {
 
 			let char2After = input.validIndex(index, offsetBy: +1).map { input[$0] }
 			func after2(_ a1: Group<UInt32>, _ a2: Group<UInt32>) -> Bool {
-				return a1.contains(char1After) && char2After.map(a2.contains) ?? false
+				a1.contains(char1After) && char2After.map(a2.contains) ?? false
 			}
 
 			let char2Before = input.validIndex(index, offsetBy: -2).map { input[$0] }
 			func before2(_ b2: Group<UInt32>, _ b1: Group<UInt32>) -> Bool {
-				return b1.contains(char1Before) && (char2Before.map(b2.contains) ?? false)
+				b1.contains(char1Before) && (char2Before.map(b2.contains) ?? false)
 			}
 
 			if before(aHLetter), after2(midLetter || midNumLetQ, aHLetter) { return nil }
@@ -90,7 +90,7 @@ extension Group where Element == UInt32 {
 	}
 
 	func contains(_ c: Character) -> Bool {
-		return contains(c.unicodeScalars.first!.value)
+		contains(c.unicodeScalars.first!.value)
 	}
 }
 

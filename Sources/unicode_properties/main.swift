@@ -63,7 +63,7 @@ func generateEnumAndDictionary(_ properties: [Substring: [ClosedRange<UInt32>]])
 }
 
 func generateConstants(_ properties: [Substring: [ClosedRange<UInt32>]]) -> String {
-	return properties.map { propertyName, ranges in
+	properties.map { propertyName, ranges in
 		"let \(caseName(propertyName)) = [ \(ranges.map { "\($0)" }.joined(separator: ", ")) ]"
 	}.joined(separator: "\n")
 }

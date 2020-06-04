@@ -85,7 +85,7 @@ extension BidirectionalCollection where Element: Hashable {
 extension Collection {
 	/// Returns the length of the range in this Collection.
 	func distance(of range: Range<Index>) -> Int {
-		return distance(from: range.lowerBound, to: range.upperBound)
+		distance(from: range.lowerBound, to: range.upperBound)
 	}
 
 	/// The second element of the collection.
@@ -97,20 +97,20 @@ extension Collection {
 	}
 
 	var fullRange: Range<Index> {
-		return startIndex ..< endIndex
+		startIndex ..< endIndex
 	}
 }
 
 extension Sequence {
 	/// Returns an array containing the entire sequence.
 	public func array() -> [Element] {
-		return Array(self)
+		Array(self)
 	}
 }
 
 extension Range: Comparable {
 	public static func < (l: Range<Bound>, r: Range<Bound>) -> Bool {
-		return (l.lowerBound == r.lowerBound) ? (l.upperBound < r.upperBound) : (l.lowerBound < r.lowerBound)
+		(l.lowerBound == r.lowerBound) ? (l.upperBound < r.upperBound) : (l.lowerBound < r.lowerBound)
 	}
 }
 

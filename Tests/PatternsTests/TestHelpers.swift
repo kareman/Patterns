@@ -116,7 +116,7 @@ extension RangeReplaceableCollection where Self: BidirectionalCollection {
 }
 
 func getLocalURL(for path: String, file: String = #file) -> URL {
-	return URL(fileURLWithPath: file)
+	URL(fileURLWithPath: file)
 		.deletingLastPathComponent().appendingPathComponent(path)
 }
 

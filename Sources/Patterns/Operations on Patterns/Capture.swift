@@ -36,7 +36,7 @@ public struct Capture<Wrapped: Pattern>: Pattern {
 	}
 
 	public struct Start: Pattern {
-		public var description: String { return "[" }
+		public var description: String { "[" }
 		public let name: String?
 
 		public init(name: String? = nil) {
@@ -49,7 +49,7 @@ public struct Capture<Wrapped: Pattern>: Pattern {
 	}
 
 	public struct End: Pattern {
-		public var description: String { return "]" }
+		public var description: String { "]" }
 
 		public init() {}
 
