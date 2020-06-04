@@ -11,59 +11,60 @@ import XCTest
 
 class PatternTests: XCTestCase {
 	func testLiteral() {
-		assertParseAll(Literal("a"), input: "abcd", result: "a", count: 1)
-		assertParseAll(Literal("b"), input: "abcdb", result: "b", count: 2)
-		assertParseAll(Literal("ab"), input: "abcaba", result: "ab", count: 2)
+		assertParseAll(Capture(Literal("a")), input: "abcd", result: "a", count: 1)
+		assertParseAll(Capture(Literal("b")), input: "abcdb", result: "b", count: 2)
+		assertParseAll(Capture(Literal("ab")), input: "abcaba", result: "ab", count: 2)
 	}
 
 	func testOneOf() {
 		let vowels = OneOf("aeiouAEIOU")
-		assertParseAll(vowels, input: "I am, you are", result: ["I", "a", "o", "u", "a", "e"])
+		assertParseAll(Capture(vowels), input: "I am, you are", result: ["I", "a", "o", "u", "a", "e"])
 
 		let lowercaseASCII = OneOf(description: "lowercaseASCII") { character in
 			character.isASCII && character.isLowercase
 		}
-		assertParseAll(lowercaseASCII, input: "aTæøåk☀️", result: ["a", "k"])
+		assertParseAll(Capture(lowercaseASCII), input: "aTæøåk☀️", result: ["a", "k"])
 
 		assertParseAll(digit, input: "ab12c3,d4", count: 4)
 	}
 
 	func testOptional() throws {
 		assertParseAll(letter • digit*, input: "123abc123d", count: 4)
-		assertParseAll(digit¿ • letter,
+		assertParseAll(Capture(digit¿ • letter),
 		               input: "123abc", result: ["3a", "b", "c"])
 	}
 
 	func testRepeat() throws {
-		assertParseAll(digit.repeat(2...), input: "123abc123", count: 2)
-		assertParseAll(digit+, input: "123abc", result: "123", count: 1)
-		assertParseAll(digit.repeat(3...), input: "123abc", result: "123", count: 1)
+		assertParseAll(digit.repeat(2...), input: "12a1bc123", count: 2)
+		assertParseAll(Capture(digit+), input: "123abc", result: "123", count: 1)
+		assertParseAll(Capture(digit.repeat(3...)), input: "123abc", result: "123", count: 1)
 		assertParseAll(digit.repeat(4...), input: "123abc", count: 0)
 
-		assertParseAll(digit+, input: "a123abc123d", result: "123", count: 2)
+		assertParseAll(Capture(digit+), input: "a123abc123d", result: "123", count: 2)
 		assertParseAll(digit+, input: "123abc09d4 8", count: 4)
-		assertParseAll(digit.repeat(...2) • letter, input: "123abc09d4 8", result: ["23a", "b", "c", "09d"])
+		assertParseAll(Capture(digit.repeat(...2) • letter),
+		               input: "123abc09d4 8", result: ["23a", "b", "c", "09d"])
 
-		assertParseAll(digit.repeat(1 ... 2), input: "123abc09d48", result: ["12", "3", "09", "48"])
+		assertParseAll(Capture(digit.repeat(1 ... 2)), input: "123abc09d48", result: ["12", "3", "09", "48"])
 
-		assertParseAll(digit.repeat(2), input: "1234 5 6 78", result: ["12", "34", "78"])
+		assertParseAll(Capture(digit.repeat(2)), input: "1234 5 6 78", result: ["12", "34", "78"])
 
-		assertParseAll("a"* • "b", input: "b aabb ab", result: ["b", "aab", "b", "ab"])
-		assertParseAll("a"*, input: "b aabb ab", result: ["", "", "aa", "", "", "", "a", "", ""])
+		assertParseAll(Capture("a"* • "b"), input: "b aabb ab", result: ["b", "aab", "b", "ab"])
+		assertParseAll(Capture("a"*), input: "b aabb ab", result: ["", "", "aa", "", "", "", "a", "", ""])
 
 		// !a b == b - a
 		assertParseAll(
-			(newline.not • ascii)+,
+			Capture((!newline • ascii)+),
 			input: "123\n4567\n89", result: ["123", "4567", "89"])
 		assertParseAll(
-			(ascii - newline)+,
+			Capture((ascii - newline)+),
 			input: "123\n4567\n89", result: ["123", "4567", "89"])
 
 		XCTAssertEqual(digit+.description, "digit{1...}")
 	}
 
 	func testOrPattern() {
-		let pattern = "a" / "b"
+		let pattern = Capture("a" / "b")
 		assertParseAll(pattern, input: "bcbd", result: "b", count: 2)
 		assertParseAll(pattern, input: "acdaa", result: "a", count: 3)
 		assertParseAll(pattern, input: "abcdb", count: 3)
@@ -106,10 +107,10 @@ class PatternTests: XCTestCase {
 			Line.start • Capture(Skip()) • " ",
 			input: text, result: "line", count: 4)
 		assertParseAll(
-			Line.start • "line",
+			Capture(Line.start • "line"),
 			input: text, result: "line", count: 4)
 		assertParseAll(
-			digit • Skip() • Line.start • "l",
+			Capture(digit • Skip() • Line.start • "l"),
 			input: text, result: ["1\nl", "2\nl", "3\nl"])
 
 		/* TODO: Implement?
@@ -138,10 +139,10 @@ class PatternTests: XCTestCase {
 			" " • Capture(Skip()) • Line.end,
 			input: text, result: ["1", "2", "3", "4"])
 		assertParseAll(
-			digit • Line.end,
+			Capture(digit • Line.end),
 			input: text, result: ["1", "2", "3", "4"])
 		assertParseAll(
-			digit • Line.end • Skip() • "l",
+			Capture(digit • Line.end • Skip() • "l"),
 			input: text, result: ["1\nl", "2\nl", "3\nl"])
 
 		/* TODO: Implement?
@@ -152,8 +153,7 @@ class PatternTests: XCTestCase {
 		 	Line.end, Skip(), Line.end))
 		 */
 
-		XCTAssertNoThrow(
-			Line.end • Skip(alphanumeric / "\n") • Line.end)
+		XCTAssertNoThrow(try Parser(search: Line.end • Skip(alphanumeric / "\n") • Line.end))
 
 		assertParseAll(
 			Line.end,
@@ -169,7 +169,7 @@ class PatternTests: XCTestCase {
 
 		"""
 
-		assertParseAll(Line(), input: text, result: ["line 1", "", "line 3", "line 4", ""])
+		assertParseAll(Capture(Line()), input: text, result: ["line 1", "", "line 3", "line 4", ""])
 	}
 
 	func testWordBoundary() throws {
@@ -181,12 +181,16 @@ class PatternTests: XCTestCase {
 	func testNotParser() throws {
 		assertParseMarkers(alphanumeric.not, input: #"I| said|,| 3|"#)
 		assertParseAll(
-			Word.boundary • !digit • alphanumeric+,
+			Capture(Word.boundary • !digit • alphanumeric+),
+			input: "123 abc 1ab a32b",
+			result: ["abc", "a32b"])
+		assertParseAll(
+			Word.boundary • Capture(!digit • alphanumeric+),
 			input: "123 abc 1ab a32b",
 			result: ["abc", "a32b"])
 
 		assertParseAll(
-			" " • (!OneOf(" ")).repeat(2) • "d", // test repeating a parser of length 0
+			Capture(" " • (!OneOf(" ")).repeat(2) • "d"), // test repeating a parser of length 0
 			input: " d cd", result: [" d"])
 	}
 }

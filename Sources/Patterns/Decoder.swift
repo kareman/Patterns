@@ -35,7 +35,7 @@ extension Parser.Match where Input == String {
 				}
 			} ?? match.captures
 
-			self.match = Parser.Match(fullRange: match.fullRange, captures: captures)
+			self.match = Parser.Match(endIndex: match.endIndex, captures: captures)
 			self.string = string
 			self.codingPath = codingPath
 		}
@@ -53,7 +53,7 @@ extension Parser.Match where Input == String {
 				throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: codingPath, debugDescription:
 					"Property '\(codingPath.map { "\($0.stringValue)" }.joined(separator: "."))' needs a single value, but multiple captures exists."))
 			}
-			let range = match.captures.first?.range ?? match.fullRange
+			let range = match.captures.first?.range ?? match.endIndex ..< match.endIndex
 			return StringDecoder(string: String(string[range]), codingPath: codingPath)
 		}
 

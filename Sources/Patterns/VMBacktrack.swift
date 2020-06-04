@@ -10,21 +10,7 @@ class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Equ
 	let instructionsFrom: Array<Instruction<Input>>.SubSequence
 
 	required init<P: Pattern>(_ pattern: P) throws where Input == P.Input {
-		if pattern is Grammar {
-			instructionsFrom = (Capture(pattern).createInstructions() + [Instruction<Input>.match])[...]
-		} else {
-			instructionsFrom = Skip().prependSkip(Capture(pattern).createInstructions() + [Instruction<Input>.match])[...]
-		}
-	}
-
-	/*	init(_ pattern: Grammar) throws {
-	 	instructionsFrom = (Capture(pattern).createInstructions() + [Instruction<Input>.match])[...]
-	 }
-	 */
-	@usableFromInline
-	func match(in input: Input, at startindex: Input.Index) -> Parser<Input>.Match? {
-		// TODO: make more efficient.
-		return VMBacktrackEngine<Input>.backtrackingVM(instructionsFrom, input: input, startIndex: startindex).flatMap { $0.fullRange.lowerBound == startindex ? $0 : nil }
+		instructionsFrom = (pattern.createInstructions() + [Instruction<Input>.match])[...]
 	}
 
 	@usableFromInline
@@ -51,7 +37,7 @@ extension Parser.Match {
 			}
 		}
 		assert(captureBeginnings.isEmpty)
-		self.fullRange = captures.removeLast().range
+		self.endIndex = thread.inputIndex
 		self.captures = captures
 	}
 }
@@ -161,8 +147,9 @@ extension VMBacktrackEngine {
 					stack.append(newThread)
 				case .cancelLastSplit:
 					let entry = stack.popLast()
-					assert(entry != nil, "Empty stack during .cancelLastSplit")
-					assert(entry?.isReturnAddress == false, "Missing thread during .cancelLastSplit")
+					// `.split` will not add to stack if `input.formIndexSafely` fails, so it might be empty.
+					// assert(entry != nil, "Empty stack during .cancelLastSplit")
+					assert(entry.map { !$0.isReturnAddress } ?? true, "Missing thread during .cancelLastSplit")
 					thread.instructionIndex += 1
 				case let .call(offset):
 					var returnAddress = thread

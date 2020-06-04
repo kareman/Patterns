@@ -10,31 +10,31 @@ import XCTest
 class ConcatenationTests: XCTestCase {
 	func testSimple() throws {
 		assertParseAll(
-			Literal("a")¿ • "b",
-			input: "ibiiiiabiii", count: 2)
+			Capture(Literal("a")¿ • "b"),
+			input: "ibiiiiabiii", result: ["b", "ab"])
 		assertParseAll(
-			Literal("a")¿ • Literal("b"),
-			input: "ibiiaiiababiibi", count: 4)
+			Capture(Literal("a")¿ • Literal("b")),
+			input: "ibiiaiiababiibi", result: ["b", "ab", "ab", "b"])
 		assertParseAll(
-			"b" • Literal("a")¿,
-			input: "ibiiiibaiii", count: 2)
+			Capture("b" • Literal("a")¿),
+			input: "ibiiiibaiii", result: ["b", "ba"])
 
-		let p = "ab" • digit • "."
+		let p = Capture("ab" • digit • ".")
 		assertParseAll(p, input: "$#%/ab8.lsgj", result: "ab8.", count: 1)
-		assertParseAll(p, input: "$ab#%/ab8.lsgab3.j", count: 2)
+		assertParseAll(p, input: "$ab#%/ab8.lsgab3.j", result: ["ab8.", "ab3."])
 		assertParseAll(p, input: "$#%/ab8lsgj", count: 0)
 	}
 
 	func testRepeat() throws {
 		let text = "This is 4 6 a test 123 text."
 		assertParseAll(
-			" " • digit* • " ",
+			Capture(" " • digit* • " "),
 			input: text, result: [" 4 ", " 123 "])
 		assertParseAll(
 			" " • Capture(digit*) • " ",
 			input: text, result: ["4", "6", "123"])
 		assertParseAll(
-			digit • letter.repeat(0 ... 2),
+			Capture(digit • letter.repeat(0 ... 2)),
 			input: "2a 35abz2",
 			result: ["2a", "3", "5ab", "2"])
 	}
@@ -52,19 +52,19 @@ class ConcatenationTests: XCTestCase {
 			" " • Capture(letter+) • " ",
 			input: text, result: ["is", "a", "test"])
 		assertParseAll(
-			letter+,
+			Capture(letter+),
 			input: text, result: ["This", "is", "a", "test", "text"])
 		assertParseAll(
 			letter • Capture() • " ",
 			input: text, result: "", count: 4)
 		assertParseAll(
 			" " • Capture("te"),
-			input: text, count: 2)
+			input: text, result: "te", count: 2)
 	}
 
 	func testRepeatOrThenEndOfLine() throws {
 		assertParseAll(
-			(alphanumeric / OneOf(" "))+ • Line.end,
+			Capture((alphanumeric / OneOf(" "))+ • Line.end),
 			input: "FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S",
 			result: ["FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S"])
 	}
@@ -72,51 +72,51 @@ class ConcatenationTests: XCTestCase {
 	func testSkip1() throws {
 		let text = "This is a test text."
 		assertParseAll(
-			" " • Skip() • " ",
+			Capture(" " • Skip() • " "),
 			input: text, result: [" is ", " test "])
 
 		assertParseAll(
-			" " • Skip() • "d",
+			Capture(" " • Skip() • "d"),
 			input: " ad d", result: [" ad", " d"])
 	}
 
 	/*
-	func testSkipWithRepeatedPattern() throws {
-		let text = """
-		yes (a)
-		yes (aaaaa)
-		no (aaabaa)
-		no (woieru
-		lkjfd)
-		yes ()
-		"""
+	 func testSkipWithRepeatedPattern() throws {
+	 	let text = """
+	 	yes (a)
+	 	yes (aaaaa)
+	 	no (aaabaa)
+	 	no (woieru
+	 	lkjfd)
+	 	yes ()
+	 	"""
 
-		assertParseAll(
-			"("
-				• Capture(Skip(ascii • !newline))
-				• Line.End(),
-			input: text, result: ["a)", "aaaaa)", "aaabaa)", "woieru", ")"])
+	 	assertParseAll(
+	 		"("
+	 			• Capture(Skip(ascii • !newline))
+	 			• Line.End(),
+	 		input: text, result: ["a)", "aaaaa)", "aaabaa)", "woieru", ")"])
 
-		assertParseAll(
-			"("
-				• Skip(Literal("a"))
-				• ")",
-			input: text, result: ["(a)", "(aaaaa)", "()"])
-		assertParseAll(
-			"("
-				• Capture(Skip(Literal("a")))
-				• ")",
-			input: text, result: ["a", "aaaaa", ""])
+	 	assertParseAll(
+	 		"("
+	 			• Skip(Literal("a"))
+	 			• ")",
+	 		input: text, result: ["(a)", "(aaaaa)", "()"])
+	 	assertParseAll(
+	 		"("
+	 			• Capture(Skip(Literal("a")))
+	 			• ")",
+	 		input: text, result: ["a", "aaaaa", ""])
 
-		assertParseAll(
-			"("
-				• Skip(ascii • newline.not)
-				• ")",
-			input: text, result: ["(a)", "(aaaaa)", "(aaabaa)", "()"])
+	 	assertParseAll(
+	 		"("
+	 			• Skip(ascii • newline.not)
+	 			• ")",
+	 		input: text, result: ["(a)", "(aaaaa)", "(aaabaa)", "()"])
 
-		// TODO: Skip("literal")
-	}
-*/
+	 	// TODO: Skip("literal")
+	 }
+	 */
 
 	func testSkipAndCapture() throws {
 		let text = "This is a test text."
@@ -124,7 +124,7 @@ class ConcatenationTests: XCTestCase {
 			" " • Capture(letter • Skip()) • " ",
 			input: text, result: ["is", "a", "test"])
 		assertParseAll(
-			" " • Capture(Skip() • letter) • " ",
+			" " • Capture(Skip() • letter+) • " ",
 			input: text, result: ["is", "a", "test"])
 		assertParseAll(
 			" " • Capture(Skip()) • Literal(" "),
@@ -141,7 +141,7 @@ class ConcatenationTests: XCTestCase {
 			result: ["1", "2", "", "3"])
 
 		// undefined (Skip at end)
-		_ = try Parser(" " • Capture(Skip()))
+		_ = try Parser(search: " " • Capture(Skip()))
 			.matches(in: text)
 	}
 
@@ -154,8 +154,8 @@ class ConcatenationTests: XCTestCase {
 
 		"""
 
-		XCTAssertEqual(try Parser(Line()).matches(in: text).map { text[$0.fullRange] },
-		               ["line 1", "", "line 3", "line 4", ""])
+		assertParseAll(Capture(Line()), input: text,
+		               result: ["line 1", "", "line 3", "line 4", ""])
 	}
 
 	func testMatchBeginningOfLines() throws {
@@ -165,10 +165,11 @@ class ConcatenationTests: XCTestCase {
 		cera user
 		dilled10 io
 		"""
-		let pattern = try Parser(Line.start • Capture())
-		let m = Array(pattern.matches(in: text))
+		let pattern = try Parser(search: Line.start • Capture())
 
+		let m = Array(pattern.matches(in: text))
 		XCTAssertEqual(m.map { text[$0.captures[0].range.lowerBound] }, ["a", "b", "c", "d"].map(Character.init))
+
 		XCTAssertEqual(pattern.matches(in: "\n\n").map { $0.captures[0] }.count, 3)
 	}
 
@@ -181,12 +182,12 @@ class ConcatenationTests: XCTestCase {
 
 		"""
 
-		var pattern = try Parser(Line.end • Capture())
+		var pattern = try Parser(search: Line.end • Capture())
 		var m = pattern.matches(in: text)
 		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].range.lowerBound] },
 		               Array(repeating: Character("\n"), count: 4))
 
-		pattern = try Parser(Capture() • Line.end)
+		pattern = try Parser(search: Capture() • Line.end)
 		m = pattern.matches(in: text)
 		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].range.lowerBound] },
 		               Array(repeating: Character("\n"), count: 4))
@@ -208,7 +209,7 @@ class ConcatenationTests: XCTestCase {
 
 		assertCaptures(pattern, input: text, result: twoFirstWords)
 
-		let matches = Array(try Parser(pattern).matches(in: text))
+		let matches = Array(try Parser(search: pattern).matches(in: text))
 		XCTAssertEqual(matches.map { text[$0[one: "word"]!] }, ["There", "Whose", "She", "In", "And"])
 		XCTAssertEqual(matches.map { $0[multiple: "word"].map { String(text[$0]) } }, twoFirstWords)
 		XCTAssertNil(matches.first![one: "not a name"])
@@ -224,7 +225,7 @@ class ConcatenationTests: XCTestCase {
 	lazy var rangeAndProperty: Parser<String> = {
 		let hexNumber = Capture(name: "codePoint", hexDigit+)
 		let hexRange = AnyPattern("\(hexNumber)..\(hexNumber)") / hexNumber
-		return try! Parser(AnyPattern("\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) "))
+		return try! Parser(search: AnyPattern("\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) "))
 	}()
 
 	func testStringInterpolation() throws {
@@ -262,7 +263,7 @@ class ConcatenationTests: XCTestCase {
 		let text = "This is a point: (43,7), so is (0,5). But my final point is (3,-1)."
 
 		let number = OneOf("+-")¿ • digit+
-		let point = try Parser(AnyPattern("(\(Capture(name: "x", number)),\(Capture(name: "y", number)))"))
+		let point = try Parser(search: AnyPattern("(\(Capture(name: "x", number)),\(Capture(name: "y", number)))"))
 
 		let pointsAsSubstrings = point.matches(in: text).map { match in
 			(text[match[one: "x"]!], text[match[one: "y"]!])
