@@ -8,54 +8,79 @@
 import Foundation
 
 public struct OneOf: Pattern, RegexConvertible {
+	@usableFromInline
 	let group: Group<Input.Element>
 	public let description: String
-	private let _regex: String?
+
+	@usableFromInline
+	let _regex: String?
 	public var regex: String {
 		_regex ?? fatalError("Regex not provided for '\(description)'")
 	}
 
-	public init(description: String, regex: String? = nil, group: Group<Input.Element>) {
+	@usableFromInline
+	init(description: String, regex: String? = nil, group: Group<Input.Element>) {
 		self.group = group
 		self.description = description
 		self._regex = regex
 	}
 
+	@inlinable
 	public init(description: String, regex: String? = nil, contains: @escaping (Input.Element) -> Bool) {
 		self.init(description: description, regex: regex, group: Group(contains: contains))
 	}
 
+	@inlinable
 	public init<S: Sequence>(_ characters: S) where S.Element == Input.Element {
 		group = Group(contentsOf: characters)
-		description = "\"\(group)\""
+		description = #"OneOf("\#(group)")"#
 		_regex = "[\(NSRegularExpression.escapedPattern(for: characters.map(String.init(describing:)).joined()))]"
 	}
 
-	public static let basePatterns: [OneOf] = [
-		any, alphanumeric, letter, lowercase, uppercase, punctuation, whitespace, newline, hexDigit, digit,
-		ascii, symbol, mathSymbol, currencySymbol,
-	]
-
-	public static func patterns(for c: Input.Element) -> [Pattern] {
-		OneOf.basePatterns.filter { $0.group.contains(c) }
+	@inlinable
+	public init<S: Sequence>(not characters: S) where S.Element == Input.Element {
+		group = Group(contentsOf: characters).inverted()
+		description = #"OneOf(not: "\#(group)")"#
+		_regex = "[^\(NSRegularExpression.escapedPattern(for: characters.map(String.init(describing:)).joined()))]"
 	}
 
-	public static func patterns<S: Sequence>(for s: S) -> [Pattern] where S.Element == Input.Element {
-		OneOf.basePatterns.filter { $0.group.contains(contentsOf: s) }
-	}
-
+	@inlinable
 	public func createInstructions(_ instructions: inout Instructions) {
 		instructions.append(.checkCharacter(group.contains))
 	}
-
-	public static func + (lhs: OneOf, rhs: OneOf) -> OneOf {
-		OneOf(description: "\(lhs) + \(rhs)", group: lhs.group.union(rhs.group))
-	}
-
-	public static func - (lhs: OneOf, rhs: OneOf) -> OneOf {
-		OneOf(description: "\(lhs) - \(rhs)", group: lhs.group.subtracting(rhs.group))
-	}
 }
+
+// MARK: Join `&&OneOf • OneOf` into one.
+
+public func • (lhs: AndPattern<OneOf>, rhs: OneOf) -> OneOf {
+	OneOf(description: "\(lhs) \(rhs)", group: lhs.wrapped.group.intersection(rhs.group))
+}
+
+public func • <P: Pattern>(lhs: AndPattern<OneOf>, rhs: Concat<OneOf, P>) -> Concat<OneOf, P> {
+	(lhs • rhs.left) • rhs.right
+}
+
+// MARK: Join `!OneOf • Oneof` into one.
+
+public func • (lhs: NotPattern<OneOf>, rhs: OneOf) -> OneOf {
+	OneOf(description: "\(lhs) \(rhs)", group: rhs.group.subtracting(lhs.wrapped.group))
+}
+
+public func • <P: Pattern>(lhs: NotPattern<OneOf>, rhs: Concat<OneOf, P>) -> Concat<OneOf, P> {
+	(lhs • rhs.left) • rhs.right
+}
+
+// MARK: Join `OneOf / OneOf` into one.
+
+public func / (lhs: OneOf, rhs: OneOf) -> OneOf {
+	OneOf(description: "\(lhs) / \(rhs)", group: lhs.group.union(rhs.group))
+}
+
+public func / <P: Pattern>(lhs: OrPattern<P, OneOf>, rhs: OneOf) -> OrPattern<P, OneOf> {
+	lhs.first / (lhs.second / rhs)
+}
+
+// MARK: Common patterns.
 
 public let any = OneOf(description: "any", regex: #"[.\p{Zl}]"#,
                        contains: { _ in true })
@@ -85,3 +110,18 @@ public let mathSymbol = OneOf(description: "mathSymbol", regex: #"\p{Sm}"#,
                               contains: \Character.isMathSymbol)
 public let currencySymbol = OneOf(description: "currencySymbol", regex: #"\p{Sc}"#,
                                   contains: \Character.isCurrencySymbol)
+
+extension OneOf {
+	public static let basePatterns: [OneOf] = [
+		any, alphanumeric, letter, lowercase, uppercase, punctuation, whitespace, newline, hexDigit, digit,
+		ascii, symbol, mathSymbol, currencySymbol,
+	]
+
+	public static func patterns(for c: Input.Element) -> [Pattern] {
+		OneOf.basePatterns.filter { $0.group.contains(c) }
+	}
+
+	public static func patterns<S: Sequence>(for s: S) -> [Pattern] where S.Element == Input.Element {
+		OneOf.basePatterns.filter { $0.group.contains(contentsOf: s) }
+	}
+}

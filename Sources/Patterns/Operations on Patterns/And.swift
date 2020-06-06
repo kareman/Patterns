@@ -16,17 +16,15 @@ public struct AndPattern<Wrapped: Pattern>: Pattern {
 	public func createInstructions(_ instructions: inout Instructions) {
 		let wrappedInstructions = wrapped.createInstructions()
 		if let indexMovedBy = wrappedInstructions.movesIndexBy {
-			instructions.append {
-				$0 += wrappedInstructions
-				$0 += .moveIndex(offset: -indexMovedBy)
-			}
+			instructions.append(contentsOf: wrappedInstructions)
+			instructions.append(.moveIndex(offset: -indexMovedBy))
 		} else {
 			instructions.append {
-				$0 += .split(first: 1, second: wrappedInstructions.count + 4, atIndex: 0)
-				$0 += .split(first: 1, second: wrappedInstructions.count + 1, atIndex: 0)
-				$0 += wrappedInstructions
-				$0 += .cancelLastSplit
-				$0 += .fail
+				$0.append(.split(first: 1, second: wrappedInstructions.count + 4, atIndex: 0))
+				$0.append(.split(first: 1, second: wrappedInstructions.count + 1, atIndex: 0))
+				$0.append(contentsOf: wrappedInstructions)
+				$0.append(.cancelLastSplit)
+				$0.append(.fail)
 			}
 		}
 	}

@@ -12,7 +12,7 @@ let package = Package(
 			targets: ["Patterns"]),
 		.executable(
 			name: "unicode_properties",
-			targets: ["unicode_properties", "Patterns"])
+			targets: ["unicode_properties", "Patterns"]),
 	],
 	dependencies: [.package(url: "https://github.com/apple/swift-argument-parser", from: "0.0.1")],
 	targets: [
@@ -24,18 +24,21 @@ let package = Package(
 			swiftSettings: [
 				.define("DEBUG", .when(configuration: .debug)),
 				//.define("SwiftEngine"),
-				]),
+			]),
 		.testTarget(
 			name: "PatternsTests",
-			dependencies: ["Patterns"]),
+			dependencies: ["Patterns"],
+			swiftSettings: [
+				.unsafeFlags(["-Xfrontend", "-warn-long-expression-type-checking=1000",
+				              "-Xfrontend", "-warn-long-function-bodies=1000"]),
+			]),
 		.testTarget(
 			name: "PerformanceTests",
 			dependencies: ["Patterns"],
 			swiftSettings: [
 				.define("DEBUG", .when(configuration: .debug)),
-				]),
+			]),
 		.target(
 			name: "unicode_properties",
 			dependencies: ["Patterns", "ArgumentParser"]),
-	]
-)
+	])

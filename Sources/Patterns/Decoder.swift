@@ -82,7 +82,8 @@ extension Parser.Match where Input == String {
 
 			mutating func decode<T>(_ type: T.Type) throws -> T where T: Decodable {
 				defer { currentIndex += 1 }
-				return try type.init(from: StringDecoder(string: String(string[values[currentIndex]]), codingPath: codingPath))
+				let text = String(string[values[currentIndex]])
+				return try type.init(from: StringDecoder(string: text, codingPath: codingPath))
 			}
 
 			mutating func decode<T>(_ type: T.Type) throws -> T where T: Decodable & LosslessStringConvertible {

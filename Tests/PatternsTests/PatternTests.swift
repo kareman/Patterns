@@ -19,6 +19,8 @@ class PatternTests: XCTestCase {
 	func testOneOf() {
 		let vowels = OneOf("aeiouAEIOU")
 		assertParseAll(Capture(vowels), input: "I am, you are", result: ["I", "a", "o", "u", "a", "e"])
+		let notVowels = OneOf(not: "aeiouAEIOU")
+		assertParseAll(Capture(notVowels), input: "I am, you are", result: [" ", "m", ",", " ", "y", " ", "r"])
 
 		let lowercaseASCII = OneOf(description: "lowercaseASCII") { character in
 			character.isASCII && character.isLowercase
@@ -57,13 +59,16 @@ class PatternTests: XCTestCase {
 			Capture((!newline • ascii)+),
 			input: "123\n4567\n89", result: ["123", "4567", "89"])
 		assertParseAll(
-			Capture((ascii - newline)+),
+			Capture((!newline • ascii)+),
 			input: "123\n4567\n89", result: ["123", "4567", "89"])
 
 		XCTAssertEqual(digit+.description, "digit{1...}")
 	}
 
 	func testOr() {
+		// Make sure '/' operator optimizes OneOf's properly.
+		let _: OrPattern<OrPattern<Literal, OneOf>, Literal> = ("a" / letter / ascii / punctuation / "b")
+
 		let pattern = Capture("a" / "b")
 		assertParseAll(pattern, input: "bcbd", result: "b", count: 2)
 		assertParseAll(pattern, input: "acdaa", result: "a", count: 3)
@@ -179,6 +184,10 @@ class PatternTests: XCTestCase {
 	}
 
 	func testNot() throws {
+		XCTAssert(
+			type(of: "a" • !letter • ascii • "b") == Concat<Literal, Concat<OneOf, Literal>>.self,
+			"'•' operator isn't optimizing OneOf's properly.")
+
 		assertParseMarkers(alphanumeric.not, input: #"I| said|,| 3|"#)
 		assertParseAll(
 			Capture(Word.boundary • !digit • alphanumeric+),
@@ -194,7 +203,7 @@ class PatternTests: XCTestCase {
 			result: ["ab", "bc", "bcd", "efg"])
 
 		assertParseAll(
-			Capture(" " • (!OneOf(" ")).repeat(2) • "d"), // test repeating a parser of length 0
+			Capture(" " • (!OneOf(" ")).repeat(2) • "d"), // repeate a parser of length 0
 			input: " d cd", result: [" d"])
 
 		assertParseMarkers(!any, input: "  |") // EOF
@@ -202,6 +211,10 @@ class PatternTests: XCTestCase {
 	}
 
 	func testAnd() throws {
+		XCTAssert(
+			type(of: "a" • &&letter • ascii • "b") == Concat<Literal, Concat<OneOf, Literal>>.self,
+			"'•' operator isn't optimizing OneOf's properly.")
+
 		assertParseAll(Capture(&&letter • ascii), input: "1abøcæ", result: ["a", "b", "c"])
 		// find last occurence of "xuxu", even if it overlaps with itself.
 		assertParseMarkers(try Parser(Grammar { g in g.last <- &&"xuxu" • any / any • g.last }+ • any.repeat(3)),

@@ -4,7 +4,9 @@ import ArgumentParser
 import Foundation
 import Patterns
 
-func unicodeProperty(fromDataFile text: String) -> [(range: ClosedRange<UInt32>, property: Substring)] {
+typealias RangesAndProperties = [(range: ClosedRange<UInt32>, property: Substring)]
+
+func unicodeProperty(fromDataFile text: String) -> RangesAndProperties {
 	let hexNumber = Capture(name: "hexNumber", hexDigit+)
 	let hexRange = AnyPattern("\(hexNumber)..\(hexNumber)") / hexNumber
 	let rangeAndProperty: AnyPattern = "\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) "
@@ -87,8 +89,9 @@ struct Arguments: ParsableCommand {
 			enumAndDictionary = true
 		}
 
-		let properties = Dictionary(grouping: unicodeProperty(fromDataFile: unicodeData), by: \.property)
-			.mapValues { ranges -> [ClosedRange<UInt32>] in
+		let properties: [Substring: [ClosedRange<UInt32>]] =
+			Dictionary(grouping: unicodeProperty(fromDataFile: unicodeData), by: \.property)
+			.mapValues { (ranges: RangesAndProperties) -> [ClosedRange<UInt32>] in
 				ranges.map(\.range)
 					.sorted { $0.lowerBound < $1.lowerBound }
 					// compact the list of ranges by joining together adjacent ranges

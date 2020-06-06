@@ -26,7 +26,7 @@ public struct Line: Pattern {
 		public var description: String { "line.start" }
 
 		public func parse(_ input: Input, at index: Input.Index) -> Bool {
-			index == input.startIndex || input[input.index(before: index)].isNewline
+			(index == input.startIndex) || input[input.index(before: index)].isNewline
 		}
 
 		public func createInstructions(_ instructions: inout Instructions) {
