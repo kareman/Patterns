@@ -22,22 +22,27 @@ struct Group<Element> {
 }
 
 extension Group {
+	@usableFromInline
 	func union(_ other: Group) -> Group {
 		Group { self.contains($0) || other.contains($0) }
 	}
 
+	@usableFromInline
 	static func || (a: Group, b: Group) -> Group {
 		a.union(b)
 	}
 
+	@usableFromInline
 	func intersection(_ other: Group) -> Group {
 		Group { self.contains($0) && other.contains($0) }
 	}
 
+	@usableFromInline
 	func subtracting(_ other: Group) -> Group {
 		Group { self.contains($0) && !other.contains($0) }
 	}
 
+	@usableFromInline
 	func inverted() -> Group<Element> {
 		Group { !self.contains($0) }
 	}

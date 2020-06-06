@@ -33,8 +33,15 @@ public struct OneOf: Pattern, RegexConvertible {
 	@inlinable
 	public init<S: Sequence>(_ characters: S) where S.Element == Input.Element {
 		group = Group(contentsOf: characters)
-		description = "\"\(group)\""
+		description = #"OneOf("\#(group)")"#
 		_regex = "[\(NSRegularExpression.escapedPattern(for: characters.map(String.init(describing:)).joined()))]"
+	}
+
+	@inlinable
+	public init<S: Sequence>(not characters: S) where S.Element == Input.Element {
+		group = Group(contentsOf: characters).inverted()
+		description = #"OneOf(not: "\#(group)")"#
+		_regex = "[^\(NSRegularExpression.escapedPattern(for: characters.map(String.init(describing:)).joined()))]"
 	}
 
 	@inlinable

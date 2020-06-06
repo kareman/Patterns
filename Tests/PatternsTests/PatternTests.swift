@@ -19,6 +19,8 @@ class PatternTests: XCTestCase {
 	func testOneOf() {
 		let vowels = OneOf("aeiouAEIOU")
 		assertParseAll(Capture(vowels), input: "I am, you are", result: ["I", "a", "o", "u", "a", "e"])
+		let notVowels = OneOf(not: "aeiouAEIOU")
+		assertParseAll(Capture(notVowels), input: "I am, you are", result: [" ", "m", ",", " ", "y", " ", "r"])
 
 		let lowercaseASCII = OneOf(description: "lowercaseASCII") { character in
 			character.isASCII && character.isLowercase
@@ -201,7 +203,7 @@ class PatternTests: XCTestCase {
 			result: ["ab", "bc", "bcd", "efg"])
 
 		assertParseAll(
-			Capture(" " • !OneOf(" ").repeat(2) • "d"), // repeate a parser of length 0
+			Capture(" " • (!OneOf(" ")).repeat(2) • "d"), // repeate a parser of length 0
 			input: " d cd", result: [" d"])
 
 		assertParseMarkers(!any, input: "  |") // EOF
