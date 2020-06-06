@@ -100,14 +100,14 @@ public struct Skip<Repeated: Pattern>: Pattern {
 		}
 		return Array<Instruction> {
 			$0.reserveCapacity(chars.count + nonIndexMovers.count + remainingInstructions.count + 4)
-			$0 += searchInstruction
-			$0 += .split(first: 1, second: -1, atIndex: 1)
-			$0 += chars
-			$0 += .moveIndex(offset: -chars.count)
-			$0 += nonIndexMovers
-			$0 += remainingInstructions
+			$0.append(searchInstruction)
+			$0.append(.split(first: 1, second: -1, atIndex: 1))
+			$0.append(contentsOf: chars)
+			$0.append(.moveIndex(offset: -chars.count))
+			$0.append(contentsOf: nonIndexMovers)
+			$0.append(contentsOf: remainingInstructions)
 			//		if self.repeatedPattern != nil {
-			$0 += .cancelLastSplit
+			$0.append(.cancelLastSplit)
 			//		}
 		}
 	}

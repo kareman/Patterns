@@ -64,8 +64,8 @@ class PatternTests: XCTestCase {
 	}
 
 	func testOr() {
-		XCTAssert(type(of: "a" / letter / ascii / punctuation / "b") == OrPattern<OrPattern<Literal, OneOf>, Literal>.self,
-		          "'/' operator isn't optimizing OneOf's properly.")
+		// Make sure '/' operator optimizes OneOf's properly.
+		let _: OrPattern<OrPattern<Literal, OneOf>, Literal> = ("a" / letter / ascii / punctuation / "b")
 
 		let pattern = Capture("a" / "b")
 		assertParseAll(pattern, input: "bcbd", result: "b", count: 2)
