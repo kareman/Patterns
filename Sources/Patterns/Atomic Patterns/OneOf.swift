@@ -44,6 +44,14 @@ public func • <P: Pattern>(lhs: AndPattern<OneOf>, rhs: ConcatenationPattern<O
 	(lhs • rhs.left) • rhs.right
 }
 
+public func / (lhs: OneOf, rhs: OneOf) -> OneOf {
+	OneOf(description: "\(lhs) / \(rhs)", group: lhs.group.union(rhs.group))
+}
+
+public func / <P: Pattern>(lhs: OrPattern<P, OneOf>, rhs: OneOf) -> OrPattern<P, OneOf> {
+	lhs.first / (lhs.second / rhs)
+}
+
 extension OneOf {
 	public static let basePatterns: [OneOf] = [
 		any, alphanumeric, letter, lowercase, uppercase, punctuation, whitespace, newline, hexDigit, digit,
