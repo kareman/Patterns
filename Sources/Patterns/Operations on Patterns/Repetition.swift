@@ -11,7 +11,7 @@ public struct RepeatPattern<Repeated: Pattern>: Pattern {
 	public let max: Int?
 
 	init<R: RangeExpression>(repeatedPattern: Repeated, range: R) where R.Bound == Int {
-		let actualRange = range.relative(to: 0 ..< Int.max)
+		let actualRange = range.relative(to: Int.zero ..< Int.max)
 		self.repeatedPattern = repeatedPattern
 		self.min = actualRange.lowerBound
 		self.max = actualRange.upperBound == Int.max ? nil : actualRange.upperBound - 1
@@ -25,14 +25,12 @@ public struct RepeatPattern<Repeated: Pattern>: Pattern {
 		let repeatedInstructions = repeatedPattern.createInstructions()
 		for _ in 0 ..< min { instructions.append(contentsOf: repeatedInstructions) }
 		if let max = max {
-			instructions.append(contentsOf: (min ..< max).flatMap { _ in
-				// TODO: move out of loop
-				Array<Instruction> {
-					$0 += .split(first: 1, second: repeatedInstructions.count + 2)
-					$0 += repeatedInstructions
-					$0 += .cancelLastSplit
-				}
-			})
+			let optionalRepeatedInstructions = ContiguousArray<Instruction<Input>> {
+				$0 += .split(first: 1, second: repeatedInstructions.count + 2)
+				$0 += repeatedInstructions
+				$0 += .cancelLastSplit
+			}
+			instructions.append(contentsOf: repeatElement(optionalRepeatedInstructions, count: max - min).lazy.flatMap { $0 })
 		} else {
 			instructions.append {
 				$0 += .split(first: 1, second: repeatedInstructions.count + 3)

@@ -12,7 +12,7 @@ precedencegroup PatternConcatenationPrecedence {
 
 infix operator •: PatternConcatenationPrecedence
 
-public struct ConcatenationPattern<Left: Pattern, Right: Pattern>: Pattern {
+public struct Concat<Left: Pattern, Right: Pattern>: Pattern {
 	public let left: Left
 	public let right: Right
 	public var description: String { "\(left) \(right)" }
@@ -23,7 +23,7 @@ public struct ConcatenationPattern<Left: Pattern, Right: Pattern>: Pattern {
 	}
 }
 
-extension ConcatenationPattern where Left == Skip<AnyPattern> {
+extension Concat where Left == Skip<AnyPattern> {
 	// Is never called. Don't know why.
 	public func createInstructions(_ instructions: inout Instructions) {
 		let rightInstructions = right.createInstructions()
@@ -31,7 +31,7 @@ extension ConcatenationPattern where Left == Skip<AnyPattern> {
 	}
 }
 
-extension ConcatenationPattern {
+extension Concat {
 	public func createInstructions(_ instructions: inout Instructions) {
 		if let skip = left as? Skip<AnyPattern> {
 			let rightInstructions = right.createInstructions()
@@ -43,18 +43,18 @@ extension ConcatenationPattern {
 	}
 }
 
-public func • <Left, Right>(lhs: Left, rhs: Right) -> ConcatenationPattern<Left, Right> {
-	ConcatenationPattern(left: lhs, right: rhs)
+public func • <Left, Right>(lhs: Left, rhs: Right) -> Concat<Left, Right> {
+	Concat(left: lhs, right: rhs)
 }
 
-public func • <Right>(lhs: Literal, rhs: Right) -> ConcatenationPattern<Literal, Right> {
-	ConcatenationPattern(left: lhs, right: rhs)
+public func • <Right>(lhs: Literal, rhs: Right) -> Concat<Literal, Right> {
+	Concat(left: lhs, right: rhs)
 }
 
-public func • <Left>(lhs: Left, rhs: Literal) -> ConcatenationPattern<Left, Literal> {
-	ConcatenationPattern(left: lhs, right: rhs)
+public func • <Left>(lhs: Left, rhs: Literal) -> Concat<Left, Literal> {
+	Concat(left: lhs, right: rhs)
 }
 
-public func • (lhs: Literal, rhs: Literal) -> ConcatenationPattern<Literal, Literal> {
-	ConcatenationPattern(left: lhs, right: rhs)
+public func • (lhs: Literal, rhs: Literal) -> Concat<Literal, Literal> {
+	Concat(left: lhs, right: rhs)
 }

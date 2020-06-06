@@ -183,7 +183,7 @@ class PatternTests: XCTestCase {
 
 	func testNot() throws {
 		XCTAssert(
-			type(of: "a" • !letter • ascii • "b") == ConcatenationPattern<Literal, ConcatenationPattern<OneOf, Literal>>.self,
+			type(of: "a" • !letter • ascii • "b") == Concat<Literal, Concat<OneOf, Literal>>.self,
 			"'•' operator isn't optimizing OneOf's properly.")
 
 		assertParseMarkers(alphanumeric.not, input: #"I| said|,| 3|"#)
@@ -201,7 +201,7 @@ class PatternTests: XCTestCase {
 			result: ["ab", "bc", "bcd", "efg"])
 
 		assertParseAll(
-			Capture(" " • (!OneOf(" ")).repeat(2) • "d"), // test repeating a parser of length 0
+			Capture(" " • !OneOf(" ").repeat(2) • "d"), // repeate a parser of length 0
 			input: " d cd", result: [" d"])
 
 		assertParseMarkers(!any, input: "  |") // EOF
@@ -210,7 +210,7 @@ class PatternTests: XCTestCase {
 
 	func testAnd() throws {
 		XCTAssert(
-			type(of: "a" • &&letter • ascii • "b") == ConcatenationPattern<Literal, ConcatenationPattern<OneOf, Literal>>.self,
+			type(of: "a" • &&letter • ascii • "b") == Concat<Literal, Concat<OneOf, Literal>>.self,
 			"'•' operator isn't optimizing OneOf's properly.")
 
 		assertParseAll(Capture(&&letter • ascii), input: "1abøcæ", result: ["a", "b", "c"])

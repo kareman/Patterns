@@ -42,7 +42,7 @@ public func • (lhs: AndPattern<OneOf>, rhs: OneOf) -> OneOf {
 	OneOf(description: "\(lhs) \(rhs)", group: lhs.wrapped.group.intersection(rhs.group))
 }
 
-public func • <P: Pattern>(lhs: AndPattern<OneOf>, rhs: ConcatenationPattern<OneOf, P>) -> ConcatenationPattern<OneOf, P> {
+public func • <P: Pattern>(lhs: AndPattern<OneOf>, rhs: Concat<OneOf, P>) -> Concat<OneOf, P> {
 	(lhs • rhs.left) • rhs.right
 }
 
@@ -52,7 +52,7 @@ public func • (lhs: NotPattern<OneOf>, rhs: OneOf) -> OneOf {
 	OneOf(description: "\(lhs) \(rhs)", group: rhs.group.subtracting(lhs.wrapped.group))
 }
 
-public func • <P: Pattern>(lhs: NotPattern<OneOf>, rhs: ConcatenationPattern<OneOf, P>) -> ConcatenationPattern<OneOf, P> {
+public func • <P: Pattern>(lhs: NotPattern<OneOf>, rhs: Concat<OneOf, P>) -> Concat<OneOf, P> {
 	(lhs • rhs.left) • rhs.right
 }
 

@@ -46,7 +46,7 @@ extension Capture: RegexConvertible where Wrapped: RegexConvertible {
 	}
 }
 
-extension ConcatenationPattern: RegexConvertible where Left: RegexConvertible, Right: RegexConvertible {
+extension Concat: RegexConvertible where Left: RegexConvertible, Right: RegexConvertible {
 	public var regex: String { left.regex + right.regex }
 }
 

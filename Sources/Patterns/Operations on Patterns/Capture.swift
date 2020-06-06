@@ -12,9 +12,9 @@ public struct Capture<Wrapped: Pattern>: Pattern {
 		case (nil, nil):
 			result = ""
 		case let (name?, wrapped?):
-			result = "name: " + name + ", " + wrapped.description
+			result = "name: \(name), \(wrapped)"
 		case let (name?, nil):
-			result = "name: " + name
+			result = "name: \(name)"
 		case let (nil, wrapped?):
 			result = wrapped.description
 		}

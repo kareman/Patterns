@@ -40,10 +40,9 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Equ
 	case fail
 	case match
 
-	// TODO: make its own instruction
-	static var any: Instruction { Self.checkCharacter { _ in true } }
-	static func search(_ f: @escaping (Input, Input.Index) -> Input.Index?) -> Instruction {
-		.function { (input, thread) -> Bool in
+	static var any: Self { Self.checkCharacter { _ in true } } // TODO: make its own instruction
+	static func search(_ f: @escaping (Input, Input.Index) -> Input.Index?) -> Self {
+		Self.function { (input: Input, thread: inout VMBacktrackEngine<Input>.Thread) -> Bool in
 			guard let index = f(input, thread.inputIndex) else { return false }
 			thread.inputIndex = index
 			thread.instructionIndex += 1
