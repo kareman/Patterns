@@ -108,6 +108,20 @@ extension Sequence {
 	}
 }
 
+extension Sequence {
+	@inlinable
+	func reduceIfNoNils<Result, T>(
+		into initialResult: Result,
+		_ updateAccumulatingResult: (_ partialResult: inout Result, T) throws -> Void) rethrows -> Result? where Element == Optional<T> {
+		var accumulator = initialResult
+		for element in self {
+			guard let element = element else { return nil }
+			try updateAccumulatingResult(&accumulator, element)
+		}
+		return accumulator
+	}
+}
+
 extension Range: Comparable {
 	public static func < (l: Range<Bound>, r: Range<Bound>) -> Bool {
 		(l.lowerBound == r.lowerBound) ? (l.upperBound < r.upperBound) : (l.lowerBound < r.lowerBound)

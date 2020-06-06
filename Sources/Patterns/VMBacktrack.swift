@@ -94,6 +94,19 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Equ
 	static func split(first: Int, second: Int) -> Instruction {
 		.split(first: first, second: second, atIndex: 0)
 	}
+
+	var movesIndex: Int? {
+		switch self {
+		case .checkIndex, .captureStart, .captureEnd, .cancelLastSplit, .match:
+			return 0
+		case .literal, .checkCharacter:
+			return 1
+		case let .moveIndex(offset):
+			return offset
+		case .function, .split, .jump, .openCall, .call, .return, .fail:
+			return nil
+		}
+	}
 }
 
 extension VMBacktrackEngine {
