@@ -8,29 +8,36 @@
 import Foundation
 
 public struct OneOf: Pattern, RegexConvertible {
+	@usableFromInline
 	let group: Group<Input.Element>
 	public let description: String
-	private let _regex: String?
+
+	@usableFromInline
+	let _regex: String?
 	public var regex: String {
 		_regex ?? fatalError("Regex not provided for '\(description)'")
 	}
 
-	public init(description: String, regex: String? = nil, group: Group<Input.Element>) {
+	@usableFromInline
+	init(description: String, regex: String? = nil, group: Group<Input.Element>) {
 		self.group = group
 		self.description = description
 		self._regex = regex
 	}
 
+	@inlinable
 	public init(description: String, regex: String? = nil, contains: @escaping (Input.Element) -> Bool) {
 		self.init(description: description, regex: regex, group: Group(contains: contains))
 	}
 
+	@inlinable
 	public init<S: Sequence>(_ characters: S) where S.Element == Input.Element {
 		group = Group(contentsOf: characters)
 		description = "\"\(group)\""
 		_regex = "[\(NSRegularExpression.escapedPattern(for: characters.map(String.init(describing:)).joined()))]"
 	}
 
+	@inlinable
 	public func createInstructions(_ instructions: inout Instructions) {
 		instructions.append(.checkCharacter(group.contains))
 	}
