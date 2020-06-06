@@ -6,21 +6,23 @@
 //
 
 // TODO: struct?
-class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Equatable {
-	let instructionsFrom: Array<Instruction<Input>>.SubSequence
+public class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Equatable {
+	public typealias Instructions = ContiguousArray<Instruction<Input>>
+	let instructionsFrom: Instructions
 
+	@usableFromInline
 	required init<P: Pattern>(_ pattern: P) throws where Input == P.Input {
-		instructionsFrom = (pattern.createInstructions() + [Instruction<Input>.match])[...]
+		instructionsFrom = (pattern.createInstructions() + [Instruction<Input>.match])
 	}
 
 	@usableFromInline
 	func match(in input: Input, from startIndex: Input.Index) -> Parser<Input>.Match? {
-		return VMBacktrackEngine<Input>.backtrackingVM(instructionsFrom, input: input, startIndex: startIndex)
+		VMBacktrackEngine<Input>.backtrackingVM(instructionsFrom, input: input, startIndex: startIndex)
 	}
 }
 
 extension Parser.Match {
-	init(_ thread: Thread<Input>, instructions: Array<Instruction<Input>>.SubSequence) {
+	init(_ thread: VMBacktrackEngine<Input>.Thread, instructions: ContiguousArray<Instruction<Input>>) {
 		var captures = [(name: String?, range: Range<Input.Index>)]()
 		captures.reserveCapacity(thread.captures.count / 2)
 		var captureBeginnings = [(name: String?, start: Input.Index)]()
@@ -42,71 +44,37 @@ extension Parser.Match {
 	}
 }
 
-// TODO: private
-public struct Thread<Input: BidirectionalCollection> where Input.Element: Equatable {
-	var instructionIndex: Array<Instruction<Input>>.SubSequence.Index
-	var inputIndex: Input.Index
-	var captures: ContiguousArray<(index: Input.Index, instruction: Array<Instruction<Input>>.Index)>
-	var isReturnAddress: Bool = false
+extension VMBacktrackEngine {
+	// TODO: private
+	public struct Thread {
+		var instructionIndex: Instructions.Index
+		var inputIndex: Input.Index
+		var captures: ContiguousArray<(index: Input.Index, instruction: Array<Instruction<Input>>.Index)>
+		var isReturnAddress: Bool = false
 
-	init(startAt instructionIndex: Int, withDataFrom other: Thread) {
-		self.instructionIndex = instructionIndex
-		self.inputIndex = other.inputIndex
-		self.captures = other.captures
-	}
+		init(startAt instructionIndex: Int, withDataFrom other: Thread) {
+			self.instructionIndex = instructionIndex
+			self.inputIndex = other.inputIndex
+			self.captures = other.captures
+		}
 
-	init(instructionIndex: Array<Instruction<Input>>.SubSequence.Index, inputIndex: Input.Index) {
-		self.instructionIndex = instructionIndex
-		self.inputIndex = inputIndex
-		self.captures = []
-	}
-}
-
-public enum Instruction<Input: BidirectionalCollection> where Input.Element: Equatable {
-	public typealias Distance = Int
-	case literal(Input.Element)
-	case checkCharacter((Input.Element) -> Bool)
-	case checkIndex((Input, Input.Index) -> Bool)
-	case moveIndex(offset: Distance)
-	case function((Input, inout Thread<Input>) -> Bool) // TODO: remove
-	case captureStart(name: String?)
-	case captureEnd
-	case jump(offset: Distance)
-	case split(first: Distance, second: Distance, atIndex: Int)
-	case cancelLastSplit
-	case openCall(name: String) // will be replaced by .call in preprocessing.
-	case call(offset: Int)
-	case `return`
-	case fail
-	case match
-
-	// TODO: make its own instruction
-	static var any: Instruction { Self.checkCharacter { _ in true } }
-	static func search(_ f: @escaping (Input, Input.Index) -> Input.Index?) -> Instruction {
-		.function { (input, thread) -> Bool in
-			guard let index = f(input, thread.inputIndex) else { return false }
-			thread.inputIndex = index
-			thread.instructionIndex += 1
-			return true
+		init(instructionIndex: Instructions.Index, inputIndex: Input.Index) {
+			self.instructionIndex = instructionIndex
+			self.inputIndex = inputIndex
+			self.captures = []
 		}
 	}
 
-	static func split(first: Int, second: Int) -> Instruction {
-		.split(first: first, second: second, atIndex: 0)
-	}
-}
-
-extension VMBacktrackEngine {
 	@usableFromInline
-	static func backtrackingVM(_ instructions: Array<Instruction<Input>>.SubSequence, input: Input, startIndex: Input.Index? = nil) -> Parser<Input>.Match? {
-		let thread = Thread<Input>(instructionIndex: instructions.startIndex, inputIndex: startIndex ?? input.startIndex)
+	static func backtrackingVM(_ instructions: Instructions, input: Input, startIndex: Input.Index? = nil) -> Parser<Input>.Match? {
+		let thread = Thread(instructionIndex: instructions.startIndex, inputIndex: startIndex ?? input.startIndex)
 		return backtrackingVM(instructions, input: input, thread: thread)
 			.map { Parser.Match($0, instructions: instructions) }
 	}
 
 	@usableFromInline
-	static func backtrackingVM(_ instructions: Array<Instruction<Input>>.SubSequence, input: Input, thread: Thread<Input>) -> Thread<Input>? {
-		var stack = ContiguousArray<Thread<Input>>()[...]
+	static func backtrackingVM(_ instructions: Instructions, input: Input, thread: Thread) -> Thread? {
+		var stack = ContiguousArray<Thread>()[...]
 
 		stack.append(thread)
 		while var thread = stack.popLast() {

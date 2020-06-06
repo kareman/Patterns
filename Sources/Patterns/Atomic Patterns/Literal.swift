@@ -11,7 +11,7 @@ public struct Literal: Pattern {
 	public let substring: Input
 
 	public var description: String {
-		return #""\#(String(substring).replacingOccurrences(of: "\n", with: "\\n"))""#
+		#""\#(String(substring).replacingOccurrences(of: "\n", with: "\\n"))""#
 	}
 
 	public init<S: Sequence>(_ sequence: S) where S.Element == Pattern.Input.Element {

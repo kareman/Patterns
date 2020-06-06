@@ -25,7 +25,7 @@ extension Parser.Match where Input == String {
 		let string: String
 
 		public let codingPath: [CodingKey]
-		public var userInfo: [CodingUserInfoKey: Any] { return [:] }
+		public var userInfo: [CodingUserInfoKey: Any] { [:] }
 
 		init(match: Parser.Match, string: String, codingPath: [CodingKey] = []) {
 			let namePrefix = codingPath.first.map(\.stringValue)
@@ -45,7 +45,7 @@ extension Parser.Match where Input == String {
 		}
 
 		public func unkeyedContainer() throws -> UnkeyedDecodingContainer {
-			return UDC(codingPath: codingPath, values: match.captures.map(\.range), string: string)
+			UDC(codingPath: codingPath, values: match.captures.map(\.range), string: string)
 		}
 
 		public func singleValueContainer() throws -> SingleValueDecodingContainer {
@@ -110,11 +110,11 @@ extension Parser.Match where Input == String {
 			}
 
 			func contains(_ key: Key) -> Bool {
-				return matchDecoder.match[one: key.stringValue] == nil
+				matchDecoder.match[one: key.stringValue] == nil
 			}
 
 			func decodeNil(forKey key: Key) throws -> Bool {
-				return contains(key)
+				contains(key)
 			}
 
 			func decode<T>(_ type: T.Type, forKey key: Key) throws -> T where T: Decodable {

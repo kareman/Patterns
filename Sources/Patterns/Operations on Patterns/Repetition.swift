@@ -50,7 +50,7 @@ extension Pattern {
 	}
 
 	public func `repeat`(_ count: Int) -> RepeatPattern<Self> {
-		return RepeatPattern(repeatedPattern: self, range: count ... count)
+		RepeatPattern(repeatedPattern: self, range: count ... count)
 	}
 }
 

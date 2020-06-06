@@ -63,7 +63,7 @@ class PatternTests: XCTestCase {
 		XCTAssertEqual(digit+.description, "digit{1...}")
 	}
 
-	func testOrPattern() {
+	func testOr() {
 		let pattern = Capture("a" / "b")
 		assertParseAll(pattern, input: "bcbd", result: "b", count: 2)
 		assertParseAll(pattern, input: "acdaa", result: "a", count: 3)
@@ -178,7 +178,7 @@ class PatternTests: XCTestCase {
 		assertParseMarkers(pattern, input: "|this| |I| |-|3,875.08| |can't|,| |you| |letter|-|like|.| |And|?| |then|")
 	}
 
-	func testNotParser() throws {
+	func testNot() throws {
 		assertParseMarkers(alphanumeric.not, input: #"I| said|,| 3|"#)
 		assertParseAll(
 			Capture(Word.boundary • !digit • alphanumeric+),
@@ -188,9 +188,23 @@ class PatternTests: XCTestCase {
 			Word.boundary • Capture(!digit • alphanumeric+),
 			input: "123 abc 1ab a32b",
 			result: ["abc", "a32b"])
+		assertParseAll(
+			Capture(!"abc" • letter+),
+			input: "ab abc abcd efg",
+			result: ["ab", "bc", "bcd", "efg"])
 
 		assertParseAll(
 			Capture(" " • (!OneOf(" ")).repeat(2) • "d"), // test repeating a parser of length 0
 			input: " d cd", result: [" d"])
+
+		assertParseMarkers(!any, input: "  |") // EOF
+		assertParseMarkers(try Parser(!any), input: "|")
+	}
+
+	func testAnd() throws {
+		assertParseAll(Capture(&&letter • ascii), input: "1abøcæ", result: ["a", "b", "c"])
+		// find last occurence of "xuxu", even if it overlaps with itself.
+		assertParseMarkers(try Parser(Grammar { g in g.last <- &&"xuxu" • any / any • g.last }+ • any.repeat(3)),
+		                   input: "xuxuxuxu|i")
 	}
 }

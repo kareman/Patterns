@@ -18,7 +18,7 @@ public struct OrPattern<First: Pattern, Second: Pattern>: Pattern {
 	}
 
 	public var description: String {
-		return "(\(first) / \(second))"
+		"(\(first) / \(second))"
 	}
 
 	public func createInstructions(_ instructions: inout Instructions) {
@@ -32,17 +32,17 @@ public struct OrPattern<First: Pattern, Second: Pattern>: Pattern {
 }
 
 public func / <First: Pattern, Second: Pattern>(p1: First, p2: Second) -> OrPattern<First, Second> {
-	return OrPattern(p1, or: p2)
+	OrPattern(p1, or: p2)
 }
 
 public func / <Second: Pattern>(p1: Literal, p2: Second) -> OrPattern<Literal, Second> {
-	return OrPattern(p1, or: p2)
+	OrPattern(p1, or: p2)
 }
 
 public func / <First: Pattern>(p1: First, p2: Literal) -> OrPattern<First, Literal> {
-	return OrPattern(p1, or: p2)
+	OrPattern(p1, or: p2)
 }
 
 public func / (p1: Literal, p2: Literal) -> OrPattern<Literal, Literal> {
-	return OrPattern(p1, or: p2)
+	OrPattern(p1, or: p2)
 }

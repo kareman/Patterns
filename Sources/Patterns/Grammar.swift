@@ -31,6 +31,11 @@ public class Grammar: Pattern {
 
 	public init() {}
 
+	public convenience init(_ closure: (Grammar) -> Void) {
+		self.init()
+		closure(self)
+	}
+
 	public subscript(dynamicMember name: String) -> CallPattern {
 		CallPattern(grammar: self, name: name)
 	}
