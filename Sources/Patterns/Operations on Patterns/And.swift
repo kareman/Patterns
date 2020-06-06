@@ -15,11 +15,10 @@ public struct AndPattern<Wrapped: Pattern>: Pattern {
 
 	public func createInstructions(_ instructions: inout Instructions) {
 		let wrappedInstructions = wrapped.createInstructions()
-		if let movesIndices = wrappedInstructions.lazy.map({ $0.movesIndex })
-			.reduceIfNoNils(into: 0, { result, offset in result += offset }) {
+		if let indexMovedBy = wrappedInstructions.movesIndexBy {
 			instructions.append {
 				$0 += wrappedInstructions
-				$0 += .moveIndex(offset: -movesIndices)
+				$0 += .moveIndex(offset: -indexMovedBy)
 			}
 		} else {
 			instructions.append {

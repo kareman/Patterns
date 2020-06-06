@@ -82,17 +82,17 @@ public struct Skip<Repeated: Pattern>: Pattern {
 		}
 
 		if let repeatedPattern = self.repeatedPattern {
-			let skipInstructions = (repeatedPattern.repeat(0...).createInstructions() + [.match])[...]
+			let skipInstructions = (repeatedPattern.repeat(0...).createInstructions() + [.match])
 			searchInstruction = .function { (input, thread) -> Bool in
 				guard let end = search(input, thread.inputIndex) else { return false }
 				guard
 					let newThread = VMBacktrackEngine<Input>.backtrackingVM(
 						skipInstructions,
 						input: String(input.prefix(upTo: end)),
-						thread: Thread(startAt: skipInstructions.startIndex, withDataFrom: thread)),
+						thread: VMBacktrackEngine<Input>.Thread(startAt: skipInstructions.startIndex, withDataFrom: thread)),
 					newThread.inputIndex == end else { return false }
 
-				thread = Thread(startAt: thread.instructionIndex + 1, withDataFrom: newThread)
+				thread = VMBacktrackEngine<Input>.Thread(startAt: thread.instructionIndex + 1, withDataFrom: newThread)
 				return true
 			}
 		} else {

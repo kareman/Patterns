@@ -106,9 +106,7 @@ extension Sequence {
 	public func array() -> [Element] {
 		Array(self)
 	}
-}
 
-extension Sequence {
 	@inlinable
 	func reduceIfNoNils<Result, T>(
 		into initialResult: Result,
