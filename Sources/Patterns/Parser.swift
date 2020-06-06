@@ -20,12 +20,15 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Equata
 		}
 	}
 
+	@usableFromInline
 	let matcher: VMBacktrackEngine<Input>
 
+	@inlinable
 	public init<P: Pattern>(_ pattern: P) throws where P.Input == Input {
 		self.matcher = try VMBacktrackEngine(pattern)
 	}
 
+	@inlinable
 	public init<P: Pattern>(search pattern: P) throws where P.Input == Input {
 		try self.init(Skip() • pattern)
 	}

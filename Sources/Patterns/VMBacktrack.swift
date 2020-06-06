@@ -10,6 +10,7 @@ public class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Eleme
 	public typealias Instructions = ContiguousArray<Instruction<Input>>
 	let instructionsFrom: Instructions
 
+	@usableFromInline
 	required init<P: Pattern>(_ pattern: P) throws where Input == P.Input {
 		instructionsFrom = (pattern.createInstructions() + [Instruction<Input>.match])
 	}
