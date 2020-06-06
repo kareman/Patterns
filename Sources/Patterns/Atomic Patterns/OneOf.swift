@@ -36,13 +36,27 @@ public struct OneOf: Pattern, RegexConvertible {
 	}
 }
 
+// MARK: Join `&&OneOf • OneOf` into one.
+
 public func • (lhs: AndPattern<OneOf>, rhs: OneOf) -> OneOf {
-	OneOf(description: "&\(lhs) \(rhs)", group: lhs.wrapped.group.intersection(rhs.group))
+	OneOf(description: "\(lhs) \(rhs)", group: lhs.wrapped.group.intersection(rhs.group))
 }
 
 public func • <P: Pattern>(lhs: AndPattern<OneOf>, rhs: ConcatenationPattern<OneOf, P>) -> ConcatenationPattern<OneOf, P> {
 	(lhs • rhs.left) • rhs.right
 }
+
+// MARK: Join `!OneOf • Oneof` into one.
+
+public func • (lhs: NotPattern<OneOf>, rhs: OneOf) -> OneOf {
+	OneOf(description: "\(lhs) \(rhs)", group: rhs.group.subtracting(lhs.wrapped.group))
+}
+
+public func • <P: Pattern>(lhs: NotPattern<OneOf>, rhs: ConcatenationPattern<OneOf, P>) -> ConcatenationPattern<OneOf, P> {
+	(lhs • rhs.left) • rhs.right
+}
+
+// MARK: Join `OneOf / OneOf` into one.
 
 public func / (lhs: OneOf, rhs: OneOf) -> OneOf {
 	OneOf(description: "\(lhs) / \(rhs)", group: lhs.group.union(rhs.group))
@@ -52,20 +66,7 @@ public func / <P: Pattern>(lhs: OrPattern<P, OneOf>, rhs: OneOf) -> OrPattern<P,
 	lhs.first / (lhs.second / rhs)
 }
 
-extension OneOf {
-	public static let basePatterns: [OneOf] = [
-		any, alphanumeric, letter, lowercase, uppercase, punctuation, whitespace, newline, hexDigit, digit,
-		ascii, symbol, mathSymbol, currencySymbol,
-	]
-
-	public static func patterns(for c: Input.Element) -> [Pattern] {
-		OneOf.basePatterns.filter { $0.group.contains(c) }
-	}
-
-	public static func patterns<S: Sequence>(for s: S) -> [Pattern] where S.Element == Input.Element {
-		OneOf.basePatterns.filter { $0.group.contains(contentsOf: s) }
-	}
-}
+// MARK: Common patterns.
 
 public let any = OneOf(description: "any", regex: #"[.\p{Zl}]"#,
                        contains: { _ in true })
@@ -95,3 +96,18 @@ public let mathSymbol = OneOf(description: "mathSymbol", regex: #"\p{Sm}"#,
                               contains: \Character.isMathSymbol)
 public let currencySymbol = OneOf(description: "currencySymbol", regex: #"\p{Sc}"#,
                                   contains: \Character.isCurrencySymbol)
+
+extension OneOf {
+	public static let basePatterns: [OneOf] = [
+		any, alphanumeric, letter, lowercase, uppercase, punctuation, whitespace, newline, hexDigit, digit,
+		ascii, symbol, mathSymbol, currencySymbol,
+	]
+
+	public static func patterns(for c: Input.Element) -> [Pattern] {
+		OneOf.basePatterns.filter { $0.group.contains(c) }
+	}
+
+	public static func patterns<S: Sequence>(for s: S) -> [Pattern] where S.Element == Input.Element {
+		OneOf.basePatterns.filter { $0.group.contains(contentsOf: s) }
+	}
+}

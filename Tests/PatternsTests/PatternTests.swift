@@ -182,6 +182,10 @@ class PatternTests: XCTestCase {
 	}
 
 	func testNot() throws {
+		XCTAssert(
+			type(of: "a" • !letter • ascii • "b") == ConcatenationPattern<Literal, ConcatenationPattern<OneOf, Literal>>.self,
+			"'•' operator isn't optimizing OneOf's properly.")
+
 		assertParseMarkers(alphanumeric.not, input: #"I| said|,| 3|"#)
 		assertParseAll(
 			Capture(Word.boundary • !digit • alphanumeric+),
