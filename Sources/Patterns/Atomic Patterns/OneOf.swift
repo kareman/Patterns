@@ -47,14 +47,6 @@ public struct OneOf: Pattern, RegexConvertible {
 	public func createInstructions(_ instructions: inout Instructions) {
 		instructions.append(.checkCharacter(group.contains))
 	}
-
-	public static func + (lhs: OneOf, rhs: OneOf) -> OneOf {
-		OneOf(description: "\(lhs) + \(rhs)", group: lhs.group.union(rhs.group))
-	}
-
-	public static func - (lhs: OneOf, rhs: OneOf) -> OneOf {
-		OneOf(description: "\(lhs) - \(rhs)", group: lhs.group.subtracting(rhs.group))
-	}
 }
 
 public let any = OneOf(description: "any", regex: #"[.\p{Zl}]"#,

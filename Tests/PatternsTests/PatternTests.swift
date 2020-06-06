@@ -57,7 +57,7 @@ class PatternTests: XCTestCase {
 			Capture((!newline • ascii)+),
 			input: "123\n4567\n89", result: ["123", "4567", "89"])
 		assertParseAll(
-			Capture((ascii - newline)+),
+			Capture((!newline • ascii)+),
 			input: "123\n4567\n89", result: ["123", "4567", "89"])
 
 		XCTAssertEqual(digit+.description, "digit{1...}")
