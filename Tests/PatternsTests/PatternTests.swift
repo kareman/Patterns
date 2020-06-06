@@ -202,6 +202,10 @@ class PatternTests: XCTestCase {
 	}
 
 	func testAnd() throws {
+		XCTAssert(
+			type(of: "a" • &&letter • ascii • "b") == ConcatenationPattern<Literal, ConcatenationPattern<OneOf, Literal>>.self,
+			"• operator isn't optimizing OneOf's properly.")
+
 		assertParseAll(Capture(&&letter • ascii), input: "1abøcæ", result: ["a", "b", "c"])
 		// find last occurence of "xuxu", even if it overlaps with itself.
 		assertParseMarkers(try Parser(Grammar { g in g.last <- &&"xuxu" • any / any • g.last }+ • any.repeat(3)),

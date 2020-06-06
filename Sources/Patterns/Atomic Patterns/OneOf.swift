@@ -31,6 +31,20 @@ public struct OneOf: Pattern, RegexConvertible {
 		_regex = "[\(NSRegularExpression.escapedPattern(for: characters.map(String.init(describing:)).joined()))]"
 	}
 
+	public func createInstructions(_ instructions: inout Instructions) {
+		instructions.append(.checkCharacter(group.contains))
+	}
+}
+
+public func • (lhs: AndPattern<OneOf>, rhs: OneOf) -> OneOf {
+	OneOf(description: "&\(lhs) \(rhs)", group: lhs.wrapped.group.intersection(rhs.group))
+}
+
+public func • <P: Pattern>(lhs: AndPattern<OneOf>, rhs: ConcatenationPattern<OneOf, P>) -> ConcatenationPattern<OneOf, P> {
+	(lhs • rhs.left) • rhs.right
+}
+
+extension OneOf {
 	public static let basePatterns: [OneOf] = [
 		any, alphanumeric, letter, lowercase, uppercase, punctuation, whitespace, newline, hexDigit, digit,
 		ascii, symbol, mathSymbol, currencySymbol,
@@ -42,10 +56,6 @@ public struct OneOf: Pattern, RegexConvertible {
 
 	public static func patterns<S: Sequence>(for s: S) -> [Pattern] where S.Element == Input.Element {
 		OneOf.basePatterns.filter { $0.group.contains(contentsOf: s) }
-	}
-
-	public func createInstructions(_ instructions: inout Instructions) {
-		instructions.append(.checkCharacter(group.contains))
 	}
 }
 
