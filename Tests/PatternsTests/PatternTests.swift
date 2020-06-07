@@ -66,9 +66,6 @@ class PatternTests: XCTestCase {
 	}
 
 	func testOr() {
-		// Make sure '/' operator optimizes OneOf's properly.
-		let _: OrPattern<OrPattern<Literal, OneOf>, Literal> = ("a" / letter / ascii / punctuation / "b")
-
 		let pattern = Capture("a" / "b")
 		assertParseAll(pattern, input: "bcbd", result: "b", count: 2)
 		assertParseAll(pattern, input: "acdaa", result: "a", count: 3)
@@ -184,10 +181,6 @@ class PatternTests: XCTestCase {
 	}
 
 	func testNot() throws {
-		XCTAssert(
-			type(of: "a" • !letter • ascii • "b") == Concat<Literal, Concat<OneOf, Literal>>.self,
-			"'•' operator isn't optimizing OneOf's properly.")
-
 		assertParseMarkers(alphanumeric.not, input: #"I| said|,| 3|"#)
 		assertParseAll(
 			Capture(Word.boundary • !digit • alphanumeric+),
@@ -211,10 +204,6 @@ class PatternTests: XCTestCase {
 	}
 
 	func testAnd() throws {
-		XCTAssert(
-			type(of: "a" • &&letter • ascii • "b") == Concat<Literal, Concat<OneOf, Literal>>.self,
-			"'•' operator isn't optimizing OneOf's properly.")
-
 		assertParseAll(Capture(&&letter • ascii), input: "1abøcæ", result: ["a", "b", "c"])
 		// find last occurence of "xuxu", even if it overlaps with itself.
 		assertParseMarkers(try Parser(Grammar { g in g.last <- &&"xuxu" • any / any • g.last }+ • any.repeat(3)),
