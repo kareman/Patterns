@@ -24,15 +24,17 @@ class GrammarTests: XCTestCase {
 		XCTAssertEqual(grammar1.firstPattern, "letter")
 	}
 
-	func testDirectRecursion() throws {
-		let g1 = Grammar()
-		g1.a <- "a" / any • g1.a
-		let g1Parser = try Parser(g1)
+	func testDirectRecursion1() throws {
+		let g = Grammar()
+		g.a <- "a" / any • g.a
+		let g1Parser = try Parser(g)
 		assertParseAll(g1Parser, input: " aba", count: 2)
+	}
 
-		let g2 = Grammar()
-		g2.balancedParentheses <- "(" • (!OneOf("()") • any / g2.balancedParentheses)* • ")"
-		let g2Parser = try Parser(g2)
+	func testDirectRecursion2() throws {
+		let g = Grammar()
+		g.balancedParentheses <- "(" • (!OneOf("()") • any / g.balancedParentheses)* • ")"
+		let g2Parser = try Parser(g)
 		assertParseAll(g2Parser, input: "( )", count: 1)
 		assertParseAll(g2Parser, input: "((( )( )))", count: 1)
 		assertParseAll(g2Parser, input: "(( )", count: 0)

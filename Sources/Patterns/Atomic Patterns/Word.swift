@@ -9,7 +9,6 @@ public struct Word {
 	public static let boundary = Boundary()
 
 	public struct Boundary: Pattern {
-		public let length: Int? = 0
 		public let description: String = "Word.boundary"
 
 		//TODO: return bool
