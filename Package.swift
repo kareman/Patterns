@@ -40,4 +40,5 @@ let package = Package(
 		.target(
 			name: "unicode_properties",
 			dependencies: ["Patterns", "ArgumentParser"]),
-	])
+	],
+	swiftLanguageVersions: [.v5])
