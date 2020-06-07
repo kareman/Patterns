@@ -35,7 +35,7 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Equata
 
 	public func ranges(in input: Input, from startindex: Input.Index? = nil)
 		-> AnySequence<Range<Input.Index>> {
-		AnySequence(matches(in: input, from: startindex).lazy.map(\.range))
+		AnySequence(matches(in: input, from: startindex).lazy.map { $0.range })
 	}
 
 	public struct Match: Equatable {
@@ -74,10 +74,10 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Equata
 
 		@inlinable
 		public subscript(multiple name: String) -> [Range<Input.Index>] {
-			captures.filter { $0.name == name }.map(\.range)
+			captures.filter { $0.name == name }.map { $0.range }
 		}
 
-		public var names: Set<String> { Set(captures.compactMap(\.name)) }
+		public var names: Set<String> { Set(captures.compactMap { $0.name }) }
 	}
 
 	@usableFromInline

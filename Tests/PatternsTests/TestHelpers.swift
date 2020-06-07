@@ -76,9 +76,9 @@ extension XCTestCase {
 	                        file: StaticString = #file, line: UInt = #line) {
 		let (string, correct) = processMarkers(input)
 		let parsedRanges = pattern.ranges(in: string).array()
-		XCTAssert(parsedRanges.allSatisfy(\.isEmpty), "Not all results are empty ranges",
+		XCTAssert(parsedRanges.allSatisfy { $0.isEmpty }, "Not all results are empty ranges",
 		          file: file, line: line)
-		let parsed = parsedRanges.map(\.lowerBound)
+		let parsed = parsedRanges.map { $0.lowerBound }
 		let notParsed = Set(correct).subtracting(parsed).sorted()
 		if !notParsed.isEmpty {
 			XCTFail("\nThese positions were not parsed:\n" + string.underlineIndices(notParsed),

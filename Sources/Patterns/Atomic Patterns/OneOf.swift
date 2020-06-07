@@ -87,29 +87,29 @@ public let any = OneOf(description: "any", regex: #"[.\p{Zl}]"#,
 public let alphanumeric = OneOf(description: "alphanumeric", regex: #"(?:\p{Alphabetic}|\p{Nd})"#,
                                 contains: { $0.isWholeNumber || $0.isLetter })
 public let digit = OneOf(description: "digit", regex: #"\p{Nd}"#,
-                         contains: \Character.isWholeNumber)
+                         contains: { $0.isWholeNumber })
 public let letter = OneOf(description: "letter", regex: #"\p{Alphabetic}"#,
-                          contains: \Character.isLetter)
+                          contains: { $0.isLetter })
 public let lowercase = OneOf(description: "lowercase", regex: #"\p{Ll}"#,
-                             contains: \Character.isLowercase)
+                             contains: { $0.isLowercase })
 public let newline = OneOf(description: "newline", regex: #"\p{Zl}"#,
-                           contains: \Character.isNewline)
+                           contains: { $0.isNewline })
 public let punctuation = OneOf(description: "punctuation", regex: #"\p{P}"#,
-                               contains: \Character.isPunctuation)
+                               contains: { $0.isPunctuation })
 public let symbol = OneOf(description: "symbol", regex: #"\p{S}"#,
-                          contains: \Character.isSymbol)
+                          contains: { $0.isSymbol })
 public let uppercase = OneOf(description: "uppercase", regex: #"\p{Lu}"#,
-                             contains: \Character.isUppercase)
+                             contains: { $0.isUppercase })
 public let whitespace = OneOf(description: "whitespace", regex: #"\p{White_Space}"#,
-                              contains: \Character.isWhitespace)
+                              contains: { $0.isWhitespace })
 public let hexDigit = OneOf(description: "hexDigit", regex: #"\p{Hex_Digit}"#,
-                            contains: \Character.isHexDigit)
+                            contains: { $0.isHexDigit })
 public let ascii = OneOf(description: "ascii", regex: #"[[:ascii:]]"#,
-                         contains: \Character.isASCII) // regex might also be [ -~] or [\x00-\x7F]
+                         contains: { $0.isASCII }) // regex might also be [ -~] or [\x00-\x7F]
 public let mathSymbol = OneOf(description: "mathSymbol", regex: #"\p{Sm}"#,
-                              contains: \Character.isMathSymbol)
+                              contains: { $0.isMathSymbol })
 public let currencySymbol = OneOf(description: "currencySymbol", regex: #"\p{Sc}"#,
-                                  contains: \Character.isCurrencySymbol)
+                                  contains: { $0.isCurrencySymbol })
 
 extension OneOf {
 	public static let basePatterns: [OneOf] = [

@@ -28,7 +28,7 @@ extension Parser.Match where Input == String {
 		public var userInfo: [CodingUserInfoKey: Any] { [:] }
 
 		init(match: Parser.Match, string: String, codingPath: [CodingKey] = []) {
-			let namePrefix = codingPath.first.map(\.stringValue)
+			let namePrefix = codingPath.first.map { $0.stringValue }
 			let captures = namePrefix.map { namePrefix in
 				match.captures.flatMap { name, range in
 					name?.hasPrefix(namePrefix) ?? false ? [(String(name!.dropFirst(namePrefix.count)), range)] : []
@@ -45,7 +45,7 @@ extension Parser.Match where Input == String {
 		}
 
 		public func unkeyedContainer() throws -> UnkeyedDecodingContainer {
-			UDC(codingPath: codingPath, values: match.captures.map(\.range), string: string)
+			UDC(codingPath: codingPath, values: match.captures.map { $0.range }, string: string)
 		}
 
 		public func singleValueContainer() throws -> SingleValueDecodingContainer {
@@ -59,7 +59,7 @@ extension Parser.Match where Input == String {
 
 		struct UDC: UnkeyedDecodingContainer {
 			var codingPath: [CodingKey]
-			let values: [Pattern.ParsedRange]
+			let values: [Range<Pattern.Input.Index>]
 			let string: String
 
 			var count: Int? { values.count }
