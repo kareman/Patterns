@@ -22,7 +22,7 @@ class PerformanceTests: XCTestCase {
 		#if DEBUG
 		block()
 		#else
-		self.measure(block)
+		self.measure(block: block)
 		#endif
 		XCTAssertEqual(result, hits, file: file, line: line)
 	}
