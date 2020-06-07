@@ -5,6 +5,7 @@
 //  Created by Kåre Morstøl on 29.07.2018.
 //
 
+import Foundation
 import Patterns
 import XCTest
 
