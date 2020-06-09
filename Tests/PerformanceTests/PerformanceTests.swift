@@ -23,7 +23,13 @@ class PerformanceTests: XCTestCase {
 		#if DEBUG
 		block()
 		#else
-		self.measure(block)
+		if #available(OSX 10.15, *) {
+			let options = XCTMeasureOptions()
+			options.iterationCount = 10
+			self.measure(metrics: [XCTCPUMetric(), XCTClockMetric()], options: options, block: block)
+		} else {
+			self.measure(block)
+		}
 		#endif
 		XCTAssertEqual(result, hits, file: file, line: line)
 	}
