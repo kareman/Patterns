@@ -33,21 +33,68 @@ public struct OneOf: Pattern, RegexConvertible {
 	@inlinable
 	public init<S: Sequence>(_ characters: S) where S.Element == Input.Element {
 		group = Group(contentsOf: characters)
-		description = #"OneOf("\#(group)")"#
+		description = #"["\#(String(characters))"]"#
 		_regex = "[\(NSRegularExpression.escapedPattern(for: characters.map(String.init(describing:)).joined()))]"
 	}
 
 	@inlinable
 	public init<S: Sequence>(not characters: S) where S.Element == Input.Element {
 		group = Group(contentsOf: characters).inverted()
-		description = #"OneOf(not: "\#(group)")"#
+		description = #"[^"\#(String(characters))"]"#
 		_regex = "[^\(NSRegularExpression.escapedPattern(for: characters.map(String.init(describing:)).joined()))]"
+	}
+
+	@inlinable
+	public init(_ oneofs: OneOfConvertible...) {
+		let closures = oneofs.map { $0.contains(_:) }
+		group = Group(contains: { char in closures.contains(where: { $0(char) }) })
+		description = #"[\#(oneofs.map(String.init(describing:)).joined(separator: ","))]"#
+		_regex = nil
+	}
+
+	@inlinable
+	public init(not oneofs: OneOfConvertible...) {
+		let closures = oneofs.map { $0.contains(_:) }
+		group = Group(contains: { char in !closures.contains(where: { $0(char) }) })
+		description = #"[^\#(oneofs.map(String.init(describing:)).joined(separator: ","))]"#
+		_regex = nil
 	}
 
 	@inlinable
 	public func createInstructions(_ instructions: inout Instructions) {
 		instructions.append(.checkCharacter(group.contains))
 	}
+}
+
+// MARK: OneOfConvertible
+
+public protocol OneOfConvertible {
+	func contains(_: Character) -> Bool
+}
+
+extension Character: OneOfConvertible {
+	public func contains(_ char: Character) -> Bool { char == self }
+}
+
+extension String: OneOfConvertible {}
+extension Substring: OneOfConvertible {}
+
+public func ... (lhs: Character, rhs: Character) -> ClosedRange<Character> {
+	precondition(lhs <= rhs, "The left side of the '...' operator must be less than or equal to the right side")
+	return ClosedRange(uncheckedBounds: (lower: lhs, upper: rhs))
+}
+
+extension ClosedRange: OneOfConvertible where Bound == Character {}
+
+public func ..< (lhs: Character, rhs: Character) -> Range<Character> {
+	precondition(lhs <= rhs, "The left side of the '..<' operator must be less than or equal to the right side")
+	return Range(uncheckedBounds: (lower: lhs, upper: rhs))
+}
+
+extension Range: OneOfConvertible where Bound == Character {}
+
+extension OneOf: OneOfConvertible {
+	public func contains(_ char: Character) -> Bool { group.contains(char) }
 }
 
 // MARK: Join `&&OneOf • OneOf` into one.

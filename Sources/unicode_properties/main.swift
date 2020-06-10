@@ -92,12 +92,13 @@ struct Arguments: ParsableCommand {
 		let properties: [Substring: [ClosedRange<UInt32>]] =
 			Dictionary(grouping: unicodeProperty(fromDataFile: unicodeData), by: \.property)
 			.mapValues { (ranges: RangesAndProperties) -> [ClosedRange<UInt32>] in
-				ranges.map { $0.range }
+				let sortedranges = ranges.map { $0.range }
 					.sorted { $0.lowerBound < $1.lowerBound }
-					// compact the list of ranges by joining together adjacent ranges
-					.flatMapPairs { a, b in
-						a.upperBound + 1 == b.lowerBound ? [a.lowerBound ... b.upperBound] : [a, b]
-					}
+
+				// compact the list of ranges by joining together adjacent ranges
+				return sortedranges.flatMapPairs { a, b in
+					a.upperBound + 1 == b.lowerBound ? [a.lowerBound ... b.upperBound] : [a, b]
+				}
 			}
 
 		if enumAndDictionary {

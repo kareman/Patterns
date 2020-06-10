@@ -30,6 +30,18 @@ class PatternTests: XCTestCase {
 		assertParseAll(digit, input: "ab12c3,d4", count: 4)
 	}
 
+	func testOneOfsMultiple() {
+		assertParseAll(Capture(OneOf("a" ... "e", "xyz")),
+		               input: "abegkxryz", result: ["a", "b", "e", "x", "y", "z"])
+		assertParseAll(Capture(OneOf("a" ..< "e", "g", uppercase)),
+		               input: "aBcdefgh", result: ["a", "B", "c", "d", "g"])
+
+		assertParseAll(Capture(OneOf(not: "a" ... "e", "xyz")),
+		               input: "abegkxryz", result: ["g", "k", "r"])
+		assertParseAll(Capture(OneOf(not: "a" ..< "e", "g", uppercase)),
+		               input: "aBcdefgh", result: ["e", "f", "h"])
+	}
+
 	func testOptional() throws {
 		assertParseAll(letter • digit*, input: "123abc123d", count: 4)
 		assertParseAll(Capture(digit¿ • letter),
