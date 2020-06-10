@@ -11,7 +11,7 @@ extension Parser where Input == String {
 	}
 
 	public func decodeFirst<T>(_ type: T.Type, from string: String) throws -> T? where T: Decodable {
-		try match(in: string, from: string.startIndex).map { try $0.decode(type.self, from: string) }
+		try match(in: string, at: string.startIndex).map { try $0.decode(type.self, from: string) }
 	}
 }
 
