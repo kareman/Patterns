@@ -61,8 +61,8 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Equata
 
 		public func description(using input: Input) -> String {
 			"""
-			endIndex: \(input[endIndex])
-			captures: \(captures.map { "\($0.name ?? "")    \(input[$0.range])" })
+			endIndex: "\(input[endIndex])"
+			\(captures.map { "\($0.name.map { $0 + ":" } ?? "") \(input[$0.range])" }.joined(separator: "\n"))
 
 			"""
 		}
@@ -80,9 +80,9 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Equata
 		public var names: Set<String> { Set(captures.compactMap { $0.name }) }
 	}
 
-	@usableFromInline
-	internal func match(in input: Input, from startIndex: Input.Index) -> Match? {
-		matcher.match(in: input, from: startIndex)
+	@inlinable
+	public func match(in input: Input, at startIndex: Input.Index? = nil) -> Match? {
+		matcher.match(in: input, from: startIndex ?? input.startIndex)
 	}
 
 	@inlinable
@@ -91,11 +91,11 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Equata
 		var stop = false
 		var lastMatch: Match?
 		return sequence(state: startindex ?? input.startIndex, next: { (index: inout Input.Index) in
-			guard var match = self.match(in: input, from: index), !stop else { return nil }
+			guard var match = self.match(in: input, at: index), !stop else { return nil }
 			if match == lastMatch {
 				guard index != input.endIndex else { return nil }
 				input.formIndex(after: &index)
-				guard let newMatch = self.match(in: input, from: index) else { return nil }
+				guard let newMatch = self.match(in: input, at: index) else { return nil }
 				match = newMatch
 			}
 			lastMatch = match
