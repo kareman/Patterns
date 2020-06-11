@@ -48,7 +48,7 @@ Any text within double quotes matches that exact text, no need to escape special
 `OneOf` is like character classes from regular expressions, and matches 1 character. `OneOf("aeiouAEIOU")` matches any single character in that string, and `OneOf("a"..."e")` matches any of "abcde". They can also be combined, like `OneOf("aeiou", punctuation, "x"..."z")`. And you can implement one yourself:
 
 ```swift
-OneOf(description: "eleven") { character in
+OneOf(description: "ten") { character in
 	character.wholeNumberValue == 10
 }
 ```
