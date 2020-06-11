@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name                      = "Patterns"
   s.version                   = "0.1.0"
-  s.summary                   = "A Swift alternative to regex"
+  s.summary                   = "A Swift library for Parser Expression Grammars (PEG)."
   s.homepage                  = "https://github.com/kareman/Patterns"
   s.license                   = { :type => "MIT", :file => "LICENSE" }
   s.author                    = { "Kare Morstol" => "kare@nottoobadsoftware.com" }
@@ -10,6 +10,7 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target    = "9.0"
   s.watchos.deployment_target = "2.0"
   s.osx.deployment_target     = "10.10"
-  s.source_files              = "Sources/**/*"
+  s.source_files              = "Sources/Patterns/**/*"
   s.frameworks                = "Foundation"
+  s.swift_versions            = "5.2.4"
 end
