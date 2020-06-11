@@ -1,4 +1,3 @@
-
 <p align="center">
    <a href="https://developer.apple.com/swift/">
       <img src="https://img.shields.io/badge/Swift-5.2-orange.svg?style=flat" alt="Swift 5.2">
@@ -6,58 +5,69 @@
    <a href="https://github.com/apple/swift-package-manager">
       <img src="https://img.shields.io/badge/Swift%20Package%20Manager-compatible-brightgreen.svg" alt="SPM">
    </a>
-   <a href="https://github.com/Carthage/Carthage">
-      <img src="https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat" alt="Carthage Compatible">
-   </a>
-</p>
+</p> 
 
 # Patterns
 
-Patterns is a Swift framework for finding text patterns, similar in functionality to regex.
+Patterns is a Swift library for Parser Expression Grammars (PEG). It can be used to create regular expressions (like regex’es) and grammars (for parsers).
 
-Its primary goal is to be easier to read than regexes, and fully Unicode compliant.
+For general information about PEGs, see [the original paper](https://dl.acm.org/doi/10.1145/982962.964011) or [Wikipedia](https://en.wikipedia.org/wiki/Parsing_expression_grammar).
 
-## Features
+## Example
 
-- [x] Easier to read
-- [x] Easier to write
-- [x] Cross-platform
-- [x] Negation 
+```swift
+let text = "This is a point: (43,7), so is (0, 5). But my final point is (3,-1)."
 
-## Examples
+let number = ("+" / "-" / "") • digit+
+let point = "(" • Capture(name: "x", number)
+	• "," • " "¿ • Capture(name: "y", number) • ")"
 
+struct Point: Codable {
+	let x, y: Int
+}
+
+let points = try Parser(search: point).decode([Point].self, from: text)
+// points == [Point(x: 43, y: 7), Point(x: 0, y: 5), Point(x: 3, y: -1)]
+```
+
+See also:
 - [Parsing Unicode property data files](https://nottoobadsoftware.com/blog/textpicker/patterns/parsing_unicode_property_data_files/)
 
 ## Usage
 
-### Defining patterns
-
-`Literal("some text")` matches that exact text.
-
-`OneOf("aeiouAEIOU")` matches any single character in that string.
+Patterns are defined directly in code, instead of in a text string.
 
 ```swift
-OneOf(description: "lowercaseASCII") { character in
-	character.isASCII && character.isLowercase
+let a = punctuation • " "
+```
+
+This matches one punctuation character followed by a space. The `•` operator (Option-8 on U.S. keyboards, Option-Q on Norwegian ones) is used to create a pattern from a sequence of other patterns.
+
+Any text within double quotes matches that exact text, no need to escape special letters with `\`. If you want to turn a string variable `s` into a pattern, use `Literal(s)`.
+
+`OneOf` is like character classes from regular expressions, and matches 1 character. `OneOf("aeiouAEIOU")` matches any single character in that string, and `OneOf("a"..."e")` matches any of "abcde". They can also be combined, like `OneOf("aeiou", punctuation, "x"..."z")`. And you can implement one yourself:
+
+```swift
+OneOf(description: "eleven") { character in
+	character.wholeNumberValue == 10
 }
 ```
 
-takes a closure `@escaping (Character) -> Bool)` and matches any character for which the closure returns `true`. The description parameter is only used when creating a textual representation of the pattern.
+It takes a closure `@escaping (Character) -> Bool` and matches any character for which the closure returns `true`. The description parameter is only used when creating a textual representation of the pattern.
+ 
+`a*`  matches 0 or more, as many as it can (It is greedy, like the regex  `a*?`). So a pattern like `a+ • a` will never match anything because the repeated `a` pattern will always match all it can, leaving nothing left for the last `a`.
 
-`digit.repeat(2)` matches 2 of that pattern in a row. `digit.repeat(0...1)` matches 0 or 1 (so it is optional), `digit.repeat(...2)` matches 0, 1 or 2 and `digit.repeat(2...)` matches 2 or more. These always match as many characters as possible, so a pattern like `digit.repeat(1...) digit` will never match anything because the repeated digit pattern will always take all the digits, leaving none left for the single digit pattern.
+`a+`  matches 1 or more, also as many as it can (like the regex  `a+?`).
 
-`a || b` first tries the pattern on the left. If that fails it tries the pattern on the right.
+`a¿` makes `a` optional, but it always matches if it can (the `¿` character is Option-Shift-TheKeyWith?OnIt on most keyboards).
 
-`Patterns(Literal("name: '"), letter.repeat(1...), Literal("'"))` matches a series of patterns. If that specific combination of patterns is invalid it will crash. You can use `try Patterns(verify: Literal("name: '"), letter.repeat(1...), Literal("'"))` to throw an error instead.
+`a.repeat(2)` matches 2 of that pattern in a row. `a.repeat(...2)` matches 0, 1 or 2, `a.repeat(2...)` matches 2 or more and `a.repeat(3...6)` between 3 and 6. 
 
-If your pattern contains several literals it might be easier to read using string interpolation: `Patterns("name: '\(letter.repeat(1...))'")`. This is the same as the previous example.
-
-`Skip()` matches 0 or more characters until a match for the rest of the pattern up to the next `Skip`. So `Patterns("name: '\(Skip())'")` is a better version of the examples above if you also want to include names with non-letter characters.
-
+`a / b` first tries the pattern on the left. If that fails it tries the pattern on the right.
 
 ### Predefined patterns
 
-There are predefined patterns for all the boolean `is...` properties of Swift's `Character`: `letter`, `lowercase`, `uppercase`, `punctuation`, `whitespace`, `newline`, `hexDigit`, `digit`, `ascii`, `symbol`, `mathSymbol`, `currencySymbol`.
+There are predefined OneOf patterns for all the boolean `is...` properties of Swift's `Character`: `letter`, `lowercase`, `uppercase`, `punctuation`, `whitespace`, `newline`, `hexDigit`, `digit`, `ascii`, `symbol`, `mathSymbol`, `currencySymbol`.
 
 They all have the same name as the last part of the property, except for `wholeNumber`, which is renamed to `digit` because `wholeNumber` sounds more like an entire number than a single digit.
 
@@ -65,35 +75,44 @@ There is also `alphanumeric`, which is a `letter` or a `digit`.
 
 `Line.start` matches at the beginning of the text, and after any newline characters. `Line.end` matches at the end of the text, and right before any newline characters. They both have a length of 0, which means the next pattern will start at the same position in the text.
 
-`Line()` matches a single line, not including the newline characters.
+`Line()` matches a single line, not including the newline characters. So `Line() • Line()` will never match anything, but `Line() • "\n" • Line()` matches 2 lines.
 
 `Word.boundary` matches the position right before or right after a word. Like `Line.start` and `Line.end` it also has a length of 0.
 
+`Skip() • a • b` finds the first match of `a • b` from the current position.
 
-### Extracting data
+### Parsing
 
-All `Patterns` have a `.matches(in: String)` method which returns a lazy sequence of `Match` instances. Use their `.fullRange` property to access the full range matched by the pattern:
+To actually use a pattern, pass it to a Parser:
 
 ```swift
-Patterns(Line()).matches(in: text).map { text[$0.fullRange] }
+let parser = try Parser(search: a)
+for match in parser.matches(in: text) {
+	// ...
+}
 ```
+
+`Parser(search: a)` searches for the first match for `a`. It is the same as `Parser(Skip() • a)`.
+
+The `.matches(in: String)` method returns a lazy sequence of `Match` instances.
 
 Often we are only interested in parts of a pattern. You can use the `Capture` pattern to assign a name to those parts:
 
 ```swift
-let text = "This is a point: (43,7), so is (0,5). But my final point is (3,-1)."
+let text = "This is a point: (43,7), so is (0, 5). But my final point is (3,-1)."
 
-let number = Patterns(OneOf("+-").repeat(0 ... 1), digit.repeat(1...))
-let point = Patterns("(\(Capture(name: "x", number)),\(Capture(name: "y", number)))")
+let number = ("+" / "-" / "") • digit+
+let point = "(" • Capture(name: "x", number)
+	• "," • " "¿ • Capture(name: "y", number) • ")"
 
-struct Point: Codable, Equatable {
+struct Point: Codable {
 	let x, y: Int
 }
 
-let points = try point.decode([Point].self, from: text)
+let points = try Parser(search: point).decode([Point].self, from: text)
 ```
 
-If you don't want to create new types, you can use subscripting:
+Or you can use subscripting:
 
 ```swift
 let pointsAsSubstrings = point.matches(in: text).map { match in
@@ -101,10 +120,9 @@ let pointsAsSubstrings = point.matches(in: text).map { match in
 }
 ```
 
-You can also use `match[multiple: name]` if captures with that name may be matched multiple times. `match[one: name]` only returns the first capture of that name.
+You can also use `match[multiple: name]` to get an array if captures with that name may be matched multiple times. `match[one: name]` only returns the first capture of that name.
 
-
-## Installation
+## Setup
 
 ### [Swift Package Manager](https://swift.org/package-manager/)
 
@@ -115,6 +133,8 @@ dependencies: [
     .package(url: "https://github.com/kareman/Patterns.git", .branch("master")),
 ]
 ```
+
+or choose “Add Package Dependency” from within Xcode.
 
 ### [CocoaPods](http://cocoapods.org)
 
@@ -136,23 +156,21 @@ Run `carthage update` to build the framework and drag the built `Patterns.framew
 
 In your application targets’ “Build Phases” settings tab, click the “+” icon and choose “New Run Script Phase” and add the Framework path as mentioned in [Carthage Getting started Step 4, 5 and 6](https://github.com/Carthage/Carthage/blob/master/README.md#if-youre-building-for-ios-tvos-or-watchos)
 
-### Manually
+## Implementation
 
-If you prefer not to use any dependency managers, you can integrate Patterns into your project manually. Just drag the `Sources` folder into your Xcode project.
-
+Patterns is implemented using a virtual parsing machine, similar to how [LPEG](http://www.inf.puc-rio.br/~roberto/lpeg/) is [implemented](http://www.inf.puc-rio.br/~roberto/docs/peg.pdf). See also the `backtrackingvm` function described [here](https://swtch.com/~rsc/regexp/regexp2.html).
 
 ## Contributing
-Contributions are most welcome 🙌.
 
-Especially suggestions for a better name. 
+Contributions are most welcome 🙌.
 
 ## License
 
 MIT
 
-```
+```text
 Patterns
-Copyright (c) 2019 NotTooBad Software kare@nottoobadsoftware.com
+Copyright © 2019
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
