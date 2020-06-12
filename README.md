@@ -104,6 +104,8 @@ let arithmetic = Grammar { g in
 }
 ```
 
+This will parse expressions like "1+2-3^(4*3)/2".
+
 The top expression is called first. `• !any` means it must match the entire string, because only at the end of the string is there no characters. If you want to match multiple arithmetic expressions in a string, comment out the first expression. Grammars use dynamic properties so there is no auto-completion for the expression names.
 
 ### Predefined patterns
