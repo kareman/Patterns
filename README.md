@@ -9,9 +9,11 @@
 
 # Patterns
 
-Patterns is a Swift library for Parser Expression Grammars (PEG). It can be used to create regular expressions (like regex’es) and grammars (for parsers).
+Patterns is a Swift library for Parser Expression Grammars (PEGs). It can be used to create expressions similar to regular expressions (like regex’es) and grammars (for parsers).
 
 For general information about PEGs, see [the original paper](https://dl.acm.org/doi/10.1145/982962.964011) or [Wikipedia](https://en.wikipedia.org/wiki/Parsing_expression_grammar).
+
+
 
 ## Example
 
@@ -35,17 +37,17 @@ See also:
 
 ## Usage
 
-Patterns are defined directly in code, instead of in a text string.
+Patterns are defined directly in code, instead of in a text string. 
 
-```swift
-let a = punctuation • " "
-```
+### Standard PEG
 
-This matches one punctuation character followed by a space. The `•` operator (Option-8 on U.S. keyboards, Option-Q on Norwegian ones) is used to create a pattern from a sequence of other patterns.
+`"text"`
 
-Any text within double quotes matches that exact text, no need to escape special letters with `\`. If you want to turn a string variable `s` into a pattern, use `Literal(s)`.
+Text within double quotes matches that exact text, no need to escape special letters with `\`. If you want to turn a string variable `s` into a pattern, use `Literal(s)`.
 
-`OneOf` is like character classes from regular expressions, and matches 1 character. `OneOf("aeiouAEIOU")` matches any single character in that string, and `OneOf("a"..."e")` matches any of "abcde". They can also be combined, like `OneOf("aeiou", punctuation, "x"..."z")`. And you can implement one yourself:
+`OneOf(...)`
+
+This is like character classes from regular expressions, and matches 1 character. `OneOf("aeiouAEIOU")` matches any single character in that string, and `OneOf("a"..."e")` matches any of "abcde". They can also be combined, like `OneOf("aeiou", punctuation, "x"..."z")`. And you can implement one yourself:
 
 ```swift
 OneOf(description: "ten") { character in
@@ -54,16 +56,55 @@ OneOf(description: "ten") { character in
 ```
 
 It takes a closure `@escaping (Character) -> Bool` and matches any character for which the closure returns `true`. The description parameter is only used when creating a textual representation of the pattern.
- 
-`a*`  matches 0 or more, as many as it can (It is greedy, like the regex  `a*?`). So a pattern like `a+ • a` will never match anything because the repeated `a` pattern will always match all it can, leaving nothing left for the last `a`.
 
-`a+`  matches 1 or more, also as many as it can (like the regex  `a+?`).
+`a • b • c`
 
-`a¿` makes `a` optional, but it always matches if it can (the `¿` character is Option-Shift-TheKeyWith?OnIt on most keyboards).
+The • operator (Option-8 on U.S. keyboards, Option-Q on Norwegian ones) first matches `a`, then `b` and then `c`. It is used to create a pattern from a sequence of other patterns.
+
+`a*`  
+
+matches 0 or more, as many as it can (it is greedy, like the regex  `a*?`). So a pattern like `a* • a` will never match anything because the repeated `a` pattern will always match all it can, leaving nothing left for the last `a`.
+
+`a+`
+
+ matches 1 or more, also as many as it can (like the regex  `a+?`).
+
+`a¿`
+
+makes `a` optional, but it always matches if it can (the `¿` character is Option-Shift-TheKeyWith?OnIt on most keyboards).
+
+`a.repeat(...)`
 
 `a.repeat(2)` matches 2 of that pattern in a row. `a.repeat(...2)` matches 0, 1 or 2, `a.repeat(2...)` matches 2 or more and `a.repeat(3...6)` between 3 and 6. 
 
-`a / b` first tries the pattern on the left. If that fails it tries the pattern on the right.
+`a / b`
+
+This first tries the pattern on the left. If that fails it tries the pattern on the right. This is _ordered choice_, once `a` has matched it will never go back and try `b` if a later part of the expression fails. This is the main difference between PEGs and most other grammars and regex'es.
+
+`&&a • b`
+
+The "and predicate" first verifies that `a` matches, then moves the position in the input back to where `a` began and continues with `b`. In other words it verifies that both `a` and `b` match from the same position. So to match one ASCII letter you can use `&&ascii letter`.
+
+`!a • b`
+
+The "not predicate" verifies that `a` does _not_ match, then just like above it moves the position in the input back to where `a` began and continues with `b`. You can read it like "b and not a".
+
+#### Grammars
+
+The main advantage of PEGs over regular expressions is that they support recursive expressions. These expressions can contain themselves, or other expressions that in turn contain them. Here is how you can parse simple arithmetic expressions:
+
+```swift
+let arithmetic = Grammar { g in
+	g.all     <- g.expr • !any
+	g.expr    <- g.sum
+	g.sum     <- g.product • (("+" / "-") • g.product)*
+	g.product <- g.power • (("*" / "/") • g.power)*
+	g.power   <- g.value • ("^" • g.power)¿
+	g.value   <- digit+ / "(" • g.expr • ")"
+}
+```
+
+The top expression is called first. `• !any` means it must match the entire string, because only at the end of the string is there no characters. If you want to match multiple arithmetic expressions in a string, comment out the first expression. Grammars use dynamic properties so there is no auto-completion for the expression names.
 
 ### Predefined patterns
 
@@ -72,6 +113,8 @@ There are predefined OneOf patterns for all the boolean `is...` properties of Sw
 They all have the same name as the last part of the property, except for `wholeNumber`, which is renamed to `digit` because `wholeNumber` sounds more like an entire number than a single digit.
 
 There is also `alphanumeric`, which is a `letter` or a `digit`.
+
+And `any`, which matches any character. `!any` matches only the end of the text.
 
 `Line.start` matches at the beginning of the text, and after any newline characters. `Line.end` matches at the end of the text, and right before any newline characters. They both have a length of 0, which means the next pattern will start at the same position in the text.
 
