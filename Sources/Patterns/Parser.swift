@@ -61,7 +61,7 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Equata
 
 		public func description(using input: Input) -> String {
 			"""
-			endIndex: "\(input[endIndex])"
+			endIndex: "\(endIndex == input.endIndex ? "EOF" : String(describing: input[endIndex]))"
 			\(captures.map { "\($0.name.map { $0 + ":" } ?? "") \(input[$0.range])" }.joined(separator: "\n"))
 
 			"""

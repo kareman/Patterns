@@ -39,4 +39,19 @@ class GrammarTests: XCTestCase {
 		assertParseAll(g2Parser, input: "((( )( )))", count: 1)
 		assertParseAll(g2Parser, input: "(( )", count: 0)
 	}
+
+	func testArithmetic() throws {
+		let g = Grammar { g in
+			g.all <- g.expr • !any
+			g.expr <- g.sum
+			g.sum <- g.product • (("+" / "-") • g.product)*
+			g.product <- g.power • (("*" / "/") • g.power)*
+			g.power <- g.value • ("^" • g.power)¿
+			g.value <- digit+ / "(" • g.expr • ")"
+		}
+
+		let p = try Parser(g)
+		assertParseMarkers(p, input: "1+2-3*(4+3)|")
+		assertParseAll(p, input: "1+2(", count: 0)
+	}
 }
