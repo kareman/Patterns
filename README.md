@@ -47,7 +47,7 @@ Text within double quotes matches that exact text, no need to escape special let
 
 `OneOf(...)`
 
-This is like character classes from regular expressions, and matches 1 character. `OneOf("aeiouAEIOU")` matches any single character in that string, and `OneOf("a"..."e")` matches any of "abcde". They can also be combined, like `OneOf("aeiou", punctuation, "x"..."z")`. And you can implement one yourself:
+This is like character classes (`[...]`) from regular expressions, and matches 1 character. `OneOf("aeiouAEIOU")` matches any single character in that string, and `OneOf("a"..."e")` matches any of "abcde". They can also be combined, like `OneOf("aeiou", punctuation, "x"..."z")`. And you can implement one yourself:
 
 ```swift
 OneOf(description: "ten") { character in
@@ -72,10 +72,6 @@ matches 0 or more, as many as it can (it is greedy, like the regex  `a*?`). So a
 `a¿`
 
 makes `a` optional, but it always matches if it can (the `¿` character is Option-Shift-TheKeyWith?OnIt on most keyboards).
-
-`a.repeat(...)`
-
-`a.repeat(2)` matches 2 of that pattern in a row. `a.repeat(...2)` matches 0, 1 or 2, `a.repeat(2...)` matches 2 or more and `a.repeat(3...6)` between 3 and 6. 
 
 `a / b`
 
@@ -108,7 +104,7 @@ This will parse expressions like "1+2-3^(4*3)/2".
 
 The top expression is called first. `• !any` means it must match the entire string, because only at the end of the string is there no characters. If you want to match multiple arithmetic expressions in a string, comment out the first expression. Grammars use dynamic properties so there is no auto-completion for the expression names.
 
-### Predefined patterns
+### Additions
 
 There are predefined OneOf patterns for all the boolean `is...` properties of Swift's `Character`: `letter`, `lowercase`, `uppercase`, `punctuation`, `whitespace`, `newline`, `hexDigit`, `digit`, `ascii`, `symbol`, `mathSymbol`, `currencySymbol`.
 
@@ -116,15 +112,27 @@ They all have the same name as the last part of the property, except for `wholeN
 
 There is also `alphanumeric`, which is a `letter` or a `digit`.
 
-And `any`, which matches any character. `!any` matches only the end of the text.
+`any`
+
+Matches any character. `!any` matches only the end of the text.
+
+`Line()` 
+
+Matches a single line, not including the newline characters. So `Line() • Line()` will never match anything, but `Line() • "\n" • Line()` matches 2 lines.
 
 `Line.start` matches at the beginning of the text, and after any newline characters. `Line.end` matches at the end of the text, and right before any newline characters. They both have a length of 0, which means the next pattern will start at the same position in the text.
 
-`Line()` matches a single line, not including the newline characters. So `Line() • Line()` will never match anything, but `Line() • "\n" • Line()` matches 2 lines.
+`Word.boundary` 
 
-`Word.boundary` matches the position right before or right after a word. Like `Line.start` and `Line.end` it also has a length of 0.
+Matches the position right before or right after a word. Like `Line.start` and `Line.end` it also has a length of 0.
 
-`Skip() • a • b` finds the first match of `a • b` from the current position.
+`a.repeat(...)`
+
+`a.repeat(2)` matches 2 of that pattern in a row. `a.repeat(...2)` matches 0, 1 or 2, `a.repeat(2...)` matches 2 or more and `a.repeat(3...6)` between 3 and 6. 
+
+`Skip() • a • b`
+
+Finds the first match of `a • b` from the current position.
 
 ### Parsing
 
