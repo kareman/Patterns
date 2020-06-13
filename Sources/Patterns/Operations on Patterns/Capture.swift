@@ -29,9 +29,9 @@ public struct Capture<Wrapped: Pattern>: Pattern {
 		self.name = name
 	}
 
-	public func createInstructions(_ instructions: inout Instructions) {
+	public func createInstructions(_ instructions: inout Instructions) throws {
 		instructions.append(.captureStart(name: name))
-		wrapped?.createInstructions(&instructions)
+		try wrapped?.createInstructions(&instructions)
 		instructions.append(.captureEnd)
 	}
 

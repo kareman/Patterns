@@ -13,8 +13,8 @@ public struct AndPattern<Wrapped: Pattern>: Pattern {
 		self.wrapped = wrapped
 	}
 
-	public func createInstructions(_ instructions: inout Instructions) {
-		let wrappedInstructions = wrapped.createInstructions()
+	public func createInstructions(_ instructions: inout Instructions) throws {
+		let wrappedInstructions = try wrapped.createInstructions()
 		if let indexMovedBy = wrappedInstructions.movesIndexBy {
 			instructions.append(contentsOf: wrappedInstructions)
 			instructions.append(.moveIndex(offset: -indexMovedBy))

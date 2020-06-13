@@ -25,20 +25,20 @@ public struct Concat<Left: Pattern, Right: Pattern>: Pattern {
 
 extension Concat where Left == Skip<AnyPattern> {
 	// Is never called. Don't know why.
-	public func createInstructions(_ instructions: inout Instructions) {
-		let rightInstructions = right.createInstructions()
-		instructions.append(contentsOf: left.prependSkip(rightInstructions))
+	public func createInstructions(_ instructions: inout Instructions) throws {
+		let rightInstructions = try right.createInstructions()
+		instructions.append(contentsOf: try left.prependSkip(rightInstructions))
 	}
 }
 
 extension Concat {
-	public func createInstructions(_ instructions: inout Instructions) {
+	public func createInstructions(_ instructions: inout Instructions) throws {
 		if let skip = left as? Skip<AnyPattern> {
-			let rightInstructions = right.createInstructions()
-			instructions.append(contentsOf: skip.prependSkip(rightInstructions))
+			let rightInstructions = try right.createInstructions()
+			instructions.append(contentsOf: try skip.prependSkip(rightInstructions))
 		} else {
-			left.createInstructions(&instructions)
-			right.createInstructions(&instructions)
+			try left.createInstructions(&instructions)
+			try right.createInstructions(&instructions)
 		}
 	}
 }

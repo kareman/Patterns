@@ -134,6 +134,14 @@ func ?? <T>(b: T?, a: @autoclosure () -> Never) -> T {
 	a()
 }
 
+func ?? <T, E: Error>(b: T?, a: @autoclosure () -> (E)) throws -> T {
+	if let b = b {
+		return b
+	} else {
+		throw a()
+	}
+}
+
 extension BidirectionalCollection {
 	@inlinable
 	func validIndex(_ i: Index, offsetBy distance: Int) -> Index? {
@@ -185,12 +193,5 @@ extension RangeReplaceableCollection {
 
 	mutating func append(compose: (inout Self) -> Void) {
 		compose(&self)
-	}
-}
-
-extension Optional {
-	func onNil(_ closure: @autoclosure () -> Never) -> Wrapped {
-		if self == nil { closure() }
-		return self.unsafelyUnwrapped
 	}
 }

@@ -6,9 +6,9 @@
 //
 
 public struct AnyPattern: Pattern {
-	private let _instructions: (inout Instructions) -> Void
-	public func createInstructions(_ instructions: inout Instructions) {
-		_instructions(&instructions)
+	private let _instructions: (inout Instructions) throws -> Void
+	public func createInstructions(_ instructions: inout Instructions) throws {
+		try _instructions(&instructions)
 	}
 
 	private let _description: () -> String

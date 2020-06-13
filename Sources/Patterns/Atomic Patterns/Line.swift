@@ -16,8 +16,8 @@ public struct Line: Pattern {
 		pattern = Start() • Skip() • End()
 	}
 
-	public func createInstructions(_ instructions: inout Instructions) {
-		pattern.createInstructions(&instructions)
+	public func createInstructions(_ instructions: inout Instructions) throws {
+		try pattern.createInstructions(&instructions)
 	}
 
 	public struct Start: Pattern {

@@ -12,7 +12,7 @@ public class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Eleme
 
 	@usableFromInline
 	required init<P: Pattern>(_ pattern: P) throws where Input == P.Input {
-		instructionsFrom = (pattern.createInstructions() + [Instruction<Input>.match])
+		instructionsFrom = (try pattern.createInstructions() + [Instruction<Input>.match])
 	}
 
 	@usableFromInline
@@ -22,7 +22,7 @@ public class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Eleme
 }
 
 extension Parser.Match {
-	init(_ thread: VMBacktrackEngine<Input>.Thread, instructions: ContiguousArray<Instruction<Input>>) {
+	init(_ thread: VMBacktrackEngine<Input>.Thread, instructions: VMBacktrackEngine<Input>.Instructions) {
 		var captures = [(name: String?, range: Range<Input.Index>)]()
 		captures.reserveCapacity(thread.captures.count / 2)
 		var captureBeginnings = [(name: String?, start: Input.Index)]()
@@ -35,7 +35,7 @@ extension Parser.Match {
 				let beginning = captureBeginnings.removeLast()
 				captures.append((name: beginning.name, range: beginning.start ..< capture.index))
 			default:
-				fatalError("Captured wrong instructions")
+				fatalError("Captured wrong instructions.")
 			}
 		}
 		assert(captureBeginnings.isEmpty)
@@ -49,7 +49,7 @@ extension VMBacktrackEngine {
 	public struct Thread {
 		var instructionIndex: Instructions.Index
 		var inputIndex: Input.Index
-		var captures: ContiguousArray<(index: Input.Index, instruction: Array<Instruction<Input>>.Index)>
+		var captures: ContiguousArray<(index: Input.Index, instruction: Instructions.Index)>
 		var isReturnAddress: Bool = false
 
 		init(startAt instructionIndex: Int, withDataFrom other: Thread) {
