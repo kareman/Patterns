@@ -47,19 +47,18 @@ public class Grammar: Pattern {
 			.openCall(name: try firstPattern ?? Parser<Input>.InitError.message("Grammar is empty")))
 		instructions.append(.jump(offset: .max)) // replaced later
 		var callTable = [String: Instructions.Index]()
-		var currentIndex = instructions.endIndex
 		for (name, pattern) in patterns {
-			callTable[name] = currentIndex
+			callTable[name] = instructions.endIndex
 			try pattern.createInstructions(&instructions)
-			precondition(currentIndex != instructions.endIndex, "Pattern \(name) <- \(pattern) was empty") // should we support this?
+			precondition(callTable[name] != instructions.endIndex,
+			             "Pattern '\(name) <- \(pattern)' was empty")
 			instructions.append(.return)
-			currentIndex = instructions.endIndex
 		}
 
 		for i in instructions.indices[startIndex...] {
 			if case let .openCall(name) = instructions[i] {
 				let address = try callTable[name]
-					?? Parser<Input>.InitError.message("Pattern '\(name)' was newer defined with ´<-´ operator.")
+					?? Parser<Input>.InitError.message("Pattern '\(name)' was never defined with ´<-´ operator.")
 				instructions[i] = .call(offset: address - i)
 			}
 		}
