@@ -25,7 +25,7 @@ public struct RepeatPattern<Repeated: Pattern>: Pattern {
 		let repeatedInstructions = repeatedPattern.createInstructions()
 		for _ in 0 ..< min { instructions.append(contentsOf: repeatedInstructions) }
 		if let max = max {
-			let optionalRepeatedInstructions = ContiguousArray<Instruction<Input>> {
+			let optionalRepeatedInstructions = Instructions {
 				$0.append(.split(first: 1, second: repeatedInstructions.count + 2))
 				$0.append(contentsOf: repeatedInstructions)
 				$0.append(.cancelLastSplit)

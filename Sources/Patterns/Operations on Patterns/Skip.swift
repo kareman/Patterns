@@ -22,7 +22,7 @@ public struct Skip<Repeated: Pattern>: Pattern {
 	}
 
 	internal func prependSkip<C: BidirectionalCollection>(_ instructions: C)
-		-> [Instruction<Input>] where C.Element == Instruction<Input> {
+		-> Instructions where C.Element == Instruction<Input> {
 		var remainingInstructions = instructions[...]
 		var chars = [Instruction<Input>]()[...]
 		var nonIndexMovers = [Instruction<Input>]()[...]
@@ -63,7 +63,7 @@ public struct Skip<Repeated: Pattern>: Pattern {
 						?? (function(input, input.endIndex) ? input.endIndex : nil)
 				}
 			default:
-				return self.createInstructions().array() + instructions
+				return Instructions(self.createInstructions() + instructions)
 			}
 		case let .checkCharacter(test):
 			search = { input, index in input[index...].firstIndex(where: test) }
@@ -98,7 +98,7 @@ public struct Skip<Repeated: Pattern>: Pattern {
 		} else {
 			searchInstruction = .search(search)
 		}
-		return Array<Instruction> {
+		return Instructions {
 			$0.reserveCapacity(chars.count + nonIndexMovers.count + remainingInstructions.count + 4)
 			$0.append(searchInstruction)
 			$0.append(.split(first: 1, second: -1, atIndex: 1))
