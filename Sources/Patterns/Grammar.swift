@@ -43,7 +43,8 @@ public class Grammar: Pattern {
 	public func createInstructions(_ finalInstructions: inout Instructions) throws {
 		var instructions = finalInstructions
 		let startIndex = instructions.endIndex
-		instructions.append(.openCall(name: firstPattern.onNil(fatalError("Grammar is empty"))))
+		instructions.append(
+			.openCall(name: try firstPattern ?? Parser<Input>.InitError.message("Grammar is empty")))
 		instructions.append(.jump(offset: .max)) // replaced later
 		var callTable = [String: Instructions.Index]()
 		var currentIndex = instructions.endIndex
@@ -57,7 +58,9 @@ public class Grammar: Pattern {
 
 		for i in instructions.indices[startIndex...] {
 			if case let .openCall(name) = instructions[i] {
-				instructions[i] = .call(offset: callTable[name].onNil(fatalError("Pattern '\(name)' not found.")) - i)
+				let address = try callTable[name]
+					?? Parser<Input>.InitError.message("Pattern '\(name)' was newer defined with ´<-´ operator.")
+				instructions[i] = .call(offset: address - i)
 			}
 		}
 		instructions[startIndex + 1] = .jump(offset: instructions.endIndex - startIndex - 1)
