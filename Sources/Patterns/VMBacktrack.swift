@@ -12,7 +12,7 @@ public class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Eleme
 
 	@usableFromInline
 	required init<P: Pattern>(_ pattern: P) throws where Input == P.Input {
-		instructionsFrom = (pattern.createInstructions() + [Instruction<Input>.match])
+		instructionsFrom = (try pattern.createInstructions() + [Instruction<Input>.match])
 	}
 
 	@usableFromInline
@@ -35,7 +35,7 @@ extension Parser.Match {
 				let beginning = captureBeginnings.removeLast()
 				captures.append((name: beginning.name, range: beginning.start ..< capture.index))
 			default:
-				fatalError("Captured wrong instructions")
+				fatalError("Captured wrong instructions.")
 			}
 		}
 		assert(captureBeginnings.isEmpty)

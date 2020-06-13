@@ -10,14 +10,14 @@ public protocol Pattern: CustomStringConvertible {
 	typealias ParsedRange = Range<Input.Index>
 	typealias Instructions = ContiguousArray<Instruction<Input>> // TODO: use almost everywhere
 
-	func createInstructions(_ instructions: inout Instructions)
-	func createInstructions() -> Instructions
+	func createInstructions(_ instructions: inout Instructions) throws
+	func createInstructions() throws -> Instructions
 }
 
 extension Pattern {
-	public func createInstructions() -> Instructions {
+	public func createInstructions() throws -> Instructions {
 		var instructions = Instructions()
-		self.createInstructions(&instructions)
+		try self.createInstructions(&instructions)
 		return instructions
 	}
 }

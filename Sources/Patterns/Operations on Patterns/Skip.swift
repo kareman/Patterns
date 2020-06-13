@@ -14,14 +14,14 @@ public struct Skip<Repeated: Pattern>: Pattern {
 		self.description = "Skip(\(repeatedPattern))"
 	}
 
-	public func createInstructions(_ instructions: inout Instructions) {
-		let reps: Instructions = repeatedPattern?.repeat(0...).createInstructions() ?? [.any]
+	public func createInstructions(_ instructions: inout Instructions) throws {
+		let reps: Instructions = try repeatedPattern?.repeat(0...).createInstructions() ?? [.any]
 		instructions.append(.split(first: reps.count + 2, second: 1))
 		instructions.append(contentsOf: reps)
 		instructions.append(.jump(offset: -reps.count - 1))
 	}
 
-	internal func prependSkip<C: BidirectionalCollection>(_ instructions: C)
+	internal func prependSkip<C: BidirectionalCollection>(_ instructions: C) throws
 		-> Instructions where C.Element == Instruction<Input> {
 		var remainingInstructions = instructions[...]
 		var chars = [Instruction<Input>]()[...]
@@ -63,7 +63,7 @@ public struct Skip<Repeated: Pattern>: Pattern {
 						?? (function(input, input.endIndex) ? input.endIndex : nil)
 				}
 			default:
-				return Instructions(self.createInstructions() + instructions)
+				return Instructions(try self.createInstructions() + instructions)
 			}
 		case let .checkCharacter(test):
 			search = { input, index in input[index...].firstIndex(where: test) }
@@ -82,7 +82,7 @@ public struct Skip<Repeated: Pattern>: Pattern {
 		}
 
 		if let repeatedPattern = self.repeatedPattern {
-			let skipInstructions = (repeatedPattern.repeat(0...).createInstructions() + [.match])
+			let skipInstructions = (try repeatedPattern.repeat(0...).createInstructions() + [.match])
 			searchInstruction = .function { (input, thread) -> Bool in
 				guard let end = search(input, thread.inputIndex) else { return false }
 				guard

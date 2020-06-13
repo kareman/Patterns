@@ -40,7 +40,7 @@ public class Grammar: Pattern {
 		CallPattern(grammar: self, name: name)
 	}
 
-	public func createInstructions(_ finalInstructions: inout Instructions) {
+	public func createInstructions(_ finalInstructions: inout Instructions) throws {
 		var instructions = finalInstructions
 		let startIndex = instructions.endIndex
 		instructions.append(.openCall(name: firstPattern.onNil(fatalError("Grammar is empty"))))
@@ -49,7 +49,7 @@ public class Grammar: Pattern {
 		var currentIndex = instructions.endIndex
 		for (name, pattern) in patterns {
 			callTable[name] = currentIndex
-			pattern.createInstructions(&instructions)
+			try pattern.createInstructions(&instructions)
 			precondition(currentIndex != instructions.endIndex, "Pattern \(name) <- \(pattern) was empty") // should we support this?
 			instructions.append(.return)
 			currentIndex = instructions.endIndex
