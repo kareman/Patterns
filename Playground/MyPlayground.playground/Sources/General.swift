@@ -25,7 +25,7 @@ let defaultCapturedAttributes =
 		return attribs
 	}
 
-func adorn<S: Sequence>(_ string: String, matches: S) -> NSMutableAttributedString
+func adorn<S: Sequence>(_ string: String, matches: S) -> (NSMutableAttributedString, [String: Attributes])
 	where S.Element == Parser<String>.Match {
 	var capturedAttributes = defaultCapturedAttributes.repeatForever().makeIterator()
 	let attributedString = NSMutableAttributedString(string: string, attributes: defaultTextAttributes)
@@ -39,7 +39,7 @@ func adorn<S: Sequence>(_ string: String, matches: S) -> NSMutableAttributedStri
 		}
 	}
 
-	return attributedString
+	return (attributedString, captureColors)
 }
 
 extension Sequence {
@@ -55,4 +55,36 @@ extension Sequence {
 
 extension NSAttributedString {
 	var nsRange: NSRange { NSRange(location: 0, length: self.length) }
+}
+
+import AppKit
+import SwiftUI
+
+struct Label: NSViewRepresentable {
+	typealias TheUIView = NSTextView
+	var configuration = { (view: TheUIView) in }
+
+	func makeNSView(context: Context) -> TheUIView {
+		let view = TheUIView()
+		view.isEditable = false
+		return view
+	}
+
+	func updateNSView(_ nsView: TheUIView, context: Context) {
+		configuration(nsView)
+	}
+}
+
+struct SingleLineLabel: NSViewRepresentable {
+	typealias TheUIView = NSTextField
+	let content: NSAttributedString
+
+	func makeNSView(context: Context) -> TheUIView {
+		let view = TheUIView(labelWithAttributedString: content)
+		view.isEditable = false
+		//view.alignment = .center
+		return view
+	}
+
+	func updateNSView(_ nsView: TheUIView, context: Context) {}
 }

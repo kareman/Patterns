@@ -4,3 +4,36 @@
 // ℹ️ Please restart Xcode if autocomplete is not working.
 
 import Patterns
+import PlaygroundSupport
+import SwiftUI
+
+let arithmetic = Grammar { g in
+	//g.all     <- g.expr • !any
+	g.expr <- g.sum
+	g.sum <- g.product • (Capture(name: "sum", "+" / "-") • g.product)*
+	g.product <- g.power • (Capture(name: "product", "*" / "/") • g.power)*
+	g.power <- g.value • (Capture(name: "power", "^") • g.power)¿
+	g.value <- Capture(name: "value", digit+) / "(" • g.expr • ")"
+}
+
+let text = """
+This will parse expressions like "1+2-3^(4*3)/2".
+
+The top expression is called first. • !any means it must match the entire string, because only at the end of the string is there no characters. If you want to match multiple arithmetic expressions in a string, comment out the first expression. Grammars use dynamic properties so there is no auto-completion for the expression names.
+
+This will parse expressions like "1+2-3^(4*3)/2".
+
+The top expression is called first. • !any means it must match the entire string, because only at the end of the string is there no characters. If you want to match multiple arithmetic expressions in a string, comment out the first expression. Grammars use dynamic properties so there is no auto-completion for the expression names.
+
+
+"""
+
+let view = try ContentView(text: text, pattern: arithmetic)
+
+let size = CGSize(width: 600, height: 600)
+let frame = CGRect(origin: .zero, size: size)
+let hosting = NSHostingController(rootView: view)
+//hosting.preferredContentSize = frame
+hosting.view.frame = frame
+
+PlaygroundPage.current.setLiveView(hosting)

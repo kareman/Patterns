@@ -8,13 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		BA92EA232495240C000A854B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA92EA222495240C000A854B /* AppDelegate.swift */; };
-		BA92EA252495240C000A854B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA92EA242495240C000A854B /* ContentView.swift */; };
 		BA92EA272495240D000A854B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA92EA262495240D000A854B /* Assets.xcassets */; };
 		BA92EA2A2495240D000A854B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA92EA292495240D000A854B /* Preview Assets.xcassets */; };
 		BA92EA2D2495240D000A854B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA92EA2B2495240D000A854B /* Main.storyboard */; };
-		BA92EA34249524FF000A854B /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA92EA33249524FF000A854B /* General.swift */; };
 		BA92EA36249527A0000A854B /* Patterns.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Patterns::Patterns::Product" /* Patterns.framework */; };
 		BA92EA37249527A0000A854B /* Patterns.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = "Patterns::Patterns::Product" /* Patterns.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BA92EA3F2496AD19000A854B /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA92EA3D2496AD19000A854B /* General.swift */; };
+		BA92EA402496AD19000A854B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA92EA3E2496AD19000A854B /* ContentView.swift */; };
 		OBJ_48 /* Line.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_15 /* Line.swift */; };
 		OBJ_49 /* Literal.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_16 /* Literal.swift */; };
 		OBJ_50 /* OneOf.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_17 /* OneOf.swift */; };
@@ -75,13 +75,13 @@
 /* Begin PBXFileReference section */
 		BA92EA202495240C000A854B /* PlaygroundView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlaygroundView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA92EA222495240C000A854B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		BA92EA242495240C000A854B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		BA92EA262495240D000A854B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BA92EA292495240D000A854B /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		BA92EA2C2495240D000A854B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		BA92EA2E2495240D000A854B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BA92EA2F2495240D000A854B /* PlaygroundView.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PlaygroundView.entitlements; sourceTree = "<group>"; };
-		BA92EA33249524FF000A854B /* General.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = General.swift; sourceTree = "<group>"; };
+		BA92EA3D2496AD19000A854B /* General.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = General.swift; path = MyPlayground.playground/Sources/General.swift; sourceTree = SOURCE_ROOT; };
+		BA92EA3E2496AD19000A854B /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = MyPlayground.playground/Sources/ContentView.swift; sourceTree = SOURCE_ROOT; };
 		OBJ_15 /* Line.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Line.swift; sourceTree = "<group>"; };
 		OBJ_16 /* Literal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Literal.swift; sourceTree = "<group>"; };
 		OBJ_17 /* OneOf.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneOf.swift; sourceTree = "<group>"; };
@@ -140,14 +140,14 @@
 		BA92EA212495240C000A854B /* PlaygroundView */ = {
 			isa = PBXGroup;
 			children = (
+				BA92EA3E2496AD19000A854B /* ContentView.swift */,
+				BA92EA3D2496AD19000A854B /* General.swift */,
 				BA92EA222495240C000A854B /* AppDelegate.swift */,
-				BA92EA242495240C000A854B /* ContentView.swift */,
 				BA92EA262495240D000A854B /* Assets.xcassets */,
 				BA92EA2B2495240D000A854B /* Main.storyboard */,
 				BA92EA2E2495240D000A854B /* Info.plist */,
 				BA92EA2F2495240D000A854B /* PlaygroundView.entitlements */,
 				BA92EA282495240D000A854B /* Preview Content */,
-				BA92EA33249524FF000A854B /* General.swift */,
 			);
 			path = PlaygroundView;
 			sourceTree = "<group>";
@@ -432,9 +432,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BA92EA34249524FF000A854B /* General.swift in Sources */,
-				BA92EA252495240C000A854B /* ContentView.swift in Sources */,
+				BA92EA3F2496AD19000A854B /* General.swift in Sources */,
 				BA92EA232495240C000A854B /* AppDelegate.swift in Sources */,
+				BA92EA402496AD19000A854B /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

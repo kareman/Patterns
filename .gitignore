@@ -123,4 +123,4 @@ iOSInjectionProject/
 
 default.profraw
 *.xcodeproj
-Playground/MyPlayground.playground/
+#Playground/MyPlayground.playground/
