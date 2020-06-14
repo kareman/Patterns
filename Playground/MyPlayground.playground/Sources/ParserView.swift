@@ -8,7 +8,7 @@
 import AppKit
 import SwiftUI
 
-public struct ContentView: View {
+public struct ParserView: View {
 	let attributedString: NSMutableAttributedString
 	let captureColors: [NSAttributedString]
 
@@ -51,7 +51,7 @@ struct ContentView_Previews: PreviewProvider {
 		let point = "(" • Capture(name: "x", number)
 			• "," • " "¿ • Capture(name: "y", number) • ")"
 
-		return try! ContentView(text: text, pattern: point)
+		return try! ParserView(text: text, pattern: point)
 	}
 }
 
@@ -74,8 +74,14 @@ struct ContentView_Previews2: PreviewProvider {
 		This will parse expressions like "1+2-3^(4*3)/2".
 
 		The top expression is called first. • !any means it must match the entire string, because only at the end of the string is there no characters. If you want to match multiple arithmetic expressions in a string, comment out the first expression. Grammars use dynamic properties so there is no auto-completion for the expression names.
+		This will parse expressions like "1+2-3^(4*3)/2".
+
+		The top expression is called first. • !any means it must match the entire string, because only at the end of the string is there no characters. If you want to match multiple arithmetic expressions in a string, comment out the first expression. Grammars use dynamic properties so there is no auto-completion for the expression names.
+		This will parse expressions like "1+2-3^(4*3)/2".
+
+		The top expression is called first. • !any means it must match the entire string, because only at the end of the string is there no characters. If you want to match multiple arithmetic expressions in a string, comment out the first expression. Grammars use dynamic properties so there is no auto-completion for the expression names.
 
 		"""
-		return try! ContentView(text: text, pattern: arithmetic)
+		return try! ParserView(text: text, pattern: arithmetic)
 	}
 }

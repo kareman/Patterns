@@ -25,15 +25,12 @@ This will parse expressions like "1+2-3^(4*3)/2".
 
 The top expression is called first. • !any means it must match the entire string, because only at the end of the string is there no characters. If you want to match multiple arithmetic expressions in a string, comment out the first expression. Grammars use dynamic properties so there is no auto-completion for the expression names.
 
+The top expression is called first. • !any means it must match the entire string, because only at the end of the string is there no characters. If you want to match multiple arithmetic expressions in a string, comment out the first expression. Grammars use dynamic properties so there is no auto-completion for the expression names.
 
 """
 
-let view = try ContentView(text: text, pattern: arithmetic)
-
-let size = CGSize(width: 600, height: 600)
-let frame = CGRect(origin: .zero, size: size)
+let view = try ParserView(text: text, pattern: arithmetic)
+let size = NSSize(width: 600, height: 600)
 let hosting = NSHostingController(rootView: view)
-//hosting.preferredContentSize = frame
-hosting.view.frame = frame
-
+hosting.view.frame.size = size
 PlaygroundPage.current.setLiveView(hosting)
