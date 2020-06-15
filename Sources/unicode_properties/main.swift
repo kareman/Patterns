@@ -8,8 +8,8 @@ typealias RangesAndProperties = [(range: ClosedRange<UInt32>, property: Substrin
 
 func unicodeProperty(fromDataFile text: String) -> RangesAndProperties {
 	let hexNumber = Capture(name: "hexNumber", hexDigit+)
-	let hexRange = AnyPattern("\(hexNumber)..\(hexNumber)") / hexNumber
-	let rangeAndProperty: AnyPattern = "\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) "
+	let hexRange = hexNumber • ".." • hexNumber / hexNumber
+	let rangeAndProperty = Line.start • hexRange • Skip() • "; " • Capture(name: "property", Skip()) • " "
 
 	return try! Parser(search: rangeAndProperty).matches(in: text).map { match in
 		let propertyName = text[match[one: "property"]!]
