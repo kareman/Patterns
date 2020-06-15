@@ -13,7 +13,9 @@ Patterns is a Swift library for Parser Expression Grammars (PEGs). It can be use
 
 For general information about PEGs, see [the original paper](https://dl.acm.org/doi/10.1145/982962.964011) or [Wikipedia](https://en.wikipedia.org/wiki/Parsing_expression_grammar).
 
+![Example of using Patterns in a playground](Playground-screenshot.png)
 
+To try out Patterns in a playground, open Playground/Playground.xcworkspace in Xcode.
 
 ## Example
 
@@ -79,7 +81,7 @@ This first tries the pattern on the left. If that fails it tries the pattern on 
 
 `&&a • b`
 
-The "and predicate" first verifies that `a` matches, then moves the position in the input back to where `a` began and continues with `b`. In other words it verifies that both `a` and `b` match from the same position. So to match one ASCII letter you can use `&&ascii letter`.
+The "and predicate" first verifies that `a` matches, then moves the position in the input back to where `a` began and continues with `b`. In other words it verifies that both `a` and `b` match from the same position. So to match one ASCII letter you can use `&&ascii • letter`.
 
 `!a • b`
 

@@ -38,7 +38,7 @@ public struct ParserView: View {
 			Label {
 				$0.textStorage!.setAttributedString(self.attributedString)
 			}
-		}
+		}.padding(10)
 	}
 }
 
