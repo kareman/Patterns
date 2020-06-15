@@ -1,872 +1,901 @@
 // !$*UTF8*$!
 {
-   archiveVersion = "1";
-   objectVersion = "46";
-   objects = {
-      "OBJ_1" = {
-         isa = "PBXProject";
-         attributes = {
-            LastSwiftMigration = "9999";
-            LastUpgradeCheck = "9999";
-         };
-         buildConfigurationList = "OBJ_2";
-         compatibilityVersion = "Xcode 3.2";
-         developmentRegion = "en";
-         hasScannedForEncodings = "0";
-         knownRegions = (
-            "en"
-         );
-         mainGroup = "OBJ_5";
-         productRefGroup = "OBJ_39";
-         projectDirPath = ".";
-         targets = (
-            "Patterns::Patterns",
-            "Patterns::SwiftPMPackageDescription",
-            "Playground::Playground",
-            "Playground::SwiftPMPackageDescription"
-         );
-      };
-      "OBJ_10" = {
-         isa = "PBXGroup";
-         children = (
-         );
-         name = "Tests";
-         path = "";
-         sourceTree = "SOURCE_ROOT";
-      };
-      "OBJ_11" = {
-         isa = "PBXGroup";
-         children = (
-            "OBJ_12"
-         );
-         name = "Dependencies";
-         path = "";
-         sourceTree = "<group>";
-      };
-      "OBJ_12" = {
-         isa = "PBXGroup";
-         children = (
-            "OBJ_13",
-            "OBJ_37",
-            "OBJ_38"
-         );
-         name = "Patterns";
-         path = "";
-         sourceTree = "SOURCE_ROOT";
-      };
-      "OBJ_13" = {
-         isa = "PBXGroup";
-         children = (
-            "OBJ_14",
-            "OBJ_19",
-            "OBJ_20",
-            "OBJ_23",
-            "OBJ_24",
-            "OBJ_33",
-            "OBJ_34",
-            "OBJ_35",
-            "OBJ_36"
-         );
-         name = "Patterns";
-         path = "../Sources/Patterns";
-         sourceTree = "SOURCE_ROOT";
-      };
-      "OBJ_14" = {
-         isa = "PBXGroup";
-         children = (
-            "OBJ_15",
-            "OBJ_16",
-            "OBJ_17",
-            "OBJ_18"
-         );
-         name = "Atomic Patterns";
-         path = "Atomic Patterns";
-         sourceTree = "<group>";
-      };
-      "OBJ_15" = {
-         isa = "PBXFileReference";
-         path = "Line.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_16" = {
-         isa = "PBXFileReference";
-         path = "Literal.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_17" = {
-         isa = "PBXFileReference";
-         path = "OneOf.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_18" = {
-         isa = "PBXFileReference";
-         path = "Word.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_19" = {
-         isa = "PBXFileReference";
-         path = "Decoder.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_2" = {
-         isa = "XCConfigurationList";
-         buildConfigurations = (
-            "OBJ_3",
-            "OBJ_4"
-         );
-         defaultConfigurationIsVisible = "0";
-         defaultConfigurationName = "Release";
-      };
-      "OBJ_20" = {
-         isa = "PBXGroup";
-         children = (
-            "OBJ_21",
-            "OBJ_22"
-         );
-         name = "General";
-         path = "General";
-         sourceTree = "<group>";
-      };
-      "OBJ_21" = {
-         isa = "PBXFileReference";
-         path = "General.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_22" = {
-         isa = "PBXFileReference";
-         path = "Group.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_23" = {
-         isa = "PBXFileReference";
-         path = "Grammar.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_24" = {
-         isa = "PBXGroup";
-         children = (
-            "OBJ_25",
-            "OBJ_26",
-            "OBJ_27",
-            "OBJ_28",
-            "OBJ_29",
-            "OBJ_30",
-            "OBJ_31",
-            "OBJ_32"
-         );
-         name = "Operations on Patterns";
-         path = "Operations on Patterns";
-         sourceTree = "<group>";
-      };
-      "OBJ_25" = {
-         isa = "PBXFileReference";
-         path = "And.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_26" = {
-         isa = "PBXFileReference";
-         path = "AnyPattern.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_27" = {
-         isa = "PBXFileReference";
-         path = "Capture.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_28" = {
-         isa = "PBXFileReference";
-         path = "Choice.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_29" = {
-         isa = "PBXFileReference";
-         path = "Concatenation.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_3" = {
-         isa = "XCBuildConfiguration";
-         buildSettings = {
-            CLANG_ENABLE_OBJC_ARC = "YES";
-            COMBINE_HIDPI_IMAGES = "YES";
-            COPY_PHASE_STRIP = "NO";
-            DEBUG_INFORMATION_FORMAT = "dwarf";
-            DYLIB_INSTALL_NAME_BASE = "@rpath";
-            ENABLE_NS_ASSERTIONS = "YES";
-            GCC_OPTIMIZATION_LEVEL = "0";
-            GCC_PREPROCESSOR_DEFINITIONS = (
-               "$(inherited)",
-               "SWIFT_PACKAGE=1",
-               "DEBUG=1"
-            );
-            MACOSX_DEPLOYMENT_TARGET = "10.10";
-            ONLY_ACTIVE_ARCH = "YES";
-            OTHER_SWIFT_FLAGS = (
-               "$(inherited)",
-               "-DXcode"
-            );
-            PRODUCT_NAME = "$(TARGET_NAME)";
-            SDKROOT = "macosx";
-            SUPPORTED_PLATFORMS = (
-               "macosx",
-               "iphoneos",
-               "iphonesimulator",
-               "appletvos",
-               "appletvsimulator",
-               "watchos",
-               "watchsimulator"
-            );
-            SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
-               "$(inherited)",
-               "SWIFT_PACKAGE",
-               "DEBUG"
-            );
-            SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-            USE_HEADERMAP = "NO";
-         };
-         name = "Debug";
-      };
-      "OBJ_30" = {
-         isa = "PBXFileReference";
-         path = "Not.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_31" = {
-         isa = "PBXFileReference";
-         path = "Repetition.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_32" = {
-         isa = "PBXFileReference";
-         path = "Skip.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_33" = {
-         isa = "PBXFileReference";
-         path = "Parser.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_34" = {
-         isa = "PBXFileReference";
-         path = "Pattern And Instruction.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_35" = {
-         isa = "PBXFileReference";
-         path = "Regex.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_36" = {
-         isa = "PBXFileReference";
-         path = "VMBacktrack.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_37" = {
-         isa = "PBXGroup";
-         children = (
-         );
-         name = "unicode_properties";
-         path = "../Sources/unicode_properties";
-         sourceTree = "SOURCE_ROOT";
-      };
-      "OBJ_38" = {
-         isa = "PBXFileReference";
-         explicitFileType = "sourcecode.swift";
-         name = "Package.swift";
-         path = "/Users/karemorstol/Programming/Xtracter/Xtracter/Framework/Package.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_39" = {
-         isa = "PBXGroup";
-         children = (
-            "Playground::Playground::Product",
-            "Patterns::Patterns::Product"
-         );
-         name = "Products";
-         path = "";
-         sourceTree = "BUILT_PRODUCTS_DIR";
-      };
-      "OBJ_4" = {
-         isa = "XCBuildConfiguration";
-         buildSettings = {
-            CLANG_ENABLE_OBJC_ARC = "YES";
-            COMBINE_HIDPI_IMAGES = "YES";
-            COPY_PHASE_STRIP = "YES";
-            DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-            DYLIB_INSTALL_NAME_BASE = "@rpath";
-            GCC_OPTIMIZATION_LEVEL = "s";
-            GCC_PREPROCESSOR_DEFINITIONS = (
-               "$(inherited)",
-               "SWIFT_PACKAGE=1"
-            );
-            MACOSX_DEPLOYMENT_TARGET = "10.10";
-            OTHER_SWIFT_FLAGS = (
-               "$(inherited)",
-               "-DXcode"
-            );
-            PRODUCT_NAME = "$(TARGET_NAME)";
-            SDKROOT = "macosx";
-            SUPPORTED_PLATFORMS = (
-               "macosx",
-               "iphoneos",
-               "iphonesimulator",
-               "appletvos",
-               "appletvsimulator",
-               "watchos",
-               "watchsimulator"
-            );
-            SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
-               "$(inherited)",
-               "SWIFT_PACKAGE"
-            );
-            SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-            USE_HEADERMAP = "NO";
-         };
-         name = "Release";
-      };
-      "OBJ_42" = {
-         isa = "PBXFileReference";
-         path = "README.md";
-         sourceTree = "<group>";
-      };
-      "OBJ_44" = {
-         isa = "XCConfigurationList";
-         buildConfigurations = (
-            "OBJ_45",
-            "OBJ_46"
-         );
-         defaultConfigurationIsVisible = "0";
-         defaultConfigurationName = "Release";
-      };
-      "OBJ_45" = {
-         isa = "XCBuildConfiguration";
-         buildSettings = {
-            ENABLE_TESTABILITY = "YES";
-            FRAMEWORK_SEARCH_PATHS = (
-               "$(inherited)",
-               "$(PLATFORM_DIR)/Developer/Library/Frameworks"
-            );
-            HEADER_SEARCH_PATHS = (
-               "$(inherited)"
-            );
-            INFOPLIST_FILE = "Playground.xcodeproj/Patterns_Info.plist";
-            IPHONEOS_DEPLOYMENT_TARGET = "8.0";
-            LD_RUNPATH_SEARCH_PATHS = (
-               "$(inherited)",
-               "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx"
-            );
-            MACOSX_DEPLOYMENT_TARGET = "10.10";
-            OTHER_CFLAGS = (
-               "$(inherited)"
-            );
-            OTHER_LDFLAGS = (
-               "$(inherited)"
-            );
-            OTHER_SWIFT_FLAGS = (
-               "$(inherited)"
-            );
-            PRODUCT_BUNDLE_IDENTIFIER = "Patterns";
-            PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
-            PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-            SKIP_INSTALL = "YES";
-            SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
-               "DEBUG"
-            );
-            SWIFT_VERSION = "5.0";
-            TARGET_NAME = "Patterns";
-            TVOS_DEPLOYMENT_TARGET = "9.0";
-            WATCHOS_DEPLOYMENT_TARGET = "2.0";
-         };
-         name = "Debug";
-      };
-      "OBJ_46" = {
-         isa = "XCBuildConfiguration";
-         buildSettings = {
-            ENABLE_TESTABILITY = "YES";
-            FRAMEWORK_SEARCH_PATHS = (
-               "$(inherited)",
-               "$(PLATFORM_DIR)/Developer/Library/Frameworks"
-            );
-            HEADER_SEARCH_PATHS = (
-               "$(inherited)"
-            );
-            INFOPLIST_FILE = "Playground.xcodeproj/Patterns_Info.plist";
-            IPHONEOS_DEPLOYMENT_TARGET = "8.0";
-            LD_RUNPATH_SEARCH_PATHS = (
-               "$(inherited)",
-               "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx"
-            );
-            MACOSX_DEPLOYMENT_TARGET = "10.10";
-            OTHER_CFLAGS = (
-               "$(inherited)"
-            );
-            OTHER_LDFLAGS = (
-               "$(inherited)"
-            );
-            OTHER_SWIFT_FLAGS = (
-               "$(inherited)"
-            );
-            PRODUCT_BUNDLE_IDENTIFIER = "Patterns";
-            PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
-            PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-            SKIP_INSTALL = "YES";
-            SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
-               "$(inherited)"
-            );
-            SWIFT_VERSION = "5.0";
-            TARGET_NAME = "Patterns";
-            TVOS_DEPLOYMENT_TARGET = "9.0";
-            WATCHOS_DEPLOYMENT_TARGET = "2.0";
-         };
-         name = "Release";
-      };
-      "OBJ_47" = {
-         isa = "PBXSourcesBuildPhase";
-         files = (
-            "OBJ_48",
-            "OBJ_49",
-            "OBJ_50",
-            "OBJ_51",
-            "OBJ_52",
-            "OBJ_53",
-            "OBJ_54",
-            "OBJ_55",
-            "OBJ_56",
-            "OBJ_57",
-            "OBJ_58",
-            "OBJ_59",
-            "OBJ_60",
-            "OBJ_61",
-            "OBJ_62",
-            "OBJ_63",
-            "OBJ_64",
-            "OBJ_65",
-            "OBJ_66",
-            "OBJ_67"
-         );
-      };
-      "OBJ_48" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_15";
-      };
-      "OBJ_49" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_16";
-      };
-      "OBJ_5" = {
-         isa = "PBXGroup";
-         children = (
-            "OBJ_6",
-            "OBJ_7",
-            "OBJ_10",
-            "OBJ_11",
-            "OBJ_39",
-            "OBJ_42"
-         );
-         path = "";
-         sourceTree = "<group>";
-      };
-      "OBJ_50" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_17";
-      };
-      "OBJ_51" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_18";
-      };
-      "OBJ_52" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_19";
-      };
-      "OBJ_53" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_21";
-      };
-      "OBJ_54" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_22";
-      };
-      "OBJ_55" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_23";
-      };
-      "OBJ_56" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_25";
-      };
-      "OBJ_57" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_26";
-      };
-      "OBJ_58" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_27";
-      };
-      "OBJ_59" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_28";
-      };
-      "OBJ_6" = {
-         isa = "PBXFileReference";
-         explicitFileType = "sourcecode.swift";
-         path = "Package.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_60" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_29";
-      };
-      "OBJ_61" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_30";
-      };
-      "OBJ_62" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_31";
-      };
-      "OBJ_63" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_32";
-      };
-      "OBJ_64" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_33";
-      };
-      "OBJ_65" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_34";
-      };
-      "OBJ_66" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_35";
-      };
-      "OBJ_67" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_36";
-      };
-      "OBJ_68" = {
-         isa = "PBXFrameworksBuildPhase";
-         files = (
-         );
-      };
-      "OBJ_7" = {
-         isa = "PBXGroup";
-         children = (
-            "OBJ_8"
-         );
-         name = "Sources";
-         path = "";
-         sourceTree = "SOURCE_ROOT";
-      };
-      "OBJ_70" = {
-         isa = "XCConfigurationList";
-         buildConfigurations = (
-            "OBJ_71",
-            "OBJ_72"
-         );
-         defaultConfigurationIsVisible = "0";
-         defaultConfigurationName = "Release";
-      };
-      "OBJ_71" = {
-         isa = "XCBuildConfiguration";
-         buildSettings = {
-            LD = "/usr/bin/true";
-            OTHER_SWIFT_FLAGS = (
-               "-swift-version",
-               "5",
-               "-I",
-               "$(TOOLCHAIN_DIR)/usr/lib/swift/pm/4_2",
-               "-target",
-               "x86_64-apple-macosx10.10",
-               "-sdk",
-               "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk",
-               "-package-description-version",
-               "5.0.0"
-            );
-            SWIFT_VERSION = "5.0";
-         };
-         name = "Debug";
-      };
-      "OBJ_72" = {
-         isa = "XCBuildConfiguration";
-         buildSettings = {
-            LD = "/usr/bin/true";
-            OTHER_SWIFT_FLAGS = (
-               "-swift-version",
-               "5",
-               "-I",
-               "$(TOOLCHAIN_DIR)/usr/lib/swift/pm/4_2",
-               "-target",
-               "x86_64-apple-macosx10.10",
-               "-sdk",
-               "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk",
-               "-package-description-version",
-               "5.0.0"
-            );
-            SWIFT_VERSION = "5.0";
-         };
-         name = "Release";
-      };
-      "OBJ_73" = {
-         isa = "PBXSourcesBuildPhase";
-         files = (
-            "OBJ_74"
-         );
-      };
-      "OBJ_74" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_38";
-      };
-      "OBJ_76" = {
-         isa = "XCConfigurationList";
-         buildConfigurations = (
-            "OBJ_77",
-            "OBJ_78"
-         );
-         defaultConfigurationIsVisible = "0";
-         defaultConfigurationName = "Release";
-      };
-      "OBJ_77" = {
-         isa = "XCBuildConfiguration";
-         buildSettings = {
-            ENABLE_TESTABILITY = "YES";
-            FRAMEWORK_SEARCH_PATHS = (
-               "$(inherited)",
-               "$(PLATFORM_DIR)/Developer/Library/Frameworks"
-            );
-            HEADER_SEARCH_PATHS = (
-               "$(inherited)"
-            );
-            INFOPLIST_FILE = "Playground.xcodeproj/Playground_Info.plist";
-            IPHONEOS_DEPLOYMENT_TARGET = "8.0";
-            LD_RUNPATH_SEARCH_PATHS = (
-               "$(inherited)",
-               "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx"
-            );
-            MACOSX_DEPLOYMENT_TARGET = "10.10";
-            OTHER_CFLAGS = (
-               "$(inherited)"
-            );
-            OTHER_LDFLAGS = (
-               "$(inherited)"
-            );
-            OTHER_SWIFT_FLAGS = (
-               "$(inherited)"
-            );
-            PRODUCT_BUNDLE_IDENTIFIER = "Playground";
-            PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
-            PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-            SKIP_INSTALL = "YES";
-            SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
-               "$(inherited)"
-            );
-            SWIFT_VERSION = "5.0";
-            TARGET_NAME = "Playground";
-            TVOS_DEPLOYMENT_TARGET = "9.0";
-            WATCHOS_DEPLOYMENT_TARGET = "2.0";
-         };
-         name = "Debug";
-      };
-      "OBJ_78" = {
-         isa = "XCBuildConfiguration";
-         buildSettings = {
-            ENABLE_TESTABILITY = "YES";
-            FRAMEWORK_SEARCH_PATHS = (
-               "$(inherited)",
-               "$(PLATFORM_DIR)/Developer/Library/Frameworks"
-            );
-            HEADER_SEARCH_PATHS = (
-               "$(inherited)"
-            );
-            INFOPLIST_FILE = "Playground.xcodeproj/Playground_Info.plist";
-            IPHONEOS_DEPLOYMENT_TARGET = "8.0";
-            LD_RUNPATH_SEARCH_PATHS = (
-               "$(inherited)",
-               "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx"
-            );
-            MACOSX_DEPLOYMENT_TARGET = "10.10";
-            OTHER_CFLAGS = (
-               "$(inherited)"
-            );
-            OTHER_LDFLAGS = (
-               "$(inherited)"
-            );
-            OTHER_SWIFT_FLAGS = (
-               "$(inherited)"
-            );
-            PRODUCT_BUNDLE_IDENTIFIER = "Playground";
-            PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
-            PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-            SKIP_INSTALL = "YES";
-            SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
-               "$(inherited)"
-            );
-            SWIFT_VERSION = "5.0";
-            TARGET_NAME = "Playground";
-            TVOS_DEPLOYMENT_TARGET = "9.0";
-            WATCHOS_DEPLOYMENT_TARGET = "2.0";
-         };
-         name = "Release";
-      };
-      "OBJ_79" = {
-         isa = "PBXSourcesBuildPhase";
-         files = (
-            "OBJ_80"
-         );
-      };
-      "OBJ_8" = {
-         isa = "PBXGroup";
-         children = (
-            "OBJ_9"
-         );
-         name = "Playground";
-         path = "Sources/Playground";
-         sourceTree = "SOURCE_ROOT";
-      };
-      "OBJ_80" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_9";
-      };
-      "OBJ_81" = {
-         isa = "PBXFrameworksBuildPhase";
-         files = (
-            "OBJ_82"
-         );
-      };
-      "OBJ_82" = {
-         isa = "PBXBuildFile";
-         fileRef = "Patterns::Patterns::Product";
-      };
-      "OBJ_83" = {
-         isa = "PBXTargetDependency";
-         target = "Patterns::Patterns";
-      };
-      "OBJ_85" = {
-         isa = "XCConfigurationList";
-         buildConfigurations = (
-            "OBJ_86",
-            "OBJ_87"
-         );
-         defaultConfigurationIsVisible = "0";
-         defaultConfigurationName = "Release";
-      };
-      "OBJ_86" = {
-         isa = "XCBuildConfiguration";
-         buildSettings = {
-            LD = "/usr/bin/true";
-            OTHER_SWIFT_FLAGS = (
-               "-swift-version",
-               "5",
-               "-I",
-               "$(TOOLCHAIN_DIR)/usr/lib/swift/pm/4_2",
-               "-target",
-               "x86_64-apple-macosx10.10",
-               "-sdk",
-               "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk",
-               "-package-description-version",
-               "5.2.0"
-            );
-            SWIFT_VERSION = "5.0";
-         };
-         name = "Debug";
-      };
-      "OBJ_87" = {
-         isa = "XCBuildConfiguration";
-         buildSettings = {
-            LD = "/usr/bin/true";
-            OTHER_SWIFT_FLAGS = (
-               "-swift-version",
-               "5",
-               "-I",
-               "$(TOOLCHAIN_DIR)/usr/lib/swift/pm/4_2",
-               "-target",
-               "x86_64-apple-macosx10.10",
-               "-sdk",
-               "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk",
-               "-package-description-version",
-               "5.2.0"
-            );
-            SWIFT_VERSION = "5.0";
-         };
-         name = "Release";
-      };
-      "OBJ_88" = {
-         isa = "PBXSourcesBuildPhase";
-         files = (
-            "OBJ_89"
-         );
-      };
-      "OBJ_89" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_6";
-      };
-      "OBJ_9" = {
-         isa = "PBXFileReference";
-         path = "Playground.swift";
-         sourceTree = "<group>";
-      };
-      "Patterns::Patterns" = {
-         isa = "PBXNativeTarget";
-         buildConfigurationList = "OBJ_44";
-         buildPhases = (
-            "OBJ_47",
-            "OBJ_68"
-         );
-         dependencies = (
-         );
-         name = "Patterns";
-         productName = "Patterns";
-         productReference = "Patterns::Patterns::Product";
-         productType = "com.apple.product-type.framework";
-      };
-      "Patterns::Patterns::Product" = {
-         isa = "PBXFileReference";
-         path = "Patterns.framework";
-         sourceTree = "BUILT_PRODUCTS_DIR";
-      };
-      "Patterns::SwiftPMPackageDescription" = {
-         isa = "PBXNativeTarget";
-         buildConfigurationList = "OBJ_70";
-         buildPhases = (
-            "OBJ_73"
-         );
-         dependencies = (
-         );
-         name = "PatternsPackageDescription";
-         productName = "PatternsPackageDescription";
-         productType = "com.apple.product-type.framework";
-      };
-      "Playground::Playground" = {
-         isa = "PBXNativeTarget";
-         buildConfigurationList = "OBJ_76";
-         buildPhases = (
-            "OBJ_79",
-            "OBJ_81"
-         );
-         dependencies = (
-            "OBJ_83"
-         );
-         name = "Playground";
-         productName = "Playground";
-         productReference = "Playground::Playground::Product";
-         productType = "com.apple.product-type.framework";
-      };
-      "Playground::Playground::Product" = {
-         isa = "PBXFileReference";
-         path = "Playground.framework";
-         sourceTree = "BUILT_PRODUCTS_DIR";
-      };
-      "Playground::SwiftPMPackageDescription" = {
-         isa = "PBXNativeTarget";
-         buildConfigurationList = "OBJ_85";
-         buildPhases = (
-            "OBJ_88"
-         );
-         dependencies = (
-         );
-         name = "PlaygroundPackageDescription";
-         productName = "PlaygroundPackageDescription";
-         productType = "com.apple.product-type.framework";
-      };
-   };
-   rootObject = "OBJ_1";
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BA92EA232495240C000A854B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA92EA222495240C000A854B /* AppDelegate.swift */; };
+		BA92EA272495240D000A854B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA92EA262495240D000A854B /* Assets.xcassets */; };
+		BA92EA2A2495240D000A854B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA92EA292495240D000A854B /* Preview Assets.xcassets */; };
+		BA92EA2D2495240D000A854B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA92EA2B2495240D000A854B /* Main.storyboard */; };
+		BA92EA36249527A0000A854B /* Patterns.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Patterns::Patterns::Product" /* Patterns.framework */; };
+		BA92EA37249527A0000A854B /* Patterns.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = "Patterns::Patterns::Product" /* Patterns.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BA92EA3F2496AD19000A854B /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA92EA3D2496AD19000A854B /* General.swift */; };
+		BA92EA402496AD19000A854B /* ParserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA92EA3E2496AD19000A854B /* ParserView.swift */; };
+		OBJ_48 /* Line.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_15 /* Line.swift */; };
+		OBJ_49 /* Literal.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_16 /* Literal.swift */; };
+		OBJ_50 /* OneOf.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_17 /* OneOf.swift */; };
+		OBJ_51 /* Word.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_18 /* Word.swift */; };
+		OBJ_52 /* Decoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_19 /* Decoder.swift */; };
+		OBJ_53 /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_21 /* General.swift */; };
+		OBJ_54 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_22 /* Group.swift */; };
+		OBJ_55 /* Grammar.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_23 /* Grammar.swift */; };
+		OBJ_56 /* And.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_25 /* And.swift */; };
+		OBJ_57 /* AnyPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_26 /* AnyPattern.swift */; };
+		OBJ_58 /* Capture.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_27 /* Capture.swift */; };
+		OBJ_59 /* Choice.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_28 /* Choice.swift */; };
+		OBJ_60 /* Concatenation.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_29 /* Concatenation.swift */; };
+		OBJ_61 /* Not.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_30 /* Not.swift */; };
+		OBJ_62 /* Repetition.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_31 /* Repetition.swift */; };
+		OBJ_63 /* Skip.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_32 /* Skip.swift */; };
+		OBJ_64 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_33 /* Parser.swift */; };
+		OBJ_65 /* Pattern And Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_34 /* Pattern And Instruction.swift */; };
+		OBJ_66 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_35 /* Regex.swift */; };
+		OBJ_67 /* VMBacktrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_36 /* VMBacktrack.swift */; };
+		OBJ_74 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_38 /* Package.swift */; };
+		OBJ_80 /* Playground.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Playground.swift */; };
+		OBJ_82 /* Patterns.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Patterns::Patterns::Product" /* Patterns.framework */; };
+		OBJ_89 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		BA92EA38249527A0000A854B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = OBJ_1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = "Patterns::Patterns";
+			remoteInfo = Patterns;
+		};
+		BAAF4B962493FA31006BBB38 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = OBJ_1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = "Patterns::Patterns";
+			remoteInfo = Patterns;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BA92EA3A249527A0000A854B /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				BA92EA37249527A0000A854B /* Patterns.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		BA92EA202495240C000A854B /* PlaygroundView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlaygroundView.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BA92EA222495240C000A854B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		BA92EA262495240D000A854B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BA92EA292495240D000A854B /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		BA92EA2C2495240D000A854B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		BA92EA2E2495240D000A854B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BA92EA2F2495240D000A854B /* PlaygroundView.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PlaygroundView.entitlements; sourceTree = "<group>"; };
+		BA92EA3D2496AD19000A854B /* General.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = General.swift; path = MyPlayground.playground/Sources/General.swift; sourceTree = SOURCE_ROOT; };
+		BA92EA3E2496AD19000A854B /* ParserView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ParserView.swift; path = MyPlayground.playground/Sources/ParserView.swift; sourceTree = SOURCE_ROOT; };
+		OBJ_15 /* Line.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Line.swift; sourceTree = "<group>"; };
+		OBJ_16 /* Literal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Literal.swift; sourceTree = "<group>"; };
+		OBJ_17 /* OneOf.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneOf.swift; sourceTree = "<group>"; };
+		OBJ_18 /* Word.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Word.swift; sourceTree = "<group>"; };
+		OBJ_19 /* Decoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Decoder.swift; sourceTree = "<group>"; };
+		OBJ_21 /* General.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = General.swift; sourceTree = "<group>"; };
+		OBJ_22 /* Group.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
+		OBJ_23 /* Grammar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Grammar.swift; sourceTree = "<group>"; };
+		OBJ_25 /* And.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = And.swift; sourceTree = "<group>"; };
+		OBJ_26 /* AnyPattern.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyPattern.swift; sourceTree = "<group>"; };
+		OBJ_27 /* Capture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Capture.swift; sourceTree = "<group>"; };
+		OBJ_28 /* Choice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Choice.swift; sourceTree = "<group>"; };
+		OBJ_29 /* Concatenation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Concatenation.swift; sourceTree = "<group>"; };
+		OBJ_30 /* Not.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Not.swift; sourceTree = "<group>"; };
+		OBJ_31 /* Repetition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repetition.swift; sourceTree = "<group>"; };
+		OBJ_32 /* Skip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Skip.swift; sourceTree = "<group>"; };
+		OBJ_33 /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
+		OBJ_34 /* Pattern And Instruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Pattern And Instruction.swift"; sourceTree = "<group>"; };
+		OBJ_35 /* Regex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Regex.swift; sourceTree = "<group>"; };
+		OBJ_36 /* VMBacktrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VMBacktrack.swift; sourceTree = "<group>"; };
+		OBJ_38 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; name = Package.swift; path = /Users/karemorstol/Programming/Xtracter/Xtracter/Framework/Package.swift; sourceTree = "<group>"; };
+		OBJ_42 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+		OBJ_9 /* Playground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playground.swift; sourceTree = "<group>"; };
+		"Patterns::Patterns::Product" /* Patterns.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Patterns.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		"Playground::Playground::Product" /* Playground.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Playground.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BA92EA1D2495240C000A854B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA92EA36249527A0000A854B /* Patterns.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		OBJ_68 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		OBJ_81 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 0;
+			files = (
+				OBJ_82 /* Patterns.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		BA92EA212495240C000A854B /* PlaygroundView */ = {
+			isa = PBXGroup;
+			children = (
+				BA92EA3E2496AD19000A854B /* ParserView.swift */,
+				BA92EA3D2496AD19000A854B /* General.swift */,
+				BA92EA222495240C000A854B /* AppDelegate.swift */,
+				BA92EA262495240D000A854B /* Assets.xcassets */,
+				BA92EA2B2495240D000A854B /* Main.storyboard */,
+				BA92EA2E2495240D000A854B /* Info.plist */,
+				BA92EA2F2495240D000A854B /* PlaygroundView.entitlements */,
+				BA92EA282495240D000A854B /* Preview Content */,
+			);
+			path = PlaygroundView;
+			sourceTree = "<group>";
+		};
+		BA92EA282495240D000A854B /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				BA92EA292495240D000A854B /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		BA92EA35249527A0000A854B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		OBJ_10 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Tests;
+			sourceTree = SOURCE_ROOT;
+		};
+		OBJ_11 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				OBJ_12 /* Patterns */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		OBJ_12 /* Patterns */ = {
+			isa = PBXGroup;
+			children = (
+				OBJ_13 /* Patterns */,
+				OBJ_37 /* unicode_properties */,
+				OBJ_38 /* Package.swift */,
+			);
+			name = Patterns;
+			sourceTree = SOURCE_ROOT;
+		};
+		OBJ_13 /* Patterns */ = {
+			isa = PBXGroup;
+			children = (
+				OBJ_14 /* Atomic Patterns */,
+				OBJ_19 /* Decoder.swift */,
+				OBJ_20 /* General */,
+				OBJ_23 /* Grammar.swift */,
+				OBJ_24 /* Operations on Patterns */,
+				OBJ_33 /* Parser.swift */,
+				OBJ_34 /* Pattern And Instruction.swift */,
+				OBJ_35 /* Regex.swift */,
+				OBJ_36 /* VMBacktrack.swift */,
+			);
+			name = Patterns;
+			path = ../Sources/Patterns;
+			sourceTree = SOURCE_ROOT;
+		};
+		OBJ_14 /* Atomic Patterns */ = {
+			isa = PBXGroup;
+			children = (
+				OBJ_15 /* Line.swift */,
+				OBJ_16 /* Literal.swift */,
+				OBJ_17 /* OneOf.swift */,
+				OBJ_18 /* Word.swift */,
+			);
+			path = "Atomic Patterns";
+			sourceTree = "<group>";
+		};
+		OBJ_20 /* General */ = {
+			isa = PBXGroup;
+			children = (
+				OBJ_21 /* General.swift */,
+				OBJ_22 /* Group.swift */,
+			);
+			path = General;
+			sourceTree = "<group>";
+		};
+		OBJ_24 /* Operations on Patterns */ = {
+			isa = PBXGroup;
+			children = (
+				OBJ_25 /* And.swift */,
+				OBJ_26 /* AnyPattern.swift */,
+				OBJ_27 /* Capture.swift */,
+				OBJ_28 /* Choice.swift */,
+				OBJ_29 /* Concatenation.swift */,
+				OBJ_30 /* Not.swift */,
+				OBJ_31 /* Repetition.swift */,
+				OBJ_32 /* Skip.swift */,
+			);
+			path = "Operations on Patterns";
+			sourceTree = "<group>";
+		};
+		OBJ_37 /* unicode_properties */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = unicode_properties;
+			path = ../Sources/unicode_properties;
+			sourceTree = SOURCE_ROOT;
+		};
+		OBJ_39 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				"Playground::Playground::Product" /* Playground.framework */,
+				"Patterns::Patterns::Product" /* Patterns.framework */,
+				BA92EA202495240C000A854B /* PlaygroundView.app */,
+			);
+			name = Products;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		OBJ_5 = {
+			isa = PBXGroup;
+			children = (
+				OBJ_6 /* Package.swift */,
+				OBJ_7 /* Sources */,
+				OBJ_10 /* Tests */,
+				OBJ_11 /* Dependencies */,
+				BA92EA212495240C000A854B /* PlaygroundView */,
+				OBJ_39 /* Products */,
+				OBJ_42 /* README.md */,
+				BA92EA35249527A0000A854B /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		OBJ_7 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				OBJ_8 /* Playground */,
+			);
+			name = Sources;
+			sourceTree = SOURCE_ROOT;
+		};
+		OBJ_8 /* Playground */ = {
+			isa = PBXGroup;
+			children = (
+				OBJ_9 /* Playground.swift */,
+			);
+			name = Playground;
+			path = Sources/Playground;
+			sourceTree = SOURCE_ROOT;
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		BA92EA1F2495240C000A854B /* PlaygroundView */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BA92EA322495240D000A854B /* Build configuration list for PBXNativeTarget "PlaygroundView" */;
+			buildPhases = (
+				BA92EA1C2495240C000A854B /* Sources */,
+				BA92EA1D2495240C000A854B /* Frameworks */,
+				BA92EA1E2495240C000A854B /* Resources */,
+				BA92EA3A249527A0000A854B /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BA92EA39249527A0000A854B /* PBXTargetDependency */,
+			);
+			name = PlaygroundView;
+			productName = PlaygroundView;
+			productReference = BA92EA202495240C000A854B /* PlaygroundView.app */;
+			productType = "com.apple.product-type.application";
+		};
+		"Patterns::Patterns" /* Patterns */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = OBJ_44 /* Build configuration list for PBXNativeTarget "Patterns" */;
+			buildPhases = (
+				OBJ_47 /* Sources */,
+				OBJ_68 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Patterns;
+			productName = Patterns;
+			productReference = "Patterns::Patterns::Product" /* Patterns.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		"Patterns::SwiftPMPackageDescription" /* PatternsPackageDescription */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = OBJ_70 /* Build configuration list for PBXNativeTarget "PatternsPackageDescription" */;
+			buildPhases = (
+				OBJ_73 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PatternsPackageDescription;
+			productName = PatternsPackageDescription;
+			productType = "com.apple.product-type.framework";
+		};
+		"Playground::Playground" /* Playground */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = OBJ_76 /* Build configuration list for PBXNativeTarget "Playground" */;
+			buildPhases = (
+				OBJ_79 /* Sources */,
+				OBJ_81 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				OBJ_83 /* PBXTargetDependency */,
+			);
+			name = Playground;
+			productName = Playground;
+			productReference = "Playground::Playground::Product" /* Playground.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		"Playground::SwiftPMPackageDescription" /* PlaygroundPackageDescription */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = OBJ_85 /* Build configuration list for PBXNativeTarget "PlaygroundPackageDescription" */;
+			buildPhases = (
+				OBJ_88 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PlaygroundPackageDescription;
+			productName = PlaygroundPackageDescription;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		OBJ_1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftMigration = 9999;
+				LastSwiftUpdateCheck = 1150;
+				LastUpgradeCheck = 9999;
+				TargetAttributes = {
+					BA92EA1F2495240C000A854B = {
+						CreatedOnToolsVersion = 11.5;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = OBJ_2 /* Build configuration list for PBXProject "Playground" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = OBJ_5;
+			productRefGroup = OBJ_39 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				"Patterns::Patterns" /* Patterns */,
+				"Patterns::SwiftPMPackageDescription" /* PatternsPackageDescription */,
+				"Playground::Playground" /* Playground */,
+				"Playground::SwiftPMPackageDescription" /* PlaygroundPackageDescription */,
+				BA92EA1F2495240C000A854B /* PlaygroundView */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BA92EA1E2495240C000A854B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA92EA2D2495240D000A854B /* Main.storyboard in Resources */,
+				BA92EA2A2495240D000A854B /* Preview Assets.xcassets in Resources */,
+				BA92EA272495240D000A854B /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BA92EA1C2495240C000A854B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA92EA3F2496AD19000A854B /* General.swift in Sources */,
+				BA92EA232495240C000A854B /* AppDelegate.swift in Sources */,
+				BA92EA402496AD19000A854B /* ParserView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		OBJ_47 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 0;
+			files = (
+				OBJ_48 /* Line.swift in Sources */,
+				OBJ_49 /* Literal.swift in Sources */,
+				OBJ_50 /* OneOf.swift in Sources */,
+				OBJ_51 /* Word.swift in Sources */,
+				OBJ_52 /* Decoder.swift in Sources */,
+				OBJ_53 /* General.swift in Sources */,
+				OBJ_54 /* Group.swift in Sources */,
+				OBJ_55 /* Grammar.swift in Sources */,
+				OBJ_56 /* And.swift in Sources */,
+				OBJ_57 /* AnyPattern.swift in Sources */,
+				OBJ_58 /* Capture.swift in Sources */,
+				OBJ_59 /* Choice.swift in Sources */,
+				OBJ_60 /* Concatenation.swift in Sources */,
+				OBJ_61 /* Not.swift in Sources */,
+				OBJ_62 /* Repetition.swift in Sources */,
+				OBJ_63 /* Skip.swift in Sources */,
+				OBJ_64 /* Parser.swift in Sources */,
+				OBJ_65 /* Pattern And Instruction.swift in Sources */,
+				OBJ_66 /* Regex.swift in Sources */,
+				OBJ_67 /* VMBacktrack.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		OBJ_73 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 0;
+			files = (
+				OBJ_74 /* Package.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		OBJ_79 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 0;
+			files = (
+				OBJ_80 /* Playground.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		OBJ_88 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 0;
+			files = (
+				OBJ_89 /* Package.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BA92EA39249527A0000A854B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = "Patterns::Patterns" /* Patterns */;
+			targetProxy = BA92EA38249527A0000A854B /* PBXContainerItemProxy */;
+		};
+		OBJ_83 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = "Patterns::Patterns" /* Patterns */;
+			targetProxy = BAAF4B962493FA31006BBB38 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		BA92EA2B2495240D000A854B /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BA92EA2C2495240D000A854B /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		BA92EA302495240D000A854B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = PlaygroundView/PlaygroundView.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_ASSET_PATHS = "\"PlaygroundView/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = PlaygroundView/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nope.PlaygroundView;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		BA92EA312495240D000A854B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = PlaygroundView/PlaygroundView.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_ASSET_PATHS = "\"PlaygroundView/Preview Content\"";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = PlaygroundView/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nope.PlaygroundView;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		OBJ_3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"SWIFT_PACKAGE=1",
+					"DEBUG=1",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_SWIFT_FLAGS = "$(inherited) -DXcode";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator appletvos appletvsimulator watchos watchsimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SWIFT_PACKAGE DEBUG";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				USE_HEADERMAP = NO;
+			};
+			name = Debug;
+		};
+		OBJ_4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"SWIFT_PACKAGE=1",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				OTHER_SWIFT_FLAGS = "$(inherited) -DXcode";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator appletvos appletvsimulator watchos watchsimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SWIFT_PACKAGE";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				USE_HEADERMAP = NO;
+			};
+			name = Release;
+		};
+		OBJ_45 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
+				INFOPLIST_FILE = Playground.xcodeproj/Patterns_Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = Patterns;
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 5.0;
+				TARGET_NAME = Patterns;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Debug;
+		};
+		OBJ_46 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
+				INFOPLIST_FILE = Playground.xcodeproj/Patterns_Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = Patterns;
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				SWIFT_VERSION = 5.0;
+				TARGET_NAME = Patterns;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Release;
+		};
+		OBJ_71 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LD = /usr/bin/true;
+				OTHER_SWIFT_FLAGS = "-swift-version 5 -I $(TOOLCHAIN_DIR)/usr/lib/swift/pm/4_2 -target x86_64-apple-macosx10.10 -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -package-description-version 5.0.0";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		OBJ_72 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LD = /usr/bin/true;
+				OTHER_SWIFT_FLAGS = "-swift-version 5 -I $(TOOLCHAIN_DIR)/usr/lib/swift/pm/4_2 -target x86_64-apple-macosx10.10 -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -package-description-version 5.0.0";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		OBJ_77 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
+				INFOPLIST_FILE = Playground.xcodeproj/Playground_Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = Playground;
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				SWIFT_VERSION = 5.0;
+				TARGET_NAME = Playground;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Debug;
+		};
+		OBJ_78 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
+				INFOPLIST_FILE = Playground.xcodeproj/Playground_Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = Playground;
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				SWIFT_VERSION = 5.0;
+				TARGET_NAME = Playground;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+				WATCHOS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Release;
+		};
+		OBJ_86 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LD = /usr/bin/true;
+				OTHER_SWIFT_FLAGS = "-swift-version 5 -I $(TOOLCHAIN_DIR)/usr/lib/swift/pm/4_2 -target x86_64-apple-macosx10.10 -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -package-description-version 5.2.0";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		OBJ_87 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LD = /usr/bin/true;
+				OTHER_SWIFT_FLAGS = "-swift-version 5 -I $(TOOLCHAIN_DIR)/usr/lib/swift/pm/4_2 -target x86_64-apple-macosx10.10 -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -package-description-version 5.2.0";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BA92EA322495240D000A854B /* Build configuration list for PBXNativeTarget "PlaygroundView" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BA92EA302495240D000A854B /* Debug */,
+				BA92EA312495240D000A854B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		OBJ_2 /* Build configuration list for PBXProject "Playground" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				OBJ_3 /* Debug */,
+				OBJ_4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		OBJ_44 /* Build configuration list for PBXNativeTarget "Patterns" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				OBJ_45 /* Debug */,
+				OBJ_46 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		OBJ_70 /* Build configuration list for PBXNativeTarget "PatternsPackageDescription" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				OBJ_71 /* Debug */,
+				OBJ_72 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		OBJ_76 /* Build configuration list for PBXNativeTarget "Playground" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				OBJ_77 /* Debug */,
+				OBJ_78 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		OBJ_85 /* Build configuration list for PBXNativeTarget "PlaygroundPackageDescription" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				OBJ_86 /* Debug */,
+				OBJ_87 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = OBJ_1 /* Project object */;
 }
