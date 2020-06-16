@@ -199,18 +199,6 @@ Add to your Podfile:
 pod 'Patterns', :git => 'https://github.com/kareman/Patterns.git'
 ```
 
-### [Carthage](https://github.com/Carthage/Carthage)
-
-Add to your `Cartfile`:
-
-```ogdl
-github "kareman/Patterns"
-```
-
-Run `carthage update` to build the framework and drag the built `Patterns.framework` into your Xcode project. 
-
-In your application targets’ “Build Phases” settings tab, click the “+” icon and choose “New Run Script Phase” and add the Framework path as mentioned in [Carthage Getting started Step 4, 5 and 6](https://github.com/Carthage/Carthage/blob/master/README.md#if-youre-building-for-ios-tvos-or-watchos)
-
 ## Implementation
 
 Patterns is implemented using a virtual parsing machine, similar to how [LPEG](http://www.inf.puc-rio.br/~roberto/lpeg/) is [implemented](http://www.inf.puc-rio.br/~roberto/docs/peg.pdf). See also the `backtrackingvm` function described [here](https://swtch.com/~rsc/regexp/regexp2.html).
