@@ -11,7 +11,7 @@ public struct NotPattern<Wrapped: Pattern>: Pattern {
 
 	public func createInstructions(_ instructions: inout Instructions) throws {
 		let wrappedInstructions = try wrapped.createInstructions()
-		instructions.append(.split(first: 1, second: wrappedInstructions.count + 3))
+		instructions.append(.split(second: wrappedInstructions.count + 3))
 		instructions.append(contentsOf: wrappedInstructions)
 		instructions.append(.cancelLastSplit)
 		instructions.append(.fail)

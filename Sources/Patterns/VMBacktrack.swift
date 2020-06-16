@@ -106,8 +106,8 @@ extension VMBacktrackEngine {
 				case .captureStart(_), .captureEnd:
 					thread.captures.append((index: thread.inputIndex, instruction: thread.instructionIndex))
 					thread.instructionIndex += 1
-				case let .split(first, second, atIndex):
-					defer { thread.instructionIndex += first }
+				case let .choice(second, atIndex):
+					defer { thread.instructionIndex += 1 }
 					var newThread = Thread(startAt: thread.instructionIndex + second, withDataFrom: thread)
 					if atIndex != 0 {
 						guard input.formIndexSafely(&newThread.inputIndex, offsetBy: atIndex) else { break }

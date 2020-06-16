@@ -26,14 +26,14 @@ public struct RepeatPattern<Repeated: Pattern>: Pattern {
 		for _ in 0 ..< min { instructions.append(contentsOf: repeatedInstructions) }
 		if let max = max {
 			let optionalRepeatedInstructions = Instructions {
-				$0.append(.split(first: 1, second: repeatedInstructions.count + 2))
+				$0.append(.split(second: repeatedInstructions.count + 2))
 				$0.append(contentsOf: repeatedInstructions)
 				$0.append(.cancelLastSplit)
 			}
 			instructions.append(contentsOf: repeatElement(optionalRepeatedInstructions, count: max - min).lazy.flatMap { $0 })
 		} else {
 			instructions.append {
-				$0.append(.split(first: 1, second: repeatedInstructions.count + 3))
+				$0.append(.split(second: repeatedInstructions.count + 3))
 				$0.append(contentsOf: repeatedInstructions)
 				$0.append(.cancelLastSplit)
 				$0.append(.jump(offset: -repeatedInstructions.count - 2))

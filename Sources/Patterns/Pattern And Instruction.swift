@@ -8,7 +8,7 @@
 public protocol Pattern: CustomStringConvertible {
 	typealias Input = String
 	typealias ParsedRange = Range<Input.Index>
-	typealias Instructions = ContiguousArray<Instruction<Input>> // TODO: use almost everywhere
+	typealias Instructions = ContiguousArray<Instruction<Input>>
 
 	func createInstructions(_ instructions: inout Instructions) throws
 	func createInstructions() throws -> Instructions
@@ -32,7 +32,7 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Equ
 	case captureStart(name: String?)
 	case captureEnd
 	case jump(offset: Distance)
-	case split(first: Distance, second: Distance, atIndex: Int)
+	case choice(second: Distance, atIndex: Int)
 	case cancelLastSplit
 	case openCall(name: String) // will be replaced by .call in preprocessing.
 	case call(offset: Int)
@@ -50,8 +50,8 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Equ
 		}
 	}
 
-	static func split(first: Int, second: Int) -> Instruction {
-		.split(first: first, second: second, atIndex: 0)
+	static func split(second: Int) -> Instruction {
+		.choice(second: second, atIndex: 0)
 	}
 
 	var movesIndexBy: Int? {
@@ -62,7 +62,7 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Equ
 			return 1
 		case let .moveIndex(offset):
 			return offset
-		case .function, .split, .jump, .openCall, .call, .return, .fail:
+		case .function, .choice, .jump, .openCall, .call, .return, .fail:
 			return nil
 		}
 	}
