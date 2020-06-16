@@ -5,70 +5,47 @@
 //  Created by Kåre Morstøl on 25/05/2020.
 //
 
-public struct Capture<Wrapped: Pattern>: Pattern {
-	public var description: String {
-		let result: String
-		switch (name, wrapped) {
-		case (nil, nil):
-			result = ""
-		case let (name?, wrapped?):
-			result = "name: \(name), \(wrapped)"
-		case let (name?, nil):
-			result = "name: \(name)"
-		case let (nil, wrapped?):
-			result = wrapped.description
-		}
-		return "Capture(\(result))"
-	}
-
+public struct CaptureStart: Pattern {
+	public var description: String { "CaptureStart(\(name.map { "name: \($0)" } ?? "")" }
 	public let name: String?
-	public let wrapped: Wrapped?
 
-	public init(name: String? = nil, _ pattern: Wrapped) {
-		self.wrapped = pattern
+	public init(name: String? = nil) {
 		self.name = name
 	}
 
-	public func createInstructions(_ instructions: inout Instructions) throws {
+	public func createInstructions(_ instructions: inout Instructions) {
 		instructions.append(.captureStart(name: name))
-		try wrapped?.createInstructions(&instructions)
+	}
+}
+
+public struct CaptureEnd: Pattern {
+	public var description: String { "CaptureEnd()" }
+
+	public init() {}
+
+	public func createInstructions(_ instructions: inout Instructions) {
 		instructions.append(.captureEnd)
 	}
-
-	public struct Start: Pattern {
-		public var description: String { "[" }
-		public let name: String?
-
-		public init(name: String? = nil) {
-			self.name = name
-		}
-
-		public func createInstructions(_ instructions: inout Instructions) {
-			instructions.append(.captureStart(name: name))
-		}
-	}
-
-	public struct End: Pattern {
-		public var description: String { "]" }
-
-		public init() {}
-
-		public func createInstructions(_ instructions: inout Instructions) {
-			instructions.append(.captureEnd)
-		}
-	}
 }
 
-extension Capture where Wrapped == AnyPattern {
-	public init(name: String? = nil) {
-		self.wrapped = nil
-		self.name = name
-	}
+/// Captures the current position in the input as an empty range.
+/// - returns: `CaptureStart(name: name) • CaptureEnd()`
+@inlinable
+public func Capture(name: String? = nil) -> Concat<CaptureStart, CaptureEnd> {
+	CaptureStart(name: name) • CaptureEnd()
 }
 
-extension Capture where Wrapped == Literal {
-	public init(name: String? = nil, _ patterns: Literal) {
-		self.wrapped = patterns
-		self.name = name
-	}
+/// Captures the position in the input of `wrapped` as a range.
+/// - returns: `CaptureStart(name: name) • wrapped • CaptureEnd()`
+@inlinable
+public func Capture<P: Pattern>(name: String? = nil, _ wrapped: P) -> Concat<CaptureStart, Concat<P, CaptureEnd>> {
+	CaptureStart(name: name) • wrapped • CaptureEnd()
 }
+
+@inlinable
+public func Capture(name: String? = nil, _ wrapped: Literal) -> Concat<CaptureStart, Concat<Literal, CaptureEnd>> {
+	CaptureStart(name: name) • wrapped • CaptureEnd()
+}
+
+// " " • Capture(letter • Skip()) • " "
+// pattern	""Concat<""Literal, ""Concat<""Concat<""CaptureStart, ""Concat<""Concat<""OneOf, ""Skip<""AnyPattern>>, ""CaptureEnd>>, ""Literal>>

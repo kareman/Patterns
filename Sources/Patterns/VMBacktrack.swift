@@ -106,16 +106,16 @@ extension VMBacktrackEngine {
 				case .captureStart(_), .captureEnd:
 					thread.captures.append((index: thread.inputIndex, instruction: thread.instructionIndex))
 					thread.instructionIndex += 1
-				case let .choice(second, atIndex):
+				case let .choice(offset, atIndex):
 					defer { thread.instructionIndex += 1 }
-					var newThread = Thread(startAt: thread.instructionIndex + second, withDataFrom: thread)
+					var newThread = Thread(startAt: thread.instructionIndex + offset, withDataFrom: thread)
 					if atIndex != 0 {
 						guard input.formIndexSafely(&newThread.inputIndex, offsetBy: atIndex) else { break }
 					}
 					stack.append(newThread)
 				case .commit:
 					let entry = stack.popLast()
-					// `.split` will not add to stack if `input.formIndexSafely` fails, so it might be empty.
+					// `.choice` will not add to stack if `input.formIndexSafely` fails, so it might be empty.
 					// assert(entry != nil, "Empty stack during .cancelLastSplit")
 					assert(entry.map { !$0.isReturnAddress } ?? true, "Missing thread during .cancelLastSplit")
 					thread.instructionIndex += 1
