@@ -47,5 +47,20 @@ public func Capture(name: String? = nil, _ wrapped: Literal) -> Concat<CaptureSt
 	CaptureStart(name: name) • wrapped • CaptureEnd()
 }
 
-// " " • Capture(letter • Skip()) • " "
-// pattern	""Concat<""Literal, ""Concat<""Concat<""CaptureStart, ""Concat<""Concat<""OneOf, ""Skip<""AnyPattern>>, ""CaptureEnd>>, ""Literal>>
+/**
+ 'flattens' the types to make it easier for `Skip` to see what comes after it.
+ By converting `before • Capture(wrapped) • after` into
+ `before • CaptureStart() • wrapped • CaptureEnd() • after` instead of
+ `before • (CaptureStart() • wrapped • CaptureEnd()) • after`.
+ */
+@inlinable
+public func • <Wrapped: Pattern, After: Pattern>(lhs: Concat<CaptureStart, Concat<Wrapped, CaptureEnd>>, rhs: After)
+	-> Concat<CaptureStart, Concat<Wrapped, Concat<CaptureEnd, After>>> {
+	lhs.left • lhs.right.left • lhs.right.right • rhs
+}
+
+@inlinable
+public func • <Wrapped: Pattern>(lhs: Concat<CaptureStart, Concat<Wrapped, CaptureEnd>>, rhs: Literal)
+	-> Concat<CaptureStart, Concat<Wrapped, Concat<CaptureEnd, Literal>>> {
+	lhs.left • lhs.right.left • lhs.right.right • rhs
+}
