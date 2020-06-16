@@ -113,6 +113,8 @@ extension VMBacktrackEngine {
 						guard input.formIndexSafely(&newThread.inputIndex, offsetBy: atIndex) else { break }
 					}
 					stack.append(newThread)
+				case .choiceEnd:
+					thread.instructionIndex += 1
 				case .commit:
 					let entry = stack.popLast()
 					// `.choice` will not add to stack if `input.formIndexSafely` fails, so it might be empty.

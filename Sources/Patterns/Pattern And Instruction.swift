@@ -47,6 +47,9 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Equ
 	/// Stores a snapshot of the current state. If there is a future failure the snapshot will be restored
 	/// and the instruction at `offset` (relative to this instruction) will be called.
 	case choice(offset: Distance, atIndexOffset: Int) // TODO: remove atIndexOffset
+	/// Signals the end of a choice. Doesn't do anything else.
+	/// Used as a barrier across which instructions cannot be moved.
+	case choiceEnd
 	/// Discards the state saved by previous `.choice`, because the instructions since then have completed
 	/// successfully and the alternative instructions at the previous `.choice` are no longer needed.
 	case commit
@@ -82,7 +85,7 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Equ
 	/// The offset by which this instruction will move the input index.
 	var movesIndexBy: Int? {
 		switch self {
-		case .checkIndex, .captureStart, .captureEnd, .commit, .match:
+		case .checkIndex, .captureStart, .captureEnd, .commit, .match, .choiceEnd:
 			return 0
 		case .elementEquals, .checkElement:
 			return 1

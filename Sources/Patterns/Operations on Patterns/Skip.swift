@@ -39,7 +39,7 @@ public struct Skip<Repeated: Pattern>: Pattern {
 					lastMoveTo = chars.count
 				}
 				nonIndexMovers.append(inst)
-			case .jump, .choice, .match, .moveIndex, .function, .call, .return, .fail, .openCall:
+			case .jump, .choice, .choiceEnd, .match, .moveIndex, .function, .call, .return, .fail, .openCall:
 				remainingInstructions = instructions[instructions.index(before: remainingInstructions.startIndex)...]
 				break loop
 			}
