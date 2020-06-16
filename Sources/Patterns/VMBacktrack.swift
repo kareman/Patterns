@@ -8,16 +8,16 @@
 // TODO: struct?
 public class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Equatable {
 	public typealias Instructions = ContiguousArray<Instruction<Input>>
-	let instructionsFrom: Instructions
+	let instructions: Instructions
 
 	@usableFromInline
 	required init<P: Pattern>(_ pattern: P) throws where Input == P.Input {
-		instructionsFrom = (try pattern.createInstructions() + [Instruction<Input>.match])
+		instructions = (try pattern.createInstructions() + [Instruction<Input>.match])
 	}
 
 	@usableFromInline
 	func match(in input: Input, from startIndex: Input.Index) -> Parser<Input>.Match? {
-		VMBacktrackEngine<Input>.backtrackingVM(instructionsFrom, input: input, startIndex: startIndex)
+		VMBacktrackEngine<Input>.backtrackingVM(instructions, input: input, startIndex: startIndex)
 	}
 }
 
@@ -85,11 +85,11 @@ extension VMBacktrackEngine {
 
 			loop: while true {
 				switch instructions[thread.instructionIndex] {
-				case let .literal(char):
+				case let .elementEquals(char):
 					guard thread.inputIndex != input.endIndex, input[thread.inputIndex] == char else { break loop }
 					input.formIndex(after: &thread.inputIndex)
 					thread.instructionIndex += 1
-				case let .checkCharacter(test):
+				case let .checkElement(test):
 					guard thread.inputIndex != input.endIndex, test(input[thread.inputIndex]) else { break loop }
 					input.formIndex(after: &thread.inputIndex)
 					thread.instructionIndex += 1
@@ -113,7 +113,7 @@ extension VMBacktrackEngine {
 						guard input.formIndexSafely(&newThread.inputIndex, offsetBy: atIndex) else { break }
 					}
 					stack.append(newThread)
-				case .cancelLastSplit:
+				case .commit:
 					let entry = stack.popLast()
 					// `.split` will not add to stack if `input.formIndexSafely` fails, so it might be empty.
 					// assert(entry != nil, "Empty stack during .cancelLastSplit")

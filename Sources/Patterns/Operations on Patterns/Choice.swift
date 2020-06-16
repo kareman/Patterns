@@ -24,9 +24,9 @@ public struct OrPattern<First: Pattern, Second: Pattern>: Pattern {
 	public func createInstructions(_ instructions: inout Instructions) throws {
 		let inst1 = try first.createInstructions()
 		let inst2 = try second.createInstructions()
-		instructions.append(.split(second: inst1.count + 3))
+		instructions.append(.choice(offset: inst1.count + 3))
 		instructions.append(contentsOf: inst1)
-		instructions.append(.cancelLastSplit)
+		instructions.append(.commit)
 		instructions.append(.jump(offset: inst2.count + 1))
 		instructions.append(contentsOf: inst2)
 	}

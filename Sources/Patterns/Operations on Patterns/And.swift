@@ -20,10 +20,10 @@ public struct AndPattern<Wrapped: Pattern>: Pattern {
 			instructions.append(.moveIndex(offset: -indexMovedBy))
 		} else {
 			instructions.append {
-				$0.append(.choice(second: wrappedInstructions.count + 4, atIndex: 0))
-				$0.append(.choice(second: wrappedInstructions.count + 1, atIndex: 0))
+				$0.append(.choice(offset: wrappedInstructions.count + 4))
+				$0.append(.choice(offset: wrappedInstructions.count + 1))
 				$0.append(contentsOf: wrappedInstructions)
-				$0.append(.cancelLastSplit)
+				$0.append(.commit)
 				$0.append(.fail)
 			}
 		}

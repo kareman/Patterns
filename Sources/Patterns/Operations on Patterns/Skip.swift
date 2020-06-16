@@ -16,7 +16,7 @@ public struct Skip<Repeated: Pattern>: Pattern {
 
 	public func createInstructions(_ instructions: inout Instructions) throws {
 		let reps: Instructions = try repeatedPattern?.repeat(0...).createInstructions() ?? [.any]
-		instructions.append(.split(second: 2))
+		instructions.append(.choice(offset: 2))
 		instructions.append(.jump(offset: reps.count + 2))
 		instructions.append(contentsOf: reps)
 		instructions.append(.jump(offset: -reps.count - 2))
@@ -30,9 +30,9 @@ public struct Skip<Repeated: Pattern>: Pattern {
 		var lastMoveTo = 0
 		loop: while let inst = remainingInstructions.popFirst() {
 			switch inst {
-			case .literal, .checkCharacter:
+			case .elementEquals, .checkElement:
 				chars.append(inst)
-			case .checkIndex, .captureStart, .captureEnd, .cancelLastSplit:
+			case .checkIndex, .captureStart, .captureEnd, .commit:
 				let moveBy = chars.count - lastMoveTo
 				if moveBy > 0 {
 					nonIndexMovers.append(.moveIndex(offset: moveBy))
@@ -66,12 +66,12 @@ public struct Skip<Repeated: Pattern>: Pattern {
 			default:
 				return Instructions(try self.createInstructions() + instructions)
 			}
-		case let .checkCharacter(test):
+		case let .checkElement(test):
 			search = { input, index in input[index...].firstIndex(where: test) }
-		case .literal:
+		case .elementEquals:
 			// TODO: mapWhile
-			let cs: [Character] = chars.prefix(while: { if case .literal = $0 { return true } else { return false } })
-				.map { if case let .literal(c) = $0 { return c } else { fatalError() } }
+			let cs: [Character] = chars.prefix(while: { if case .elementEquals = $0 { return true } else { return false } })
+				.map { if case let .elementEquals(c) = $0 { return c } else { fatalError() } }
 			if cs.count == 1 {
 				search = { input, index in input[index...].firstIndex(of: cs[0]) }
 			} else {
@@ -102,13 +102,13 @@ public struct Skip<Repeated: Pattern>: Pattern {
 		return Instructions {
 			$0.reserveCapacity(chars.count + nonIndexMovers.count + remainingInstructions.count + 4)
 			$0.append(searchInstruction)
-			$0.append(.choice(second: -1, atIndex: 1))
+			$0.append(.choice(offset: -1, atIndexOffset: 1))
 			$0.append(contentsOf: chars)
 			$0.append(.moveIndex(offset: -chars.count))
 			$0.append(contentsOf: nonIndexMovers)
 			$0.append(contentsOf: remainingInstructions)
 			//		if self.repeatedPattern != nil {
-			$0.append(.cancelLastSplit)
+			$0.append(.commit)
 			//		}
 		}
 	}

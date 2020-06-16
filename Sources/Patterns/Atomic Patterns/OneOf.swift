@@ -62,7 +62,7 @@ public struct OneOf: Pattern, RegexConvertible {
 
 	@inlinable
 	public func createInstructions(_ instructions: inout Instructions) {
-		instructions.append(.checkCharacter(group.contains))
+		instructions.append(.checkElement(group.contains))
 	}
 }
 
