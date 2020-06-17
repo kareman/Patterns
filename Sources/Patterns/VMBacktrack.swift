@@ -12,7 +12,9 @@ public class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Eleme
 
 	@usableFromInline
 	required init<P: Pattern>(_ pattern: P) throws where Input == P.Input {
-		instructions = (try pattern.createInstructions() + [Instruction<Input>.match])
+		var instructions = (try pattern.createInstructions() + [Instruction<Input>.match])
+		Self.optimiseInstructions(instructions: &instructions)
+		self.instructions = instructions
 	}
 
 	@usableFromInline
@@ -29,7 +31,7 @@ extension Parser.Match {
 		captureBeginnings.reserveCapacity(captures.capacity)
 		for capture in thread.captures {
 			switch instructions[capture.instruction] {
-			case let .captureStart(name):
+			case let .captureStart(name, _):
 				captureBeginnings.append((name, capture.index))
 			case .captureEnd:
 				let beginning = captureBeginnings.removeLast()
@@ -72,6 +74,7 @@ extension VMBacktrackEngine {
 			.map { Parser.Match($0, instructions: instructions) }
 	}
 
+	// TODO: make nonstatic when Skip has been fixed.
 	@usableFromInline
 	static func backtrackingVM(_ instructions: Instructions, input: Input, thread: Thread) -> Thread? {
 		var stack = ContiguousArray<Thread>()[...]
@@ -93,8 +96,9 @@ extension VMBacktrackEngine {
 					guard thread.inputIndex != input.endIndex, test(input[thread.inputIndex]) else { break loop }
 					input.formIndex(after: &thread.inputIndex)
 					thread.instructionIndex += 1
-				case let .checkIndex(test):
-					guard test(input, thread.inputIndex) else { break loop }
+				case let .checkIndex(test, offset):
+					let index = input.index(thread.inputIndex, offsetBy: offset)
+					guard test(input, index) else { break loop }
 					thread.instructionIndex += 1
 				case let .moveIndex(distance):
 					guard input.formIndexSafely(&thread.inputIndex, offsetBy: distance) else { break loop }
@@ -103,8 +107,13 @@ extension VMBacktrackEngine {
 					guard function(input, &thread) else { break loop }
 				case let .jump(distance):
 					thread.instructionIndex += distance
-				case .captureStart(_), .captureEnd:
-					thread.captures.append((index: thread.inputIndex, instruction: thread.instructionIndex))
+				case let .captureStart(_, offset):
+					let index = input.index(thread.inputIndex, offsetBy: offset)
+					thread.captures.append((index: index, instruction: thread.instructionIndex))
+					thread.instructionIndex += 1
+				case let .captureEnd(offset):
+					let index = input.index(thread.inputIndex, offsetBy: offset)
+					thread.captures.append((index: index, instruction: thread.instructionIndex))
 					thread.instructionIndex += 1
 				case let .choice(offset, atIndex):
 					defer { thread.instructionIndex += 1 }
@@ -118,7 +127,7 @@ extension VMBacktrackEngine {
 				case .commit:
 					let entry = stack.popLast()
 					// `.choice` will not add to stack if `input.formIndexSafely` fails, so it might be empty.
-					// assert(entry != nil, "Empty stack during .cancelLastSplit")
+					// assert(entry != nil, "Empty stack during .commit")
 					assert(entry.map { !$0.isReturnAddress } ?? true, "Missing thread during .cancelLastSplit")
 					thread.instructionIndex += 1
 				case let .call(offset):

@@ -13,11 +13,14 @@ let package = Package(
 			name: "unicode_properties",
 			targets: ["unicode_properties", "Patterns"]),
 	],
-	dependencies: [.package(url: "https://github.com/apple/swift-argument-parser", from: "0.0.1")],
+	dependencies: [
+		.package(url: "https://github.com/apple/swift-argument-parser", from: "0.0.1"),
+		.package(url: "https://github.com/apple/swift-se0270-range-set", from: "1.0.0"),
+	],
 	targets: [
 		.target(
 			name: "Patterns",
-			dependencies: [],
+			dependencies: ["SE0270_RangeSet"],
 			swiftSettings: [
 				.define("DEBUG", .when(configuration: .debug)),
 			]),

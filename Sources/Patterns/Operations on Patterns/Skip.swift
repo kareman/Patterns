@@ -58,7 +58,7 @@ public struct Skip<Repeated: Pattern>: Pattern {
 			}
 
 			switch nonIndexMovers.popFirst(where: isCheckIndex(_:)) {
-			case let .checkIndex(function):
+			case let .checkIndex(function, _):
 				search = { input, index in
 					input[index...].indices.first(where: { function(input, $0) })
 						?? (function(input, input.endIndex) ? input.endIndex : nil)

@@ -9,6 +9,15 @@
           "revision": "8d31a0905c346a45c87773ad50862b5b3df8dff6",
           "version": "0.0.4"
         }
+      },
+      {
+        "package": "swift-se0270-range-set",
+        "repositoryURL": "https://github.com/apple/swift-se0270-range-set",
+        "state": {
+          "branch": null,
+          "revision": "120fc7efe17b11f7eedd94e7a5e1885fc69efb49",
+          "version": "1.0.0"
+        }
       }
     ]
   },

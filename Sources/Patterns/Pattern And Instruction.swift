@@ -32,16 +32,16 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Equ
 	/// Succeeds if the closure returns true when passed the current element. Advances index to the next element.
 	case checkElement((Input.Element) -> Bool)
 	/// Succeeds if the closure returns true when passed the current index.
-	case checkIndex((Input, Input.Index) -> Bool)
+	case checkIndex((Input, Input.Index) -> Bool, atIndexOffset: Int)
 	/// Moves the input index by `offset`.
 	case moveIndex(offset: Distance)
 
 	case function((Input, inout VMBacktrackEngine<Input>.Thread) -> Bool) // TODO: remove
 
 	/// Stores the current index as the beginning of capture `name`
-	case captureStart(name: String?)
+	case captureStart(name: String?, atIndexOffset: Int)
 	/// Stores the current index as the end of the most recently started capture.
-	case captureEnd
+	case captureEnd(atIndexOffset: Int)
 	/// Continues with the instruction at `offset` relative to this instruction.
 	case jump(offset: Distance)
 	/// Stores a snapshot of the current state. If there is a future failure the snapshot will be restored
@@ -68,6 +68,18 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Equ
 
 	/// Succeeds anywhere except at the end of the input.
 	static var any: Self { Self.checkElement { _ in true } } // TODO: make its own instruction
+
+	static func captureStart(name: String?) -> Self {
+		.captureStart(name: name, atIndexOffset: 0)
+	}
+
+	static var captureEnd: Self {
+		.captureEnd(atIndexOffset: 0)
+	}
+
+	static func checkIndex(_ test: @escaping (Input, Input.Index) -> Bool) -> Self {
+		.checkIndex(test, atIndexOffset: 0)
+	}
 
 	static func choice(offset: Int) -> Instruction {
 		.choice(offset: offset, atIndexOffset: 0)
