@@ -24,7 +24,7 @@ extension Pattern {
 
 /// The instructions used by patterns in `createInstructions`.
 /// Unless otherwise noted, each instruction moves on to the next instruction after it has finished.
-public enum Instruction<Input: BidirectionalCollection> where Input.Element: Equatable {
+public enum Instruction<Input: BidirectionalCollection> where Input.Element: Hashable {
 	public typealias Distance = Int
 
 	/// Succeeds if the current element equals this element. Advances index to the next element.
@@ -33,17 +33,21 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Equ
 	case checkElement((Input.Element) -> Bool)
 	/// Succeeds if the closure returns true when passed the current index.
 	case checkIndex((Input, Input.Index) -> Bool, atIndexOffset: Int)
+
 	/// Moves the input index by `offset`.
 	case moveIndex(offset: Distance)
+	/// Continues with the instruction at `offset` relative to this instruction.
+	case jump(offset: Distance)
 
+	/// Will be replaced by .search in preprocessing. Is never executed.
+	case skip
 	case function((Input, inout VMBacktrackEngine<Input>.Thread) -> Bool) // TODO: remove
 
 	/// Stores the current index as the beginning of capture `name`
 	case captureStart(name: String?, atIndexOffset: Int)
 	/// Stores the current index as the end of the most recently started capture.
 	case captureEnd(atIndexOffset: Int)
-	/// Continues with the instruction at `offset` relative to this instruction.
-	case jump(offset: Distance)
+
 	/// Stores a snapshot of the current state. If there is a future failure the snapshot will be restored
 	/// and the instruction at `offset` (relative to this instruction) will be called.
 	case choice(offset: Distance, atIndexOffset: Int) // TODO: remove atIndexOffset
@@ -53,12 +57,14 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Equ
 	/// Discards the state saved by previous `.choice`, because the instructions since then have completed
 	/// successfully and the alternative instructions at the previous `.choice` are no longer needed.
 	case commit
+
 	/// Will be replaced by .call in preprocessing. Is never executed.
 	case openCall(name: String)
 	/// Goes to the sub-expression at `offset` relative to this instruction.
 	case call(offset: Distance)
 	/// Returns from this subexpression to where it was called from.
 	case `return`
+
 	/// Signals a failure.
 	case fail
 	/// A match has been successfully completed!
@@ -103,7 +109,7 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Equ
 			return 1
 		case let .moveIndex(offset):
 			return offset
-		case .function, .choice, .jump, .openCall, .call, .return, .fail:
+		case .function, .choice, .jump, .openCall, .call, .return, .fail, .skip:
 			return nil
 		}
 	}

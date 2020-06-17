@@ -15,102 +15,8 @@ public struct Skip<Repeated: Pattern>: Pattern {
 	}
 
 	public func createInstructions(_ instructions: inout Instructions) throws {
-		let reps: Instructions = try repeatedPattern?.repeat(0...).createInstructions() ?? [.any]
-		instructions.append(.choice(offset: 2))
-		instructions.append(.jump(offset: reps.count + 2))
-		instructions.append(contentsOf: reps)
-		instructions.append(.jump(offset: -reps.count - 2))
-	}
-
-	internal func prependSkip<C: BidirectionalCollection>(_ instructions: C) throws
-		-> Instructions where C.Element == Instruction<Input> {
-		var remainingInstructions = instructions[...]
-		var chars = [Instruction<Input>]()[...]
-		var nonIndexMovers = [Instruction<Input>]()[...]
-		var lastMoveTo = 0
-		loop: while let inst = remainingInstructions.popFirst() {
-			switch inst {
-			case .elementEquals, .checkElement:
-				chars.append(inst)
-			case .checkIndex, .captureStart, .captureEnd, .commit:
-				let moveBy = chars.count - lastMoveTo
-				if moveBy > 0 {
-					nonIndexMovers.append(.moveIndex(offset: moveBy))
-					lastMoveTo = chars.count
-				}
-				nonIndexMovers.append(inst)
-			case .jump, .choice, .choiceEnd, .match, .moveIndex, .function, .call, .return, .fail, .openCall:
-				remainingInstructions = instructions[instructions.index(before: remainingInstructions.startIndex)...]
-				break loop
-			}
-		}
-		if chars.count - lastMoveTo != 0 {
-			nonIndexMovers.append(.moveIndex(offset: chars.count - lastMoveTo))
-		}
-
-		let search: (Input, Input.Index) -> Input.Index?
-		let searchInstruction: Instruction<Input>
-
-		switch chars.first {
-		case nil:
-			func isCheckIndex(_ inst: Instruction<Input>) -> Bool {
-				if case .checkIndex = inst { return true } else { return false }
-			}
-
-			switch nonIndexMovers.popFirst(where: isCheckIndex(_:)) {
-			case let .checkIndex(function, _):
-				search = { input, index in
-					input[index...].indices.first(where: { function(input, $0) })
-						?? (function(input, input.endIndex) ? input.endIndex : nil)
-				}
-			default:
-				return Instructions(try self.createInstructions() + instructions)
-			}
-		case let .checkElement(test):
-			search = { input, index in input[index...].firstIndex(where: test) }
-		case .elementEquals:
-			// TODO: mapWhile
-			let cs: [Character] = chars.prefix(while: { if case .elementEquals = $0 { return true } else { return false } })
-				.map { if case let .elementEquals(c) = $0 { return c } else { fatalError() } }
-			if cs.count == 1 {
-				search = { input, index in input[index...].firstIndex(of: cs[0]) }
-			} else {
-				let cache = SearchCache(pattern: cs)
-				search = { input, index in input.range(of: cs, from: index, cache: cache)?.lowerBound }
-			}
-		default:
-			fatalError()
-		}
-
-		if let repeatedPattern = self.repeatedPattern {
-			let skipInstructions = (try repeatedPattern.repeat(0...).createInstructions() + [.match])
-			searchInstruction = .function { (input, thread) -> Bool in
-				guard let end = search(input, thread.inputIndex) else { return false }
-				guard
-					let newThread = VMBacktrackEngine<Input>.backtrackingVM(
-						skipInstructions,
-						input: String(input.prefix(upTo: end)),
-						thread: VMBacktrackEngine<Input>.Thread(startAt: skipInstructions.startIndex, withDataFrom: thread)),
-					newThread.inputIndex == end else { return false }
-
-				thread = VMBacktrackEngine<Input>.Thread(startAt: thread.instructionIndex + 1, withDataFrom: newThread)
-				return true
-			}
-		} else {
-			searchInstruction = .search(search)
-		}
-		return Instructions {
-			$0.reserveCapacity(chars.count + nonIndexMovers.count + remainingInstructions.count + 4)
-			$0.append(searchInstruction)
-			$0.append(.choice(offset: -1, atIndexOffset: 1))
-			$0.append(contentsOf: chars)
-			$0.append(.moveIndex(offset: -chars.count))
-			$0.append(contentsOf: nonIndexMovers)
-			$0.append(contentsOf: remainingInstructions)
-			//		if self.repeatedPattern != nil {
-			$0.append(.commit)
-			//		}
-		}
+		instructions.append(.skip)
+		instructions.append(.jump(offset: 1)) // dummy
 	}
 }
 
@@ -125,5 +31,91 @@ extension Skip where Repeated == Literal {
 	public init(_ repeatedPattern: Literal) {
 		self.repeatedPattern = repeatedPattern
 		self.description = "Skip(\(repeatedPattern))"
+	}
+}
+
+import SE0270_RangeSet
+
+extension VMBacktrackEngine {
+	static func replaceSkips(instructions: inout Instructions) {
+		for i in instructions.indices {
+			switch instructions[i] {
+			case .skip:
+				Self.setupSkip(&instructions, at: i)
+			default:
+				_ = 1
+			}
+		}
+	}
+
+	static func setupSkip(_ instructions: inout Instructions, at skipIndex: Instructions.Index) {
+		let searchablesStartAt = instructions.index(skipIndex, offsetBy: 2)
+		switch instructions[searchablesStartAt] {
+		case let .checkIndex(function, atIndexOffset: 0):
+			instructions[skipIndex] = .search { input, index in
+				input[index...].indices.first(where: { function(input, $0) })
+					?? (function(input, input.endIndex) ? input.endIndex : nil)
+			}
+			instructions[searchablesStartAt] = .choice(offset: -1, atIndexOffset: 1)
+		case let .checkElement(test):
+			instructions[skipIndex] = .search { input, index in
+				input[index...].firstIndex(where: test)
+					.map(input.index(after:))
+			}
+			instructions[searchablesStartAt] = .choice(offset: -1, atIndexOffset: 0)
+		case .elementEquals:
+			// TODO: mapWhile
+			let elements: [Input.Element] = instructions[searchablesStartAt...]
+				.prefix(while: { if case .elementEquals = $0 { return true } else { return false } })
+				.map { if case let .elementEquals(c) = $0 { return c } else { fatalError() } }
+			if elements.count == 1 {
+				instructions[skipIndex] = .search { input, index in
+					input[index...].firstIndex(of: elements[0])
+						.map(input.index(after:))
+				}
+				instructions[searchablesStartAt] = .choice(offset: -1, atIndexOffset: 0)
+			} else {
+				let cache = SearchCache(pattern: elements)
+				instructions[skipIndex] = .search { input, index in
+					input.range(of: elements, from: index, cache: cache)?.upperBound
+				}
+				instructions[searchablesStartAt] = .choice(offset: -1, atIndexOffset: (-elements.count) + 1)
+				instructions[searchablesStartAt + 1] = .jump(offset: elements.count - 1)
+			}
+		default:
+			instructions[skipIndex] = .choice(offset: 0, atIndexOffset: +1)
+			Self.placeSkipCommit(&instructions, skipIsAt: skipIndex, startSearchFrom: skipIndex + 2)
+			return
+		}
+		Self.placeSkipCommit(&instructions, skipIsAt: skipIndex, startSearchFrom: skipIndex + 3)
+	}
+
+	static func placeSkipCommit(_ instructions: inout Instructions, skipIsAt skipindex: Instructions.Index, startSearchFrom: Instructions.Index) {
+		var i = startSearchFrom
+		loop: while true {
+			switch instructions[i] {
+			case let .choice(offset: _, atIndexOffset: indexOffset) where indexOffset < 0:
+				fatalError()
+			case let .choice(offset, _):
+				// Follow every choice offset.
+				// If one step back there is a jump forwards, then it's a '/' operation. So follow it too.
+				if case let .jump(jumpOffset) = instructions[i + offset - 1], jumpOffset > 0 {
+					i += offset - 1 + jumpOffset
+				} else {
+					i += offset
+				}
+			case let .jump(offset):
+				i += offset
+			case .elementEquals, .checkElement, .checkIndex, .moveIndex, .captureStart, .captureEnd, .call:
+				i += 1
+			case .commit, .choiceEnd, .return, .match, .skip:
+				let dummyIndex = skipindex + 1
+				instructions.moveSubranges(RangeSet(dummyIndex ..< (dummyIndex + 1)), to: i)
+				instructions[i - 1] = .commit
+				return
+			case .fail, .function, .openCall:
+				fatalError()
+			}
+		}
 	}
 }

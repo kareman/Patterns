@@ -6,14 +6,15 @@
 //
 
 // TODO: struct?
-public class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Equatable {
+public class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Hashable {
 	public typealias Instructions = ContiguousArray<Instruction<Input>>
 	let instructions: Instructions
 
 	@usableFromInline
 	required init<P: Pattern>(_ pattern: P) throws where Input == P.Input {
 		var instructions = (try pattern.createInstructions() + [Instruction<Input>.match])
-		Self.optimiseInstructions(instructions: &instructions)
+		Self.moveMovablesForward(instructions: &instructions)
+		Self.replaceSkips(instructions: &instructions)
 		self.instructions = instructions
 	}
 
@@ -147,6 +148,8 @@ extension VMBacktrackEngine {
 					return thread
 				case .openCall:
 					fatalError("`.openCall` should be removed by Grammar.")
+				case .skip:
+					fatalError("`.skip` should be removed by VMBacktrackEngine.")
 				}
 			}
 		}

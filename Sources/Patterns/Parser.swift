@@ -5,7 +5,7 @@
 //  Created by Kåre Morstøl on 23/10/2018.
 //
 
-public struct Parser<Input: BidirectionalCollection> where Input.Element: Equatable {
+public struct Parser<Input: BidirectionalCollection> where Input.Element: Hashable {
 	public enum InitError: Error, CustomStringConvertible {
 		case invalid([Pattern])
 		case message(String)

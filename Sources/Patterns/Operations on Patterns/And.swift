@@ -19,7 +19,7 @@ public struct AndPattern<Wrapped: Pattern>: Pattern {
 			instructions.append(contentsOf: wrappedInstructions)
 			instructions.append(.moveIndex(offset: -indexMovedBy))
 		} else {
-			instructions.append {
+			instructions.append { // TODO: test
 				$0.append(.choice(offset: wrappedInstructions.count + 4))
 				$0.append(.choice(offset: wrappedInstructions.count + 1))
 				$0.append(contentsOf: wrappedInstructions)

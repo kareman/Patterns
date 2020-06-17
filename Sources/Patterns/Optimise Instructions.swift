@@ -27,7 +27,7 @@ private extension Instruction {
 import SE0270_RangeSet
 
 extension VMBacktrackEngine {
-	static func optimiseInstructions(instructions: inout Instructions) {
+	static func moveMovablesForward(instructions: inout Instructions) {
 		var movables = ContiguousArray<Instructions.Index>()[...]
 		for i in instructions.indices {
 			if instructions[i].isMovable {
@@ -47,6 +47,17 @@ extension VMBacktrackEngine {
 						fatalError()
 					}
 				}
+				// All `.checkIndex` should be first.
+				let checkIndexIndexes = instructions[moved].subranges(where: { inst in
+					switch inst {
+					case .checkIndex:
+						return true
+					default:
+						return false
+					}
+				})
+				let checkIndexCount = checkIndexIndexes.ranges.flatMap { $0 }.count
+				instructions.moveSubranges(checkIndexIndexes, to: moved.lowerBound + checkIndexCount)
 				assert(movables.isEmpty)
 			}
 		}

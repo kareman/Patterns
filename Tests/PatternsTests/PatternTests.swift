@@ -208,7 +208,7 @@ class PatternTests: XCTestCase {
 			result: ["ab", "bc", "bcd", "efg"])
 
 		assertParseAll(
-			Capture(" " • (!OneOf(" ")).repeat(2) • "d"), // repeate a parser of length 0
+			Capture(" " • (!OneOf(" ")).repeat(2) • "d"), // repeat a parser of length 0.
 			input: " d cd", result: [" d"])
 
 		assertParseMarkers(!any, input: "  |") // EOF

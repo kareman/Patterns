@@ -48,8 +48,7 @@ public func Capture(name: String? = nil, _ wrapped: Literal) -> Concat<CaptureSt
 }
 
 /**
- 'flattens' the types to make it easier for `Skip` to see what comes after it.
- By converting `before • Capture(wrapped) • after` into
+ 'flattens' the types by converting `before • Capture(wrapped) • after` into
  `before • CaptureStart() • wrapped • CaptureEnd() • after` instead of
  `before • (CaptureStart() • wrapped • CaptureEnd()) • after`.
  */

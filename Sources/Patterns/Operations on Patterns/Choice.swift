@@ -27,7 +27,7 @@ public struct OrPattern<First: Pattern, Second: Pattern>: Pattern {
 		instructions.append(.choice(offset: inst1.count + 3))
 		instructions.append(contentsOf: inst1)
 		instructions.append(.commit)
-		instructions.append(.jump(offset: inst2.count + 1))
+		instructions.append(.jump(offset: inst2.count + 2))
 		instructions.append(contentsOf: inst2)
 		instructions.append(.choiceEnd)
 	}
