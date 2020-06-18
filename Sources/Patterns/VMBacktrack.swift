@@ -12,7 +12,11 @@ public class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Eleme
 
 	@usableFromInline
 	required init<P: Pattern>(_ pattern: P) throws where Input == P.Input {
-		var instructions = (try pattern.createInstructions() + [Instruction<Input>.match])
+		var instructions = try Instructions {
+			$0.append(.fail) // dummy instruction used by '.choice'.
+			try pattern.createInstructions(&$0)
+			$0.append(.match)
+		}
 		Self.moveMovablesForward(instructions: &instructions)
 		Self.replaceSkips(instructions: &instructions)
 		self.instructions = instructions
@@ -70,7 +74,8 @@ extension VMBacktrackEngine {
 
 	@usableFromInline
 	static func backtrackingVM(_ instructions: Instructions, input: Input, startIndex: Input.Index? = nil) -> Parser<Input>.Match? {
-		let thread = Thread(instructionIndex: instructions.startIndex, inputIndex: startIndex ?? input.startIndex)
+		// Skip the first instruction, which is always '.fail'.
+		let thread = Thread(instructionIndex: instructions.startIndex + 1, inputIndex: startIndex ?? input.startIndex)
 		return backtrackingVM(instructions, input: input, thread: thread)
 			.map { Parser.Match($0, instructions: instructions) }
 	}
@@ -117,19 +122,18 @@ extension VMBacktrackEngine {
 					thread.captures.append((index: index, instruction: thread.instructionIndex))
 					thread.instructionIndex += 1
 				case let .choice(offset, atIndex):
-					defer { thread.instructionIndex += 1 }
 					var newThread = Thread(startAt: thread.instructionIndex + offset, withDataFrom: thread)
-					if atIndex != 0 {
-						guard input.formIndexSafely(&newThread.inputIndex, offsetBy: atIndex) else { break }
+					if atIndex != 0, !input.formIndexSafely(&newThread.inputIndex, offsetBy: atIndex) {
+						// we must always add to the stack here, so send it to an instruction that is always `.fail`
+						newThread.instructionIndex = instructions.startIndex
 					}
 					stack.append(newThread)
+					thread.instructionIndex += 1
 				case .choiceEnd:
 					thread.instructionIndex += 1
 				case .commit:
 					let entry = stack.popLast()
-					// `.choice` will not add to stack if `input.formIndexSafely` fails, so it might be empty.
-					// assert(entry != nil, "Empty stack during .commit")
-					// TODO: have  “choice” add a dummy thread that always fails
+					assert(entry != nil, "Empty stack during .commit")
 					assert(entry.map { !$0.isReturnAddress } ?? true, "Missing thread during .cancelLastSplit")
 					thread.instructionIndex += 1
 				case let .call(offset):
