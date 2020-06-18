@@ -7,13 +7,13 @@
 
 // TODO: struct?
 @usableFromInline
-class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Hashable {
+struct VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Hashable {
 	@usableFromInline
 	typealias Instructions = ContiguousArray<Instruction<Input>>
 	let instructions: Instructions
 
 	@usableFromInline
-	required init<P: Pattern>(_ pattern: P) throws where Input == P.Input {
+	init<P: Pattern>(_ pattern: P) throws where Input == P.Input {
 		var instructions = try Instructions {
 			$0.append(.fail) // dummy instruction used by '.choice'.
 			try pattern.createInstructions(&$0)
