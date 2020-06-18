@@ -6,7 +6,9 @@
 //
 
 precedencegroup PatternConcatenationPrecedence {
-	associativity: right // so allmost all `Skip` will be to the left and we can see what comes after.
+	// so allmost all `Skip` will be to the left and we can see what comes after.
+	// TODO: Use ‘left’ instead as it is no longer needed?
+	associativity: right
 	higherThan: MultiplicationPrecedence // `/` has this
 }
 

@@ -129,6 +129,7 @@ extension VMBacktrackEngine {
 					let entry = stack.popLast()
 					// `.choice` will not add to stack if `input.formIndexSafely` fails, so it might be empty.
 					// assert(entry != nil, "Empty stack during .commit")
+					// TODO: have  “choice” add a dummy thread that always fails
 					assert(entry.map { !$0.isReturnAddress } ?? true, "Missing thread during .cancelLastSplit")
 					thread.instructionIndex += 1
 				case let .call(offset):
@@ -149,7 +150,7 @@ extension VMBacktrackEngine {
 				case .openCall:
 					fatalError("`.openCall` should be removed by Grammar.")
 				case .skip:
-					fatalError("`.skip` should be removed by VMBacktrackEngine.")
+					fatalError("`.skip` should be removed  by Parser in preprocessing.")
 				}
 			}
 		}

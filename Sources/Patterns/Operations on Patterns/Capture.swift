@@ -42,24 +42,9 @@ public func Capture<P: Pattern>(name: String? = nil, _ wrapped: P) -> Concat<Cap
 	CaptureStart(name: name) • wrapped • CaptureEnd()
 }
 
+/// Captures the position in the input of `wrapped` as a range.
+/// - returns: `CaptureStart(name: name) • wrapped • CaptureEnd()`
 @inlinable
 public func Capture(name: String? = nil, _ wrapped: Literal) -> Concat<CaptureStart, Concat<Literal, CaptureEnd>> {
 	CaptureStart(name: name) • wrapped • CaptureEnd()
-}
-
-/**
- 'flattens' the types by converting `before • Capture(wrapped) • after` into
- `before • CaptureStart() • wrapped • CaptureEnd() • after` instead of
- `before • (CaptureStart() • wrapped • CaptureEnd()) • after`.
- */
-@inlinable
-public func • <Wrapped: Pattern, After: Pattern>(lhs: Concat<CaptureStart, Concat<Wrapped, CaptureEnd>>, rhs: After)
-	-> Concat<CaptureStart, Concat<Wrapped, Concat<CaptureEnd, After>>> {
-	lhs.left • lhs.right.left • lhs.right.right • rhs
-}
-
-@inlinable
-public func • <Wrapped: Pattern>(lhs: Concat<CaptureStart, Concat<Wrapped, CaptureEnd>>, rhs: Literal)
-	-> Concat<CaptureStart, Concat<Wrapped, Concat<CaptureEnd, Literal>>> {
-	lhs.left • lhs.right.left • lhs.right.right • rhs
 }

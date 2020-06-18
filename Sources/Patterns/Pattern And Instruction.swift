@@ -41,7 +41,7 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Has
 
 	/// Will be replaced by .search in preprocessing. Is never executed.
 	case skip
-	case function((Input, inout VMBacktrackEngine<Input>.Thread) -> Bool) // TODO: remove
+	case function((Input, inout VMBacktrackEngine<Input>.Thread) -> Bool) // TODO: Replace with “search”
 
 	/// Stores the current index as the beginning of capture `name`
 	case captureStart(name: String?, atIndexOffset: Int)
