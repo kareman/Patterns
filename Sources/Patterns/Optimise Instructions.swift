@@ -34,6 +34,7 @@ extension VMBacktrackEngine {
 				movables.append(i)
 			} else if !movables.isEmpty, !instructions[i].canMoveAcross {
 				let moved = instructions.moveSubranges(RangeSet(movables, within: instructions), to: i)
+				var checkIndexIndexes = RangeSet<Instructions.Index>()
 				for inst in moved {
 					let oldPos = movables.popFirst()!
 					switch instructions[inst] {
@@ -43,22 +44,15 @@ extension VMBacktrackEngine {
 						instructions[inst] = .captureEnd(atIndexOffset: offset - (inst - oldPos))
 					case let .checkIndex(test, atIndexOffset: offset):
 						instructions[inst] = .checkIndex(test, atIndexOffset: offset - (inst - oldPos))
+						checkIndexIndexes.insert(inst, within: instructions)
 					default:
 						fatalError()
 					}
 				}
-				// All `.checkIndex` should be first.
-				let checkIndexIndexes = instructions[moved].subranges(where: { inst in
-					switch inst {
-					case .checkIndex:
-						return true
-					default:
-						return false
-					}
-				})
-				let checkIndexCount = checkIndexIndexes.ranges.flatMap { $0 }.count
-				instructions.moveSubranges(checkIndexIndexes, to: moved.lowerBound + checkIndexCount)
 				assert(movables.isEmpty)
+
+				// All `.checkIndex` should be first.
+				instructions.moveSubranges(checkIndexIndexes, to: moved.lowerBound)
 			}
 		}
 	}
