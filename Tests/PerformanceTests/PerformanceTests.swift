@@ -56,8 +56,7 @@ class PerformanceTests: XCTestCase {
 
 	func testNotNewLine() throws {
 		let any = OneOf(description: "any", contains: { _ in true })
-		let pattern = try Parser(
-			search: "," • Capture(Skip(!newline • any)) • Line.end)
+		let pattern = try Parser(search: "," • Capture(Skip(!newline • any)) • Line.end)
 		try speedTest(pattern, textFraction: 8, hits: 1413)
 	}
 
@@ -104,8 +103,8 @@ class PerformanceTests: XCTestCase {
 		 */
 
 		let digits = digit+
-		let pattern = try Parser(
-			search: OneOf("+-")¿
+		let pattern = try Parser(search:
+			OneOf("+-")¿
 				• (digits • ("." • digits)¿)
 				/
 				("." • digits)

@@ -108,12 +108,12 @@ extension VMBacktrackEngine {
 				i += offset
 			case .elementEquals, .checkElement, .checkIndex, .moveIndex, .captureStart, .captureEnd, .call:
 				i += 1
-			case .commit, .choiceEnd, .return, .match, .skip:
+			case .commit, .choiceEnd, .return, .match, .skip, .search:
 				let dummyIndex = skipindex + 1
 				instructions.moveSubranges(RangeSet(dummyIndex ..< (dummyIndex + 1)), to: i)
 				instructions[i - 1] = .commit
 				return
-			case .fail, .function, .openCall:
+			case .fail, .openCall:
 				fatalError()
 			}
 		}

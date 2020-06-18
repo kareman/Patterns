@@ -6,8 +6,10 @@
 //
 
 // TODO: struct?
-public class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Hashable {
-	public typealias Instructions = ContiguousArray<Instruction<Input>>
+@usableFromInline
+class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Hashable {
+	@usableFromInline
+	typealias Instructions = ContiguousArray<Instruction<Input>>
 	let instructions: Instructions
 
 	@usableFromInline
@@ -24,11 +26,12 @@ public class VMBacktrackEngine<Input: BidirectionalCollection> where Input.Eleme
 
 	@usableFromInline
 	func match(in input: Input, from startIndex: Input.Index) -> Parser<Input>.Match? {
-		VMBacktrackEngine<Input>.backtrackingVM(instructions, input: input, startIndex: startIndex)
+		launch(input: input, startIndex: startIndex)
 	}
 }
 
 extension Parser.Match {
+	@usableFromInline
 	init(_ thread: VMBacktrackEngine<Input>.Thread, instructions: VMBacktrackEngine<Input>.Instructions) {
 		var captures = [(name: String?, range: Range<Input.Index>)]()
 		captures.reserveCapacity(thread.captures.count / 2)
@@ -52,19 +55,21 @@ extension Parser.Match {
 }
 
 extension VMBacktrackEngine {
-	// TODO: private
-	public struct Thread {
+	@usableFromInline
+	struct Thread {
 		var instructionIndex: Instructions.Index
 		var inputIndex: Input.Index
 		var captures: ContiguousArray<(index: Input.Index, instruction: Instructions.Index)>
 		var isReturnAddress: Bool = false
 
+		@usableFromInline
 		init(startAt instructionIndex: Int, withDataFrom other: Thread) {
 			self.instructionIndex = instructionIndex
 			self.inputIndex = other.inputIndex
 			self.captures = other.captures
 		}
 
+		@usableFromInline
 		init(instructionIndex: Instructions.Index, inputIndex: Input.Index) {
 			self.instructionIndex = instructionIndex
 			self.inputIndex = inputIndex
@@ -73,16 +78,15 @@ extension VMBacktrackEngine {
 	}
 
 	@usableFromInline
-	static func backtrackingVM(_ instructions: Instructions, input: Input, startIndex: Input.Index? = nil) -> Parser<Input>.Match? {
+	func launch(input: Input, startIndex: Input.Index? = nil) -> Parser<Input>.Match? {
 		// Skip the first instruction, which is always '.fail'.
 		let thread = Thread(instructionIndex: instructions.startIndex + 1, inputIndex: startIndex ?? input.startIndex)
-		return backtrackingVM(instructions, input: input, thread: thread)
+		return launch(input: input, thread: thread)
 			.map { Parser.Match($0, instructions: instructions) }
 	}
 
-	// TODO: make nonstatic when Skip has been fixed.
 	@usableFromInline
-	static func backtrackingVM(_ instructions: Instructions, input: Input, thread: Thread) -> Thread? {
+	func launch(input: Input, thread: Thread) -> Thread? {
 		var stack = ContiguousArray<Thread>()[...]
 
 		stack.append(thread)
@@ -109,8 +113,10 @@ extension VMBacktrackEngine {
 				case let .moveIndex(distance):
 					guard input.formIndexSafely(&thread.inputIndex, offsetBy: distance) else { break loop }
 					thread.instructionIndex += 1
-				case let .function(function):
-					guard function(input, &thread) else { break loop }
+				case let .search(closure):
+					guard let index = closure(input, thread.inputIndex) else { break loop }
+					thread.inputIndex = index
+					thread.instructionIndex += 1
 				case let .jump(distance):
 					thread.instructionIndex += distance
 				case let .captureStart(_, offset):
@@ -154,7 +160,7 @@ extension VMBacktrackEngine {
 				case .openCall:
 					fatalError("`.openCall` should be removed by Grammar.")
 				case .skip:
-					fatalError("`.skip` should be removed  by Parser in preprocessing.")
+					fatalError("`.skip` should be removed by Parser in preprocessing.")
 				}
 			}
 		}
