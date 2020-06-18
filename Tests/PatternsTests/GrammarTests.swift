@@ -17,7 +17,7 @@ class GrammarTests: XCTestCase {
 	}()
 
 	func testNamesAnonymousCaptures() {
-		XCTAssertEqual((grammar1.patterns["letter"]?.wrapped as? Capture<OneOf>)?.name, "letter")
+		XCTAssertEqual((grammar1.patterns["letter"]?.wrapped as? Concat<CaptureStart, Concat<OneOf, CaptureEnd>>)?.left.name, "letter")
 	}
 
 	func testSetsFirstPattern() {

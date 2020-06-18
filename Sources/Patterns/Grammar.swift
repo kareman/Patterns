@@ -74,14 +74,9 @@ public func <- <P: Pattern>(call: Grammar.CallPattern, pattern: P) {
 	call.grammar.patterns[call.name] = AnyPattern(pattern)
 }
 
-public func <- <P: Pattern>(call: Grammar.CallPattern, capture: Capture<P>) {
-	let newPattern = AnyPattern(capture.name == nil ? Capture(name: call.name, capture.wrapped) : capture)
-	call.grammar.patterns[call.name] = newPattern
-}
-
-private extension Capture {
-	init(name: String? = nil, _ pattern: Wrapped?) {
-		self.wrapped = pattern
-		self.name = name
-	}
+public func <- <P: Pattern>(call: Grammar.CallPattern, capture: Concat<CaptureStart, P>) {
+	let newPattern = capture.left.name == nil
+		? (CaptureStart(name: call.name) • capture.right)
+		: capture
+	call.grammar.patterns[call.name] = AnyPattern(newPattern)
 }

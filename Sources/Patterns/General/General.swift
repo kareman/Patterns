@@ -186,12 +186,12 @@ extension RangeReplaceableCollection {
 }
 
 extension RangeReplaceableCollection {
-	init(compose: (inout Self) -> Void) {
+	init(compose: (inout Self) throws -> Void) rethrows {
 		self.init()
-		compose(&self)
+		try compose(&self)
 	}
 
-	mutating func append(compose: (inout Self) -> Void) {
-		compose(&self)
+	mutating func append(compose: (inout Self) throws -> Void) rethrows {
+		try compose(&self)
 	}
 }

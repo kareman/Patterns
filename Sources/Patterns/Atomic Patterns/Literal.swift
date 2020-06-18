@@ -23,7 +23,7 @@ public struct Literal: Pattern {
 	}
 
 	public func createInstructions(_ instructions: inout Instructions) {
-		instructions.append(contentsOf: substring.map(Instruction.literal))
+		instructions.append(contentsOf: substring.map(Instruction.elementEquals))
 	}
 }
 

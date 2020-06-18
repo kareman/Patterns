@@ -19,11 +19,11 @@ public struct AndPattern<Wrapped: Pattern>: Pattern {
 			instructions.append(contentsOf: wrappedInstructions)
 			instructions.append(.moveIndex(offset: -indexMovedBy))
 		} else {
-			instructions.append {
-				$0.append(.split(first: 1, second: wrappedInstructions.count + 4, atIndex: 0))
-				$0.append(.split(first: 1, second: wrappedInstructions.count + 1, atIndex: 0))
+			instructions.append { // TODO: test
+				$0.append(.choice(offset: wrappedInstructions.count + 4))
+				$0.append(.choice(offset: wrappedInstructions.count + 1))
 				$0.append(contentsOf: wrappedInstructions)
-				$0.append(.cancelLastSplit)
+				$0.append(.commit)
 				$0.append(.fail)
 			}
 		}

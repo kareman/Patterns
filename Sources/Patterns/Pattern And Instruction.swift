@@ -8,7 +8,7 @@
 public protocol Pattern: CustomStringConvertible {
 	typealias Input = String
 	typealias ParsedRange = Range<Input.Index>
-	typealias Instructions = ContiguousArray<Instruction<Input>> // TODO: use almost everywhere
+	typealias Instructions = ContiguousArray<Instruction<Input>>
 
 	func createInstructions(_ instructions: inout Instructions) throws
 	func createInstructions() throws -> Instructions
@@ -22,25 +22,75 @@ extension Pattern {
 	}
 }
 
-public enum Instruction<Input: BidirectionalCollection> where Input.Element: Equatable {
+/// The instructions used by patterns in `createInstructions`.
+/// Unless otherwise noted, each instruction moves on to the next instruction after it has finished.
+public enum Instruction<Input: BidirectionalCollection> where Input.Element: Hashable {
 	public typealias Distance = Int
-	case literal(Input.Element)
-	case checkCharacter((Input.Element) -> Bool)
-	case checkIndex((Input, Input.Index) -> Bool)
+
+	/// Succeeds if the current element equals this element. Advances index to the next element.
+	case elementEquals(Input.Element)
+	/// Succeeds if the closure returns true when passed the current element. Advances index to the next element.
+	case checkElement((Input.Element) -> Bool)
+	/// Succeeds if the closure returns true when passed the current index.
+	case checkIndex((Input, Input.Index) -> Bool, atIndexOffset: Int)
+
+	/// Moves the input index by `offset`.
 	case moveIndex(offset: Distance)
-	case function((Input, inout VMBacktrackEngine<Input>.Thread) -> Bool) // TODO: remove
-	case captureStart(name: String?)
-	case captureEnd
+	/// Continues with the instruction at `offset` relative to this instruction.
 	case jump(offset: Distance)
-	case split(first: Distance, second: Distance, atIndex: Int)
-	case cancelLastSplit
-	case openCall(name: String) // will be replaced by .call in preprocessing.
-	case call(offset: Int)
+
+	/// Will be replaced by .search in preprocessing. Is never executed.
+	case skip
+	case function((Input, inout VMBacktrackEngine<Input>.Thread) -> Bool) // TODO: Replace with “search”
+
+	/// Stores the current index as the beginning of capture `name`
+	case captureStart(name: String?, atIndexOffset: Int)
+	/// Stores the current index as the end of the most recently started capture.
+	case captureEnd(atIndexOffset: Int)
+
+	/// Stores a snapshot of the current state. If there is a future failure the snapshot will be restored
+	/// and the instruction at `offset` (relative to this instruction) will be called.
+	case choice(offset: Distance, atIndexOffset: Int) // TODO: remove atIndexOffset
+	/// Signals the end of a choice. Doesn't do anything else.
+	/// Used as a barrier across which instructions cannot be moved.
+	case choiceEnd
+	/// Discards the state saved by previous `.choice`, because the instructions since then have completed
+	/// successfully and the alternative instructions at the previous `.choice` are no longer needed.
+	case commit
+
+	/// Will be replaced by .call in preprocessing. Is never executed.
+	case openCall(name: String)
+	/// Goes to the sub-expression at `offset` relative to this instruction.
+	case call(offset: Distance)
+	/// Returns from this subexpression to where it was called from.
 	case `return`
+
+	/// Signals a failure.
 	case fail
+	/// A match has been successfully completed!
+	///
+	/// Will not continue with further instructions.
 	case match
 
-	static var any: Self { Self.checkCharacter { _ in true } } // TODO: make its own instruction
+	/// Succeeds anywhere except at the end of the input.
+	static var any: Self { Self.checkElement { _ in true } } // TODO: make its own instruction
+
+	static func captureStart(name: String?) -> Self {
+		.captureStart(name: name, atIndexOffset: 0)
+	}
+
+	static var captureEnd: Self {
+		.captureEnd(atIndexOffset: 0)
+	}
+
+	static func checkIndex(_ test: @escaping (Input, Input.Index) -> Bool) -> Self {
+		.checkIndex(test, atIndexOffset: 0)
+	}
+
+	static func choice(offset: Int) -> Instruction {
+		.choice(offset: offset, atIndexOffset: 0)
+	}
+
 	static func search(_ f: @escaping (Input, Input.Index) -> Input.Index?) -> Self {
 		Self.function { (input: Input, thread: inout VMBacktrackEngine<Input>.Thread) -> Bool in
 			guard let index = f(input, thread.inputIndex) else { return false }
@@ -50,25 +100,23 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Equ
 		}
 	}
 
-	static func split(first: Int, second: Int) -> Instruction {
-		.split(first: first, second: second, atIndex: 0)
-	}
-
+	/// The offset by which this instruction will move the input index.
 	var movesIndexBy: Int? {
 		switch self {
-		case .checkIndex, .captureStart, .captureEnd, .cancelLastSplit, .match:
+		case .checkIndex, .captureStart, .captureEnd, .commit, .match, .choiceEnd:
 			return 0
-		case .literal, .checkCharacter:
+		case .elementEquals, .checkElement:
 			return 1
 		case let .moveIndex(offset):
 			return offset
-		case .function, .split, .jump, .openCall, .call, .return, .fail:
+		case .function, .choice, .jump, .openCall, .call, .return, .fail, .skip:
 			return nil
 		}
 	}
 }
 
 public extension Sequence where Element == Instruction<Pattern.Input> {
+	/// The offset by which these instructions will move the input index.
 	var movesIndexBy: Int? {
 		lazy .map { $0.movesIndexBy }.reduceIfNoNils(into: 0) { result, offset in result += offset }
 	}

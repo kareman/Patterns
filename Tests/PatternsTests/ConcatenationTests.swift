@@ -127,7 +127,7 @@ class ConcatenationTests: XCTestCase {
 			" " • Capture(Skip() • letter+) • " ",
 			input: text, result: ["is", "a", "test"])
 		assertParseAll(
-			" " • Capture(Skip()) • Literal(" "),
+			" " • Capture(Skip()) • " ",
 			input: text, result: ["is", "a", "test"])
 
 		assertParseAll(
