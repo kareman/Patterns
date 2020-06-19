@@ -53,6 +53,6 @@ extension RepeatPattern: RegexConvertible where Repeated: RegexConvertible {
 	}
 }
 
-extension Skip: RegexConvertible where Repeated: RegexConvertible {
-	public var regex: String { repeatedPattern.map { "(?:\($0.regex))*?" } ?? ".*?" }
+extension Skip: RegexConvertible {
+	public var regex: String { ".*?" }
 }

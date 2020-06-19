@@ -80,44 +80,6 @@ class ConcatenationTests: XCTestCase {
 			input: " ad d", result: [" ad", " d"])
 	}
 
-	/*
-	 func testSkipWithRepeatedPattern() throws {
-	 	let text = """
-	 	yes (a)
-	 	yes (aaaaa)
-	 	no (aaabaa)
-	 	no (woieru
-	 	lkjfd)
-	 	yes ()
-	 	"""
-
-	 	assertParseAll(
-	 		"("
-	 			• Capture(Skip(ascii • !newline))
-	 			• Line.End(),
-	 		input: text, result: ["a)", "aaaaa)", "aaabaa)", "woieru", ")"])
-
-	 	assertParseAll(
-	 		"("
-	 			• Skip(Literal("a"))
-	 			• ")",
-	 		input: text, result: ["(a)", "(aaaaa)", "()"])
-	 	assertParseAll(
-	 		"("
-	 			• Capture(Skip(Literal("a")))
-	 			• ")",
-	 		input: text, result: ["a", "aaaaa", ""])
-
-	 	assertParseAll(
-	 		"("
-	 			• Skip(ascii • newline.not)
-	 			• ")",
-	 		input: text, result: ["(a)", "(aaaaa)", "(aaabaa)", "()"])
-
-	 	// TODO: Skip("literal")
-	 }
-	 */
-
 	func testSkipAndCapture() throws {
 		let text = "This is a test text."
 		assertParseAll(
@@ -281,7 +243,7 @@ class ConcatenationTests: XCTestCase {
 
 	func testOperatorPrecedence() throws {
 		let p1 = "a" • Skip() • letter • !alphanumeric • "b"+
-		XCTAssert(type(of: p1.right.left) == Skip<AnyPattern>.self)
+		XCTAssert(type(of: p1.right.left) == Skip.self)
 		XCTAssert(type(of: "a" • "b" / "c" • "d")
 			== OrPattern<Concat<Literal, Literal>, Concat<Literal, Literal>>.self,
 		          #"`/` should have lower precedence than `•`"#)
