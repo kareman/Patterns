@@ -5,32 +5,14 @@
 //  Created by Kåre Morstøl on 25/05/2020.
 //
 
-public struct Skip<Repeated: Pattern>: Pattern {
-	public let repeatedPattern: Repeated?
-	public let description: String
+public struct Skip: Pattern {
+	public var description: String { "Skip()" }
 
-	public init(_ repeatedPattern: Repeated) {
-		self.repeatedPattern = repeatedPattern
-		self.description = "Skip(\(repeatedPattern))"
-	}
+	public init() {}
 
 	public func createInstructions(_ instructions: inout Instructions) throws {
 		instructions.append(.skip)
 		instructions.append(.jump(offset: 1)) // dummy
-	}
-}
-
-extension Skip where Repeated == AnyPattern {
-	public init() {
-		self.description = "Skip()"
-		self.repeatedPattern = nil
-	}
-}
-
-extension Skip where Repeated == Literal {
-	public init(_ repeatedPattern: Literal) {
-		self.repeatedPattern = repeatedPattern
-		self.description = "Skip(\(repeatedPattern))"
 	}
 }
 
@@ -108,12 +90,12 @@ extension VMBacktrackEngine {
 				i += offset
 			case .elementEquals, .checkElement, .checkIndex, .moveIndex, .captureStart, .captureEnd, .call:
 				i += 1
-			case .commit, .choiceEnd, .return, .match, .skip:
+			case .commit, .choiceEnd, .return, .match, .skip, .search:
 				let dummyIndex = skipindex + 1
 				instructions.moveSubranges(RangeSet(dummyIndex ..< (dummyIndex + 1)), to: i)
 				instructions[i - 1] = .commit
 				return
-			case .fail, .function, .openCall:
+			case .fail, .openCall:
 				fatalError()
 			}
 		}

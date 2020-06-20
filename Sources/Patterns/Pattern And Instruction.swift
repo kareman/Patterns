@@ -39,9 +39,9 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Has
 	/// Continues with the instruction at `offset` relative to this instruction.
 	case jump(offset: Distance)
 
-	/// Will be replaced by .search in preprocessing. Is never executed.
-	case skip
-	case function((Input, inout VMBacktrackEngine<Input>.Thread) -> Bool) // TODO: Replace with “search”
+	/// Sets the input index to the output from the closure.
+	/// If the output is nil, the instruction fails.
+	case search((Input, Input.Index) -> Input.Index?)
 
 	/// Stores the current index as the beginning of capture `name`
 	case captureStart(name: String?, atIndexOffset: Int)
@@ -50,7 +50,7 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Has
 
 	/// Stores a snapshot of the current state. If there is a future failure the snapshot will be restored
 	/// and the instruction at `offset` (relative to this instruction) will be called.
-	case choice(offset: Distance, atIndexOffset: Int) // TODO: remove atIndexOffset
+	case choice(offset: Distance, atIndexOffset: Int)
 	/// Signals the end of a choice. Doesn't do anything else.
 	/// Used as a barrier across which instructions cannot be moved.
 	case choiceEnd
@@ -72,6 +72,9 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Has
 	/// Will not continue with further instructions.
 	case match
 
+	/// Will be replaced in preprocessing. Is never executed.
+	case skip
+
 	/// Succeeds anywhere except at the end of the input.
 	static var any: Self { Self.checkElement { _ in true } } // TODO: make its own instruction
 
@@ -91,15 +94,6 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Has
 		.choice(offset: offset, atIndexOffset: 0)
 	}
 
-	static func search(_ f: @escaping (Input, Input.Index) -> Input.Index?) -> Self {
-		Self.function { (input: Input, thread: inout VMBacktrackEngine<Input>.Thread) -> Bool in
-			guard let index = f(input, thread.inputIndex) else { return false }
-			thread.inputIndex = index
-			thread.instructionIndex += 1
-			return true
-		}
-	}
-
 	/// The offset by which this instruction will move the input index.
 	var movesIndexBy: Int? {
 		switch self {
@@ -109,7 +103,7 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Has
 			return 1
 		case let .moveIndex(offset):
 			return offset
-		case .function, .choice, .jump, .openCall, .call, .return, .fail, .skip:
+		case .search, .choice, .jump, .openCall, .call, .return, .fail, .skip:
 			return nil
 		}
 	}

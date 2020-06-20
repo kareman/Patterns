@@ -88,3 +88,12 @@ struct SingleLineLabel: NSViewRepresentable {
 
 	func updateNSView(_ nsView: TheUIView, context: Context) {}
 }
+
+import PlaygroundSupport
+
+public func showParserView<P: Patterns.Pattern>(ofSize size: NSSize = NSSize(width: 600, height: 600), pattern: P, withText text: String) throws {
+	let view = try ParserView(text: text, pattern: pattern)
+	let hosting = NSHostingController(rootView: view)
+	hosting.view.frame.size = size
+	PlaygroundPage.current.setLiveView(hosting)
+}

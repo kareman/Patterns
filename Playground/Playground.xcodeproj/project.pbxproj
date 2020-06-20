@@ -3,10 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BA82FFEF249E5CAE00D38ABA /* SE0270_RangeSet in Frameworks */ = {isa = PBXBuildFile; productRef = BA82FFEE249E5CAE00D38ABA /* SE0270_RangeSet */; };
+		BA82FFF1249E5D2400D38ABA /* Optimise Instructions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA82FFF0249E5D2400D38ABA /* Optimise Instructions.swift */; };
 		BA92EA232495240C000A854B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA92EA222495240C000A854B /* AppDelegate.swift */; };
 		BA92EA272495240D000A854B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA92EA262495240D000A854B /* Assets.xcassets */; };
 		BA92EA2A2495240D000A854B /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BA92EA292495240D000A854B /* Preview Assets.xcassets */; };
@@ -73,6 +75,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BA82FFF0249E5D2400D38ABA /* Optimise Instructions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Optimise Instructions.swift"; sourceTree = "<group>"; };
 		BA92EA202495240C000A854B /* PlaygroundView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlaygroundView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA92EA222495240C000A854B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BA92EA262495240D000A854B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -123,6 +126,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
 			files = (
+				BA82FFEF249E5CAE00D38ABA /* SE0270_RangeSet in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -195,6 +199,7 @@
 		OBJ_13 /* Patterns */ = {
 			isa = PBXGroup;
 			children = (
+				BA82FFF0249E5D2400D38ABA /* Optimise Instructions.swift */,
 				OBJ_14 /* Atomic Patterns */,
 				OBJ_19 /* Decoder.swift */,
 				OBJ_20 /* General */,
@@ -327,6 +332,9 @@
 			dependencies = (
 			);
 			name = Patterns;
+			packageProductDependencies = (
+				BA82FFEE249E5CAE00D38ABA /* SE0270_RangeSet */,
+			);
 			productName = Patterns;
 			productReference = "Patterns::Patterns::Product" /* Patterns.framework */;
 			productType = "com.apple.product-type.framework";
@@ -401,6 +409,9 @@
 				Base,
 			);
 			mainGroup = OBJ_5;
+			packageReferences = (
+				BA82FFED249E5CAE00D38ABA /* XCRemoteSwiftPackageReference "swift-se0270-range-set" */,
+			);
 			productRefGroup = OBJ_39 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -453,6 +464,7 @@
 				OBJ_56 /* And.swift in Sources */,
 				OBJ_57 /* AnyPattern.swift in Sources */,
 				OBJ_58 /* Capture.swift in Sources */,
+				BA82FFF1249E5D2400D38ABA /* Optimise Instructions.swift in Sources */,
 				OBJ_59 /* Choice.swift in Sources */,
 				OBJ_60 /* Concatenation.swift in Sources */,
 				OBJ_61 /* Not.swift in Sources */,
@@ -569,7 +581,10 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = PlaygroundView/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -629,7 +644,10 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = PlaygroundView/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -685,7 +703,8 @@
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator appletvos appletvsimulator watchos watchsimulator";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SWIFT_PACKAGE";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				USE_HEADERMAP = NO;
 			};
 			name = Release;
@@ -701,7 +720,10 @@
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Playground.xcodeproj/Patterns_Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
@@ -729,7 +751,10 @@
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Playground.xcodeproj/Patterns_Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
@@ -775,7 +800,10 @@
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Playground.xcodeproj/Playground_Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
@@ -803,7 +831,10 @@
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Playground.xcodeproj/Playground_Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
@@ -896,6 +927,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		BA82FFED249E5CAE00D38ABA /* XCRemoteSwiftPackageReference "swift-se0270-range-set" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-se0270-range-set";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		BA82FFEE249E5CAE00D38ABA /* SE0270_RangeSet */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BA82FFED249E5CAE00D38ABA /* XCRemoteSwiftPackageReference "swift-se0270-range-set" */;
+			productName = SE0270_RangeSet;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = OBJ_1 /* Project object */;
 }

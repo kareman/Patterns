@@ -128,12 +128,10 @@ class PatternTests: XCTestCase {
 			input: text, result: ["1\nl", "2\nl", "3\nl"])
 
 		/* TODO: Implement?
-		 XCTAssertThrowsError(Line.start, Line.start))
-		 XCTAssertThrowsError(Line.start, Capture(Line.start)))
-		 XCTAssertThrowsError(
-		 	[Line.start, Skip(), Line.start]))
+		 XCTAssertThrowsError(Line.start • Line.start)
+		 XCTAssertThrowsError(Line.start • Capture(Line.start))
 		 */
-		XCTAssertNoThrow(Line.start • Skip(alphanumeric / "\n") • Line.start)
+		XCTAssertNoThrow(Line.start • Skip() • Line.start)
 	}
 
 	func testLineEnd() throws {
@@ -159,19 +157,13 @@ class PatternTests: XCTestCase {
 			Capture(digit • Line.end • Skip() • "l"),
 			input: text, result: ["1\nl", "2\nl", "3\nl"])
 
-		/* TODO: Implement?
-		 XCTAssertThrowsError(Line.end, Line.end))
-		 XCTAssertThrowsError(
-		 	Line.end, Capture(Line.end)))
-		 XCTAssertThrowsError(
-		 	Line.end, Skip(), Line.end))
-		 */
+		// TODO: Implement?
+		// XCTAssertThrowsError(Line.end • Line.end)
+		// XCTAssertThrowsError(Line.end • Capture(Line.end))
 
-		XCTAssertNoThrow(try Parser(search: Line.end • Skip(alphanumeric / "\n") • Line.end))
+		XCTAssertNoThrow(try Parser(search: Line.end • Skip() • Line.end))
 
-		assertParseAll(
-			Line.end,
-			input: "\n", count: 2)
+		assertParseAll(Line.end, input: "\n", count: 2)
 	}
 
 	func testLine() throws {
