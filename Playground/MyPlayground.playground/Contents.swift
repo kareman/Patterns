@@ -4,8 +4,6 @@
 // ℹ️ Please restart Xcode if autocomplete is not working.
 
 import Patterns
-import PlaygroundSupport
-import SwiftUI
 
 let text = """
 I can eat glass and it doesn't hurt me.
@@ -27,8 +25,4 @@ let p = Capture(name: ">=6", letter.repeat(6...))
 	/ Capture(name: "2...3", letter.repeat(2 ... 3))
 	/ Capture(name: "1", letter)
 
-let view = try ParserView(text: text, pattern: p)
-let size = NSSize(width: 600, height: 600)
-let hosting = NSHostingController(rootView: view)
-hosting.view.frame.size = size
-PlaygroundPage.current.setLiveView(hosting)
+try showParserView(pattern: p, withText: text)
