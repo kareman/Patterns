@@ -46,10 +46,15 @@ extension VMBacktrackEngine {
 			}
 			instructions[searchablesStartAt] = .choice(offset: -1, atIndexOffset: 0)
 		case .elementEquals:
-			// TODO: mapWhile
 			let elements: [Input.Element] = instructions[searchablesStartAt...]
-				.prefix(while: { if case .elementEquals = $0 { return true } else { return false } })
-				.map { if case let .elementEquals(c) = $0 { return c } else { fatalError() } }
+				.mapPrefix {
+					switch $0 {
+					case let .elementEquals(element):
+						return element
+					default:
+						return nil
+					}
+				}
 			if elements.count == 1 {
 				instructions[skipIndex] = .search { input, index in
 					input[index...].firstIndex(of: elements[0])

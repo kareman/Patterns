@@ -99,6 +99,18 @@ extension Collection {
 	var fullRange: Range<Index> {
 		startIndex ..< endIndex
 	}
+
+	func mapPrefix<T>(_ transform: (Element) throws -> T?) rethrows -> [T] {
+		var result = [T]()
+		for e in self {
+			if let transformed = try transform(e) {
+				result.append(transformed)
+			} else {
+				return result
+			}
+		}
+		return result
+	}
 }
 
 extension Sequence {
