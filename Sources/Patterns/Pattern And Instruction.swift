@@ -23,6 +23,7 @@ extension Pattern {
 }
 
 /// The instructions used by patterns in `createInstructions`.
+///
 /// Unless otherwise noted, each instruction moves on to the next instruction after it has finished.
 public enum Instruction<Input: BidirectionalCollection> where Input.Element: Hashable {
 	public typealias Distance = Int
@@ -43,12 +44,12 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Has
 	/// If the output is nil, the instruction fails.
 	case search((Input, Input.Index) -> Input.Index?)
 
-	/// Stores the current index as the beginning of capture `name`
+	/// Stores (current input index - `atIndexOffset`) as the beginning of capture `name`
 	case captureStart(name: String?, atIndexOffset: Int)
-	/// Stores the current index as the end of the most recently started capture.
+	/// Stores (current input index - `atIndexOffset`) as the end of the most recently started capture.
 	case captureEnd(atIndexOffset: Int)
 
-	/// Stores a snapshot of the current state. If there is a future failure the snapshot will be restored
+	/// Stores a snapshot of the current state, with input index set to (current + `atIndexOffset`). If there is a future failure the snapshot will be restored
 	/// and the instruction at `offset` (relative to this instruction) will be called.
 	case choice(offset: Distance, atIndexOffset: Int)
 	/// Signals the end of a choice. Doesn't do anything else.

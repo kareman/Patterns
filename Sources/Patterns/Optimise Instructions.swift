@@ -14,45 +14,46 @@ private extension Instruction {
 		}
 	}
 
-	var canMoveAcross: Bool {
+	var stopsMovables: Bool {
 		switch self {
 		case .elementEquals, .checkElement:
-			return true
-		default:
 			return false
+		default:
+			return true
 		}
 	}
 }
 
 import SE0270_RangeSet
 
-extension VMBacktrackEngine {
-	static func moveMovablesForward(instructions: inout Instructions) {
-		var movables = ContiguousArray<Instructions.Index>()[...]
-		for i in instructions.indices {
-			if instructions[i].isMovable {
+extension MutableCollection where Self: RandomAccessCollection, Index == Int {
+	@usableFromInline
+	mutating func moveMovablesForward<Input>() where Element == Instruction<Input> {
+		var movables = ContiguousArray<Index>()[...]
+		for i in indices {
+			if self[i].isMovable {
 				movables.append(i)
-			} else if !movables.isEmpty, !instructions[i].canMoveAcross {
-				let moved = instructions.moveSubranges(RangeSet(movables, within: instructions), to: i)
-				var checkIndexIndexes = RangeSet<Instructions.Index>()
-				for inst in moved {
-					let oldPos = movables.popFirst()!
-					switch instructions[inst] {
-					case let .captureStart(name: name, atIndexOffset: offset):
-						instructions[inst] = .captureStart(name: name, atIndexOffset: offset - (inst - oldPos))
-					case let .captureEnd(atIndexOffset: offset):
-						instructions[inst] = .captureEnd(atIndexOffset: offset - (inst - oldPos))
-					case let .checkIndex(test, atIndexOffset: offset):
-						instructions[inst] = .checkIndex(test, atIndexOffset: offset - (inst - oldPos))
-						checkIndexIndexes.insert(inst, within: instructions)
+			} else if !movables.isEmpty, self[i].stopsMovables {
+				let moved = moveSubranges(RangeSet(movables, within: self), to: i)
+				var checkIndexIndices = RangeSet<Index>()
+				for (movedIndex, oldPosition) in zip(moved, movables) {
+					let distanceMoved = (movedIndex - oldPosition)
+					switch self[movedIndex] {
+					case let .captureStart(name, offset):
+						self[movedIndex] = .captureStart(name: name, atIndexOffset: offset - distanceMoved)
+					case let .captureEnd(offset):
+						self[movedIndex] = .captureEnd(atIndexOffset: offset - distanceMoved)
+					case let .checkIndex(test, offset):
+						self[movedIndex] = .checkIndex(test, atIndexOffset: offset - distanceMoved)
+						checkIndexIndices.insert(movedIndex, within: self)
 					default:
 						fatalError()
 					}
 				}
-				assert(movables.isEmpty)
+				movables.removeAll()
 
 				// All `.checkIndex` should be first.
-				instructions.moveSubranges(checkIndexIndexes, to: moved.lowerBound)
+				moveSubranges(checkIndexIndices, to: moved.lowerBound)
 			}
 		}
 	}
