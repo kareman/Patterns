@@ -6,23 +6,25 @@
 import Patterns
 
 let text = """
-I can eat glass and it doesn't hurt me.
-ᛖᚴ ᚷᛖᛏ ᛖᛏᛁ ᚧ ᚷᛚᛖᚱ ᛘᚾ ᚦᛖᛋᛋ ᚨᚧ ᚡᛖ ᚱᚧᚨ ᛋᚨᚱ
-Ek get etið gler án þess að verða sár.
-Eg kan eta glas utan å skada meg.
-ᛁᚳ᛫ᛗᚨᚷ᛫ᚷᛚᚨᛋ᛫ᛖᚩᛏᚪᚾ᛫ᚩᚾᛞ᛫ᚻᛁᛏ᛫ᚾᛖ᛫ᚻᛖᚪᚱᛗᛁᚪᚧ᛫ᛗᛖ᛬
-Μπορώ να φάω σπασμένα γυαλιά χωρίς να πάθω τίποτα.
-我能吞下玻璃而不伤身体。
-我能吞下玻璃而不傷身體。
-Góa ē-tàng chia̍h po-lê, mā bē tio̍h-siong.
-私はガラスを食べられます。それは私を傷つけません。
-나는 유리를 먹을 수 있어요. 그래도 아프지 않아요
-काचं शक्नोम्यत्तुम् । नोपहिनस्ति माम् ॥
+0   0.0   0.01
+-0   +0   -0.0   +0.0
+-123.456e+00   -123.456E+00   -123.456e-00   -123.456E-00
++123.456e+00   +123.456E+00   +123.456e-00   +123.456E-00
+0   0.0   0.01
+-123e+12   -123e-12
+123.456e+00   123.456E+00
+0x123E   0x123e
+0x0123456789abcdef
+0b0   0b1   0b0000   0b0001   0b11110000   0b0000_1111   0b1010_00_11
 """
 
-let p = Capture(name: ">=6", letter.repeat(6...))
-	/ Capture(name: "4...5", letter.repeat(4 ... 5))
-	/ Capture(name: "2...3", letter.repeat(2 ... 3))
-	/ Capture(name: "1", letter)
+let unsigned = digit+
+let sign = "-" / "+"
+let integer = Capture(name: "integer", sign¿ • unsigned)
+let hexa = Capture(name: "hexa", "0x" • hexDigit+)
+let binary = Capture(name: "binary", "0b" • OneOf("01") • OneOf("01_")*)
+let floating = Capture(name: "floating", integer • "." • unsigned)
+let scientific = floating • (("e" / "E") • integer)¿
+let number = hexa / binary / floating / integer / unsigned / scientific
 
-try showParserView(pattern: p, withText: text)
+try showParserView(pattern: number, withText: text)
