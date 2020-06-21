@@ -49,7 +49,10 @@ Text within double quotes matches that exact text, no need to escape special let
 
 `OneOf(...)`
 
-This is like character classes (`[...]`) from regular expressions, and matches 1 character. `OneOf("aeiouAEIOU")` matches any single character in that string, and `OneOf("a"..."e")` matches any of "abcde". They can also be combined, like `OneOf("aeiou", punctuation, "x"..."z")`. And you can implement one yourself:
+This is like character classes (`[...]`) from regular expressions, and matches 1 character. `OneOf("aeiouAEIOU")` matches any single character in that string, and `OneOf("a"..."e")` matches any of "abcde". They can also be combined, like `OneOf("aeiou", punctuation, "x"..."z")`. To match any character _except_ ..., use `OneOf(not: ...)`.
+
+
+You can also implement one yourself:
 
 ```swift
 OneOf(description: "ten") { character in
