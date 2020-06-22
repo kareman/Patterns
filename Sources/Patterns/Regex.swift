@@ -12,7 +12,7 @@ public protocol RegexConvertible {
 }
 
 extension Literal: RegexConvertible {
-	public var regex: String { NSRegularExpression.escapedPattern(for: String(substring)) }
+	public var regex: String { NSRegularExpression.escapedPattern(for: String(elements)) }
 }
 
 extension Line: RegexConvertible {

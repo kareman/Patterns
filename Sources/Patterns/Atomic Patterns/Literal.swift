@@ -7,15 +7,18 @@
 
 import Foundation
 
+/// Matches these exact elements.
+///
+/// If empty, it will always succeed without consuming any input.
 public struct Literal: Pattern {
-	public let substring: Input
+	public let elements: Input
 
 	public var description: String {
-		#""\#(String(substring).replacingOccurrences(of: "\n", with: "\\n"))""#
+		#""\#(String(elements).replacingOccurrences(of: "\n", with: "\\n"))""#
 	}
 
 	public init<S: Sequence>(_ sequence: S) where S.Element == Pattern.Input.Element {
-		self.substring = Pattern.Input(sequence)
+		self.elements = Pattern.Input(sequence)
 	}
 
 	public init(_ character: Character) {
@@ -23,7 +26,7 @@ public struct Literal: Pattern {
 	}
 
 	public func createInstructions(_ instructions: inout Instructions) {
-		instructions.append(contentsOf: substring.map(Instruction.elementEquals))
+		instructions.append(contentsOf: elements.map(Instruction.elementEquals))
 	}
 }
 

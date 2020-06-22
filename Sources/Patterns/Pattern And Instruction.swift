@@ -5,16 +5,23 @@
 //  Created by Kåre Morstøl on 06/06/2020.
 //
 
+/// Something that can create Instructions for the Parser.
 public protocol Pattern: CustomStringConvertible {
 	typealias Input = String
 	typealias ParsedRange = Range<Input.Index>
 	typealias Instructions = ContiguousArray<Instruction<Input>>
 
+	/// Appends Instructions for the Parser to `instructions`.
+	@inlinable
 	func createInstructions(_ instructions: inout Instructions) throws
+	/// Returns Instructions for the Parser.
+	@inlinable
 	func createInstructions() throws -> Instructions
 }
 
 extension Pattern {
+	/// Returns Instructions for the Parser.
+	@inlinable
 	public func createInstructions() throws -> Instructions {
 		var instructions = Instructions()
 		try self.createInstructions(&instructions)
@@ -32,7 +39,7 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Has
 	case elementEquals(Input.Element)
 	/// Succeeds if the closure returns true when passed the current element. Advances index to the next element.
 	case checkElement((Input.Element) -> Bool)
-	/// Succeeds if the closure returns true when passed the current index.
+	/// Succeeds if the closure returns true when passed the input and the input index + `atIndexOffset`.
 	case checkIndex((Input, Input.Index) -> Bool, atIndexOffset: Int)
 
 	/// Moves the input index by `offset`.
@@ -49,7 +56,9 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Has
 	/// Stores (current input index - `atIndexOffset`) as the end of the most recently started capture.
 	case captureEnd(atIndexOffset: Int)
 
-	/// Stores a snapshot of the current state, with input index set to (current + `atIndexOffset`). If there is a future failure the snapshot will be restored
+	/// Stores a snapshot of the current state, with input index set to (current + `atIndexOffset`).
+	///
+	/// If there is a future failure the snapshot will be restored
 	/// and the instruction at `offset` (relative to this instruction) will be called.
 	case choice(offset: Distance, atIndexOffset: Int)
 	/// Signals the end of a choice. Doesn't do anything else.
@@ -77,25 +86,38 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Has
 	case skip
 
 	/// Succeeds anywhere except at the end of the input.
-	static var any: Self { Self.checkElement { _ in true } } // TODO: make its own instruction
+	@inlinable
+	public static var any: Self { Self.checkElement { _ in true } } // TODO: make its own instruction
 
-	static func captureStart(name: String?) -> Self {
+	/// Stores the current input index as the beginning of capture `name`
+	@inlinable
+	public static func captureStart(name: String?) -> Self {
 		.captureStart(name: name, atIndexOffset: 0)
 	}
 
-	static var captureEnd: Self {
+	/// Stores the current input index as the end of the most recently started capture.
+	@inlinable
+	public static var captureEnd: Self {
 		.captureEnd(atIndexOffset: 0)
 	}
 
-	static func checkIndex(_ test: @escaping (Input, Input.Index) -> Bool) -> Self {
+	/// Succeeds if the closure returns true when passed the input and the input index.
+	@inlinable
+	public static func checkIndex(_ test: @escaping (Input, Input.Index) -> Bool) -> Self {
 		.checkIndex(test, atIndexOffset: 0)
 	}
 
-	static func choice(offset: Int) -> Instruction {
+	/// Stores a snapshot of the current state.
+	///
+	/// If there is a future failure the snapshot will be restored
+	/// and the instruction at `offset` (relative to this instruction) will be called.
+	@inlinable
+	public static func choice(offset: Int) -> Instruction {
 		.choice(offset: offset, atIndexOffset: 0)
 	}
 
 	/// The offset by which this instruction will move the input index.
+	@usableFromInline
 	var movesIndexBy: Int? {
 		switch self {
 		case .checkIndex, .captureStart, .captureEnd, .commit, .match, .choiceEnd:
@@ -110,8 +132,9 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Has
 	}
 }
 
-public extension Sequence where Element == Instruction<Pattern.Input> {
+extension Sequence where Element == Instruction<Pattern.Input> {
 	/// The offset by which these instructions will move the input index.
+	@inlinable
 	var movesIndexBy: Int? {
 		lazy .map { $0.movesIndexBy }.reduceIfNoNils(into: 0) { result, offset in result += offset }
 	}

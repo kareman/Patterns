@@ -5,44 +5,49 @@
 //  Created by Kåre Morstøl on 25/05/2020.
 //
 
+/// Matches one line, not including newline characters.
 public struct Line: Pattern {
-	public let description: String = "line"
+	public init() {}
 
-	public let pattern: Pattern
+	public var description: String { "Line()" }
+
 	public static let start = Start()
 	public static let end = End()
 
-	public init() {
-		pattern = Start() • Skip() • End()
-	}
-
+	@inlinable
 	public func createInstructions(_ instructions: inout Instructions) throws {
-		try pattern.createInstructions(&instructions)
+		try (Start() • Skip() • End()).createInstructions(&instructions)
 	}
 
+	/// Matches the start of a line, including the start of input.
 	public struct Start: Pattern {
 		public init() {}
 
-		public var description: String { "line.start" }
+		public var description: String { "Line.start" }
 
-		public func parse(_ input: Input, at index: Input.Index) -> Bool {
+		@inlinable
+		func parse(_ input: Input, at index: Input.Index) -> Bool {
 			(index == input.startIndex) || input[input.index(before: index)].isNewline
 		}
 
+		@inlinable
 		public func createInstructions(_ instructions: inout Instructions) {
 			instructions.append(.checkIndex(self.parse(_:at:)))
 		}
 	}
 
+	/// Matches the end of a line, including the end of input.
 	public struct End: Pattern {
 		public init() {}
 
-		public var description: String { "line.end" }
+		public var description: String { "Line.end" }
 
-		public func parse(_ input: Input, at index: Input.Index) -> Bool {
+		@inlinable
+		func parse(_ input: Input, at index: Input.Index) -> Bool {
 			index == input.endIndex || input[index].isNewline
 		}
 
+		@inlinable
 		public func createInstructions(_ instructions: inout Instructions) {
 			instructions.append(.checkIndex(self.parse(_:at:)))
 		}
