@@ -38,13 +38,13 @@ public func Capture(name: String? = nil) -> Concat<CaptureStart, CaptureEnd> {
 /// Captures the position in the input of `wrapped` as a range.
 /// - returns: `CaptureStart(name: name) • wrapped • CaptureEnd()`
 @inlinable
-public func Capture<P: Pattern>(name: String? = nil, _ wrapped: P) -> Concat<CaptureStart, Concat<P, CaptureEnd>> {
+public func Capture<P: Pattern>(name: String? = nil, _ wrapped: P) -> Concat<Concat<CaptureStart, P>, CaptureEnd> {
 	CaptureStart(name: name) • wrapped • CaptureEnd()
 }
 
 /// Captures the position in the input of `wrapped` as a range.
 /// - returns: `CaptureStart(name: name) • wrapped • CaptureEnd()`
 @inlinable
-public func Capture(name: String? = nil, _ wrapped: Literal) -> Concat<CaptureStart, Concat<Literal, CaptureEnd>> {
+public func Capture(name: String? = nil, _ wrapped: Literal) -> Concat<Concat<CaptureStart, Literal>, CaptureEnd> {
 	CaptureStart(name: name) • wrapped • CaptureEnd()
 }

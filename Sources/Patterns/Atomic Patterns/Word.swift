@@ -11,7 +11,7 @@ public struct Word {
 	public struct Boundary: Pattern {
 		public let description: String = "Word.boundary"
 
-		//TODO: return bool
+		// TODO: Should use UnicodeScalars. And return bool.
 		public func parse(_ input: Input, at index: Input.Index) -> ParsedRange? {
 			let success = index ..< index
 			guard index != input.endIndex, index != input.startIndex else { return success }

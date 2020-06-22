@@ -5,7 +5,6 @@
 //  Created by Kåre Morstøl on 18/04/2020.
 //
 
-// TODO: struct?
 @usableFromInline
 struct VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Hashable {
 	@usableFromInline
