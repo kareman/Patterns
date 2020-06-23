@@ -121,8 +121,8 @@ public func • (lhs: AndPattern<OneOf>, rhs: OneOf) -> OneOf {
 }
 
 @inlinable
-public func • <P: Pattern>(lhs: AndPattern<OneOf>, rhs: Concat<OneOf, P>) -> Concat<OneOf, P> {
-	(lhs • rhs.left) • rhs.right
+public func • <P: Pattern>(lhs: Concat<P, AndPattern<OneOf>>, rhs: OneOf) -> Concat<P, OneOf> {
+	lhs.left • (lhs.right • rhs)
 }
 
 // MARK: Join `!OneOf • Oneof` into one.
@@ -133,8 +133,8 @@ public func • (lhs: NotPattern<OneOf>, rhs: OneOf) -> OneOf {
 }
 
 @inlinable
-public func • <P: Pattern>(lhs: NotPattern<OneOf>, rhs: Concat<OneOf, P>) -> Concat<OneOf, P> {
-	(lhs • rhs.left) • rhs.right
+public func • <P: Pattern>(lhs: Concat<P, NotPattern<OneOf>>, rhs: OneOf) -> Concat<P, OneOf> {
+	lhs.left • (lhs.right • rhs)
 }
 
 // MARK: Join `OneOf / OneOf` into one.

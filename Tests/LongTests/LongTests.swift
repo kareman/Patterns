@@ -11,13 +11,13 @@ class LongTests: XCTestCase {
 
 	func testNot() {
 		XCTAssert(
-			type(of: "a" • !letter • ascii • "b") == Concat<Literal, Concat<OneOf, Literal>>.self,
+			type(of: "a" • !letter • ascii • "b") == Concat<Concat<Literal, OneOf>, Literal>.self,
 			"'•' operator isn't optimizing OneOf's properly.")
 	}
 
 	func testAnd() throws {
 		XCTAssert(
-			type(of: "a" • &&letter • ascii • "b") == Concat<Literal, Concat<OneOf, Literal>>.self,
+			type(of: "a" • &&letter • ascii • "b") == Concat<Concat<Literal, OneOf>, Literal>.self,
 			"'•' operator isn't optimizing OneOf's properly.")
 	}
 
