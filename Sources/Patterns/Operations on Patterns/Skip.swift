@@ -65,7 +65,7 @@ extension MutableCollection where Self: RandomAccessCollection, Index == Int {
 				}
 				self[searchablesStartAt] = .choice(offset: -1, atIndexOffset: 0)
 			} else {
-				let cache = SearchCache(pattern: elements)
+				let cache = SearchCache(elements)
 				self[skipIndex] = .search { input, index in
 					input.range(of: elements, from: index, cache: cache)?.upperBound
 				}

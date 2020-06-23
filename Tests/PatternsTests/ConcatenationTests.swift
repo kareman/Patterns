@@ -201,7 +201,7 @@ class ConcatenationTests: XCTestCase {
 			let notCaptured: String?
 		}
 
-		let matches = rangeAndProperty.matches(in: text).array()
+		let matches = Array(rangeAndProperty.matches(in: text))
 		let property = try matches.first!.decode(Property.self, from: text)
 		XCTAssertEqual(property, Property(codePoint: [5, 10], property: "Common", notCaptured: nil))
 

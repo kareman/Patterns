@@ -46,6 +46,6 @@ class LongTests: XCTestCase {
 
 		let parser = try Parser(search: number)
 
-		XCTAssertEqual(parser.matches(in: text).array().count, 44)
+		XCTAssertEqual(Array(parser.matches(in: text)).count, 44)
 	}
 }

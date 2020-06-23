@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Matches a single element.
+/// Matches and consumes a single element.
 public struct OneOf: Pattern, RegexConvertible {
 	@usableFromInline
 	let group: Group<Input.Element>
@@ -80,7 +80,9 @@ public struct OneOf: Pattern, RegexConvertible {
 
 // MARK: OneOfConvertible
 
+/// A type that `OneOf` can use.
 public protocol OneOfConvertible {
+	@inlinable
 	func contains(_: Pattern.Input.Element) -> Bool
 }
 
@@ -151,6 +153,7 @@ public func / <P: Pattern>(lhs: OrPattern<P, OneOf>, rhs: OneOf) -> OrPattern<P,
 
 // MARK: Common patterns.
 
+/// Succeeds anywhere except for the end of input, and consumes 1 element.
 public let any = OneOf(description: "any", regex: #"[.\p{Zl}]"#,
                        contains: { _ in true })
 public let alphanumeric = OneOf(description: "alphanumeric", regex: #"(?:\p{Alphabetic}|\p{Nd})"#,
@@ -181,16 +184,20 @@ public let currencySymbol = OneOf(description: "currencySymbol", regex: #"\p{Sc}
                                   contains: { $0.isCurrencySymbol })
 
 extension OneOf {
-	public static let basePatterns: [OneOf] = [
-		any, alphanumeric, letter, lowercase, uppercase, punctuation, whitespace, newline, hexDigit, digit,
+	/// Predefined OneOf patterns.
+	public static let patterns: [OneOf] = [
+		alphanumeric, letter, lowercase, uppercase, punctuation, whitespace, newline, hexDigit, digit,
 		ascii, symbol, mathSymbol, currencySymbol,
 	]
 
-	public static func patterns(for c: Input.Element) -> [Pattern] {
-		OneOf.basePatterns.filter { $0.group.contains(c) }
+	/// All the predefined OneOf patterns that match `element`.
+	public static func patterns(for element: Input.Element) -> [OneOf] {
+		OneOf.patterns.filter { $0.group.contains(element) }
 	}
 
-	public static func patterns<S: Sequence>(for s: S) -> [Pattern] where S.Element == Input.Element {
-		OneOf.basePatterns.filter { $0.group.contains(contentsOf: s) }
+	/// The predefined OneOf patterns that match _all_ the elements in `sequence`.
+	public static func patterns<S: Sequence>(for sequence: S) -> [OneOf] where S.Element == Input.Element {
+		let sequence = ContiguousArray(sequence)
+		return OneOf.patterns.filter { $0.group.contains(contentsOf: sequence) }
 	}
 }

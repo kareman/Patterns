@@ -75,7 +75,7 @@ extension XCTestCase {
 	func assertParseMarkers(_ pattern: Parser<String>, input: String,
 	                        file: StaticString = #file, line: UInt = #line) {
 		let (string, correct) = processMarkers(input)
-		let parsedRanges = pattern.ranges(in: string).array()
+		let parsedRanges = Array(pattern.ranges(in: string))
 		XCTAssert(parsedRanges.allSatisfy { $0.isEmpty }, "Not all results are empty ranges",
 		          file: file, line: line)
 		let parsed = parsedRanges.map { $0.lowerBound }

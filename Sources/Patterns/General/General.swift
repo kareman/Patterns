@@ -4,73 +4,54 @@
 //
 //  Created by Kåre Morstøl on 24/09/16.
 //
-//
 
-public struct SearchCache<Element: Hashable> {
+@usableFromInline
+struct SearchCache<Element: Hashable> {
+	@usableFromInline
 	let length: Int
+	@usableFromInline
 	let skipTable: [Element: Int]
+	// TODO: Store pattern in array
 
-	public init<Pattern: BidirectionalCollection>(pattern: Pattern)
-		where Pattern.SubSequence.Element == Element {
-		length = pattern.count
+	@usableFromInline
+	init<Target: BidirectionalCollection>(_ target: Target)
+		where Target.SubSequence.Element == Element {
+		length = target.count
 		var skipTable = [Element: Int](minimumCapacity: length)
-		for (i, c) in pattern.dropLast().enumerated() {
+		for (i, c) in target.dropLast().enumerated() {
 			skipTable[c] = length - i - 1
 		}
 		self.skipTable = skipTable
 	}
 }
 
-// https://github.com/raywenderlich/swift-algorithm-club/tree/master/Boyer-Moore
 extension BidirectionalCollection where Element: Hashable {
-	public func ranges<Pattern: BidirectionalCollection>
-	(of pattern: Pattern, from start: Index? = nil, cache: SearchCache<Pattern.Element>? = nil) -> [Range<Index>]
-		where Pattern.Element == Element {
-		let cache = cache ?? SearchCache(pattern: pattern)
-		guard cache.length > 0 else { return [] }
-
-		var pos = self.index(start ?? self.startIndex, offsetBy: cache.length - 1, limitedBy: endIndex) ?? endIndex
-		var result = [Range<Index>]()
-
-		while pos < endIndex {
-			var i = pos
-			var p = pattern.index(before: pattern.endIndex)
-
-			while self[i] == pattern[p] {
-				if p == pattern.startIndex {
-					result.append(i ..< index(after: pos))
-					break
-				} else {
-					self.formIndex(before: &i)
-					pattern.formIndex(before: &p)
-				}
-			}
-
-			let advance = cache.skipTable[self[pos]] ?? cache.length
-			pos = self.index(pos, offsetBy: advance, limitedBy: endIndex) ?? endIndex
-		}
-
-		return result
-	}
-
-	public func range<Pattern: BidirectionalCollection>
-	(of pattern: Pattern, from start: Index? = nil, cache: SearchCache<Pattern.Element>? = nil) -> Range<Index>?
-		where Pattern.Element == Element {
-		let cache = cache ?? SearchCache(pattern: pattern)
+	/// Finds the next occurrence of `target` in this collection.
+	/// - Parameters:
+	///   - target: The sequence of elements to search for.
+	///   - start: Where to start the search from.
+	///   - cache: When searching for the same sequence multiple times, use a SearchCache for improved performance.
+	/// - Returns: The range where `target` was found, or nil if not found.
+	@inlinable
+	func range<Target: BidirectionalCollection>
+	(of target: Target, from start: Index? = nil, cache: SearchCache<Target.Element>? = nil) -> Range<Index>?
+		where Target.Element == Element {
+		// https://en.wikipedia.org/wiki/Boyer–Moore–Horspool_algorithm
+		let cache = cache ?? SearchCache(target)
 		guard cache.length > 0 else { return nil }
 
 		var pos = self.index(start ?? self.startIndex, offsetBy: cache.length - 1, limitedBy: endIndex) ?? endIndex
 
 		while pos < endIndex {
 			var i = pos
-			var p = pattern.index(before: pattern.endIndex)
+			var p = target.index(before: target.endIndex)
 
-			while self[i] == pattern[p] {
-				if p == pattern.startIndex {
+			while self[i] == target[p] {
+				if p == target.startIndex {
 					return i ..< index(after: pos)
 				} else {
 					self.formIndex(before: &i)
-					pattern.formIndex(before: &p)
+					target.formIndex(before: &p)
 				}
 			}
 
@@ -83,31 +64,18 @@ extension BidirectionalCollection where Element: Hashable {
 }
 
 extension Collection {
-	/// Returns the length of the range in this Collection.
-	func distance(of range: Range<Index>) -> Int {
-		distance(from: range.lowerBound, to: range.upperBound)
-	}
-
-	/// The second element of the collection.
-	var second: Element? {
-		guard let index = index(startIndex, offsetBy: 1, limitedBy: endIndex), index != endIndex else {
-			return nil
-		}
-		return self[index]
-	}
-
-	var fullRange: Range<Index> {
-		startIndex ..< endIndex
-	}
-
-	func mapPrefix<T>(_ transform: (Element) throws -> T?) rethrows -> [T] {
+	/// Returns the results of passing leading elements to `transform` until it returns nil.
+	/// - Parameter transform: transforms each element, returns nil when it wants to stop.
+	/// - Throws: Whatever `transform` throws.
+	/// - Returns: An array of the transformed elements, not including the first `nil`.
+	@inlinable
+	func mapPrefix<T>(transform: (Element) throws -> T?) rethrows -> [T] {
 		var result = [T]()
 		for e in self {
-			if let transformed = try transform(e) {
-				result.append(transformed)
-			} else {
+			guard let transformed = try transform(e) else {
 				return result
 			}
+			result.append(transformed)
 		}
 		return result
 	}
@@ -115,14 +83,20 @@ extension Collection {
 
 extension Sequence {
 	/// Returns an array containing the entire sequence.
-	public func array() -> [Element] {
-		Array(self)
-	}
+	func array() -> [Element] { Array(self) }
 
+	/// Returns the result of combining the elements using the given closure, if there are no nil elements.
+	/// - Parameters:
+	///   - initialResult: The value to use as the initial accumulating value.
+	///   - updateAccumulatingResult: A closure that updates the accumulating value with an element of the sequence.
+	///   - partialResult: The accumulating value.
+	///   - unwrappedElement: An unwrapped element.
+	/// - Returns: The final accumulated value, or nil if there were any nil elements.
+	///            If the sequence has no elements, the result is initialResult.
 	@inlinable
 	func reduceIfNoNils<Result, T>(
 		into initialResult: Result,
-		_ updateAccumulatingResult: (_ partialResult: inout Result, T) throws -> Void)
+		_ updateAccumulatingResult: (_ partialResult: inout Result, _ unwrappedElement: T) throws -> Void)
 		rethrows -> Result? where Element == Optional<T> {
 		var accumulator = initialResult
 		for element in self {
@@ -133,12 +107,7 @@ extension Sequence {
 	}
 }
 
-extension Range: Comparable {
-	public static func < (l: Range<Bound>, r: Range<Bound>) -> Bool {
-		(l.lowerBound == r.lowerBound) ? (l.upperBound < r.upperBound) : (l.lowerBound < r.lowerBound)
-	}
-}
-
+/// Used like e.g. `let a = optional ?? fatalError("Message")`.
 func ?? <T>(b: T?, a: @autoclosure () -> Never) -> T {
 	if let b = b {
 		return b
@@ -146,6 +115,7 @@ func ?? <T>(b: T?, a: @autoclosure () -> Never) -> T {
 	a()
 }
 
+/// Used like e.g. `let a = try optional ?? AnError()`.
 func ?? <T, E: Error>(b: T?, a: @autoclosure () -> (E)) throws -> T {
 	if let b = b {
 		return b
@@ -155,6 +125,8 @@ func ?? <T, E: Error>(b: T?, a: @autoclosure () -> (E)) throws -> T {
 }
 
 extension BidirectionalCollection {
+	/// Returns an index that is the specified distance from the given index, or nil if that index would be invalid.
+	/// Never returns `endIndex`.
 	@inlinable
 	func validIndex(_ i: Index, offsetBy distance: Int) -> Index? {
 		if distance < 0 {
@@ -164,17 +136,21 @@ extension BidirectionalCollection {
 		return newI == endIndex ? nil : newI
 	}
 
+	/// Offsets the given index by the specified distance, limited by `startIndex...endIndex`.
+	/// - Returns: true if `index` has been offset by exactly `distance` steps; otherwise, false. When the return value is false, `index` is either `startIndex` or `endIndex`.
 	@inlinable
-	func formIndexSafely(_ i: inout Index, offsetBy distance: Int) -> Bool {
+	func formIndexSafely(_ index: inout Index, offsetBy distance: Int) -> Bool {
 		if distance > 0 {
-			return formIndex(&i, offsetBy: distance, limitedBy: endIndex)
-		} else {
-			return formIndex(&i, offsetBy: distance, limitedBy: startIndex)
+			return formIndex(&index, offsetBy: distance, limitedBy: endIndex)
 		}
+		return formIndex(&index, offsetBy: distance, limitedBy: startIndex)
 	}
 }
 
 extension RangeReplaceableCollection where SubSequence == Self, Self: BidirectionalCollection {
+	/// Removes the trailing range of elements for which `predicate` returns true.
+	/// Stops as soon as `predicate` returns false.
+	@inlinable
 	mutating func removeSuffix(where predicate: (Element) -> Bool) {
 		guard !isEmpty else { return }
 		var i = index(before: endIndex)
@@ -191,18 +167,29 @@ extension RangeReplaceableCollection where SubSequence == Self, Self: Bidirectio
 }
 
 extension RangeReplaceableCollection {
-	mutating func popFirst(where shouldBeRemoved: (Element) throws -> Bool) rethrows -> Element? {
-		guard let index = try firstIndex(where: shouldBeRemoved) else { return nil }
-		return remove(at: index)
-	}
-}
-
-extension RangeReplaceableCollection {
+	/// Shortcut for creating a RangeReplaceableCollection.
+	///
+	/// Example:
+	/// ```
+	/// let longIdentifier = Array {
+	///    $0.append(...)
+	///    $0.append(contentsOf:...)
+	/// }
+	/// ```
 	init(compose: (inout Self) throws -> Void) rethrows {
 		self.init()
 		try compose(&self)
 	}
 
+	/// Shortcut for appending to a RangeReplaceableCollection.
+	///
+	/// Example:
+	/// ```
+	/// longIdentifier.append {
+	///    $0.append(...)
+	///    $0.append(contentsOf:...)
+	/// }
+	/// ```
 	mutating func append(compose: (inout Self) throws -> Void) rethrows {
 		try compose(&self)
 	}

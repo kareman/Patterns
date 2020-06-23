@@ -6,13 +6,20 @@
 //
 
 public struct Word {
+	/// Detects boundaries between words.
+	///
+	/// Uses rules from https://www.unicode.org/reports/tr29/#Word_Boundary_Rules .
 	public static let boundary = Boundary()
 
+	/// Detects boundaries between words.
+	///
+	/// Uses rules from https://www.unicode.org/reports/tr29/#Word_Boundary_Rules .
 	public struct Boundary: Pattern {
 		public let description: String = "Word.boundary"
 
 		// TODO: Should use UnicodeScalars. And return bool.
-		public func parse(_ input: Input, at index: Input.Index) -> ParsedRange? {
+		@usableFromInline
+		func parse(_ input: Input, at index: Input.Index) -> ParsedRange? {
 			let success = index ..< index
 			guard index != input.endIndex, index != input.startIndex else { return success }
 
@@ -37,7 +44,7 @@ public struct Word {
 				a1.contains(char1After) && char2After.map(a2.contains) ?? false
 			}
 
-			let char2Before = input.validIndex(index, offsetBy: -2).map { input[$0] }
+			let char2Before = input.index(index, offsetBy: -2, limitedBy: input.startIndex).map { input[$0] }
 			func before2(_ b2: Group<UInt32>, _ b1: Group<UInt32>) -> Bool {
 				b1.contains(char1Before) && (char2Before.map(b2.contains) ?? false)
 			}
@@ -64,6 +71,7 @@ public struct Word {
 			return success
 		}
 
+		@inlinable
 		public func createInstructions(_ instructions: inout Instructions) {
 			instructions.append(.checkIndex { (input, index) -> Bool in
 				self.parse(input, at: index) != nil
