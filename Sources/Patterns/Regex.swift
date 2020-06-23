@@ -31,12 +31,11 @@ extension Word.Boundary: RegexConvertible {
 	public var regex: String { #"\b"# }
 }
 
-extension CaptureStart: RegexConvertible {
-	public var regex: String { "(" }
-}
-
-extension CaptureEnd: RegexConvertible {
-	public var regex: String { ")" }
+extension Capture: RegexConvertible where Wrapped: RegexConvertible {
+	public var regex: String {
+		let capturedRegex = wrapped.regex
+		return name.map { "(?<\($0)>\(capturedRegex))" } ?? "(\(capturedRegex))"
+	}
 }
 
 extension Concat: RegexConvertible where Left: RegexConvertible, Right: RegexConvertible {
@@ -55,4 +54,8 @@ extension RepeatPattern: RegexConvertible where Repeated: RegexConvertible {
 
 extension Skip: RegexConvertible {
 	public var regex: String { ".*?" }
+}
+
+extension NoPattern: RegexConvertible {
+	public var regex: String { "" }
 }
