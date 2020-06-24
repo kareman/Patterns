@@ -108,6 +108,7 @@ extension Sequence {
 }
 
 /// Used like e.g. `let a = optional ?? fatalError("Message")`.
+@inlinable
 func ?? <T>(b: T?, a: @autoclosure () -> Never) -> T {
 	if let b = b {
 		return b
@@ -116,6 +117,7 @@ func ?? <T>(b: T?, a: @autoclosure () -> Never) -> T {
 }
 
 /// Used like e.g. `let a = try optional ?? AnError()`.
+@inlinable
 func ?? <T, E: Error>(b: T?, a: @autoclosure () -> (E)) throws -> T {
 	if let b = b {
 		return b

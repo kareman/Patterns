@@ -10,6 +10,7 @@ public struct Skip: Pattern {
 
 	public init() {}
 
+	@inlinable
 	public func createInstructions(_ instructions: inout Instructions) throws {
 		instructions.append(.skip)
 		instructions.append(.jump(offset: 1)) // dummy

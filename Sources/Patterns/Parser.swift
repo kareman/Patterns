@@ -43,6 +43,12 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Hashab
 		public let captures: [(name: String?, range: Range<Input.Index>)]
 
 		@inlinable
+		init(endIndex: Input.Index, captures: [(name: String?, range: Range<Input.Index>)]) {
+			self.endIndex = endIndex
+			self.captures = captures
+		}
+
+		@inlinable
 		public static func == (lhs: Parser<Input>.Match, rhs: Parser<Input>.Match) -> Bool {
 			lhs.endIndex == rhs.endIndex
 				&& lhs.captures.elementsEqual(rhs.captures, by: { left, right in
@@ -77,6 +83,7 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Hashab
 			captures.filter { $0.name == name }.map { $0.range }
 		}
 
+		@inlinable
 		public var names: Set<String> { Set(captures.compactMap { $0.name }) }
 	}
 

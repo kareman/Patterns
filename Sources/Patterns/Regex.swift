@@ -46,9 +46,9 @@ extension OrPattern: RegexConvertible where First: RegexConvertible, Second: Reg
 	public var regex: String { first.regex + "|" + second.regex }
 }
 
-extension RepeatPattern: RegexConvertible where Repeated: RegexConvertible {
+extension RepeatPattern: RegexConvertible where Wrapped: RegexConvertible {
 	public var regex: String {
-		"(?:\(repeatedPattern.regex){\(min),\(max.map(String.init(describing:)) ?? "")}"
+		"(?:\(wrapped.regex){\(min),\(max.map(String.init(describing:)) ?? "")}"
 	}
 }
 
