@@ -38,8 +38,8 @@ extension Capture: RegexConvertible where Wrapped: RegexConvertible {
 	}
 }
 
-extension Concat: RegexConvertible where Left: RegexConvertible, Right: RegexConvertible {
-	public var regex: String { left.regex + right.regex }
+extension Concat: RegexConvertible where First: RegexConvertible, Second: RegexConvertible {
+	public var regex: String { first.regex + second.regex }
 }
 
 extension OrPattern: RegexConvertible where First: RegexConvertible, Second: RegexConvertible {
