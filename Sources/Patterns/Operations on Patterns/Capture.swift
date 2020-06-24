@@ -68,7 +68,9 @@ extension Capture where Wrapped == Literal {
 public struct NoPattern: Pattern {
 	public var description: String { "" }
 
+	@inlinable
 	public init() {}
 
+	@inlinable
 	public func createInstructions(_ instructions: inout Instructions) throws {}
 }

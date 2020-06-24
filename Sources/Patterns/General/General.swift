@@ -176,6 +176,7 @@ extension RangeReplaceableCollection {
 	///    $0.append(contentsOf:...)
 	/// }
 	/// ```
+	@inlinable
 	init(compose: (inout Self) throws -> Void) rethrows {
 		self.init()
 		try compose(&self)
@@ -190,6 +191,7 @@ extension RangeReplaceableCollection {
 	///    $0.append(contentsOf:...)
 	/// }
 	/// ```
+	@inlinable
 	mutating func append(compose: (inout Self) throws -> Void) rethrows {
 		try compose(&self)
 	}
