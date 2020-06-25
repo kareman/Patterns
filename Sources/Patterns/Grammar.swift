@@ -8,38 +8,43 @@
 @dynamicMemberLookup
 public class Grammar: Pattern {
 	public struct CallPattern: Pattern {
-		public var description: String { "g." + name }
 		public let grammar: Grammar
 		public let name: String
+		public var description: String { "<\(name)>" }
 
+		@inlinable
+		init(grammar: Grammar, name: String) {
+			self.grammar = grammar
+			self.name = name
+		}
+
+		@inlinable
 		public func createInstructions(_ instructions: inout Instructions) {
 			instructions.append(.openCall(name: name))
 		}
 	}
 
-	public var description: String { "Grammar" }
+	public var description: String { "Grammar" } // TODO:
 
-	public fileprivate(set) var patterns: [String: AnyPattern] = [:] {
-		didSet {
-			if firstPattern == nil {
-				firstPattern = patterns.first?.key
-			}
-		}
-	}
+	public internal(set) var patterns: [(name: String, pattern: AnyPattern)] = []
 
-	public fileprivate(set) var firstPattern: String?
+	public var firstPattern: String? { patterns.first?.name }
 
+	@inlinable
 	public init() {}
 
+	@inlinable
 	public convenience init(_ closure: (Grammar) -> Void) {
 		self.init()
 		closure(self)
 	}
 
+	@inlinable
 	public subscript(dynamicMember name: String) -> CallPattern {
 		CallPattern(grammar: self, name: name)
 	}
 
+	@inlinable
 	public func createInstructions(_ finalInstructions: inout Instructions) throws {
 		var instructions = finalInstructions
 		let startIndex = instructions.endIndex
@@ -71,12 +76,12 @@ public class Grammar: Pattern {
 infix operator <-: AssignmentPrecedence
 
 public func <- <P: Pattern>(call: Grammar.CallPattern, pattern: P) {
-	call.grammar.patterns[call.name] = AnyPattern(pattern)
+	call.grammar.patterns.append((call.name, AnyPattern(pattern)))
 }
 
-public func <- <P: Pattern>(call: Grammar.CallPattern, capture: Concat<CaptureStart, P>) {
-	let newPattern = capture.left.name == nil
-		? (CaptureStart(name: call.name) • capture.right)
+public func <- <P: Pattern>(call: Grammar.CallPattern, capture: Capture<P>) {
+	let newPattern = capture.name == nil
+		? Capture(name: call.name, capture.wrapped)
 		: capture
-	call.grammar.patterns[call.name] = AnyPattern(newPattern)
+	call.grammar.patterns.append((call.name, AnyPattern(newPattern)))
 }

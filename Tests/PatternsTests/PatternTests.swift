@@ -185,7 +185,7 @@ class PatternTests: XCTestCase {
 	}
 
 	func testNot() throws {
-		assertParseMarkers(alphanumeric.not, input: #"I| said|,| 3|"#)
+		assertParseMarkers(!alphanumeric, input: #"I| said|,| 3|"#)
 		assertParseAll(
 			Capture(Word.boundary • !digit • alphanumeric+),
 			input: "123 abc 1ab a32b",

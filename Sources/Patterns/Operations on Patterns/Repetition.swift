@@ -5,24 +5,30 @@
 //  Created by Kåre Morstøl on 25/05/2020.
 //
 
-public struct RepeatPattern<Repeated: Pattern>: Pattern {
-	public let repeatedPattern: Repeated
+/// Repeats the `wrapped` pattern `min` times, then repeats it optionally `max-min` times.
+/// Or an unlimited number of times if max is nil.
+///
+/// Used by operators `*+¿`.
+public struct RepeatPattern<Wrapped: Pattern>: Pattern {
+	public let wrapped: Wrapped
 	public let min: Int
 	public let max: Int?
 
-	init<R: RangeExpression>(repeatedPattern: Repeated, range: R) where R.Bound == Int {
+	@inlinable
+	init<R: RangeExpression>(_ wrapped: Wrapped, range: R) where R.Bound == Int {
 		let actualRange = range.relative(to: Int.zero ..< Int.max)
-		self.repeatedPattern = repeatedPattern
+		self.wrapped = wrapped
 		self.min = actualRange.lowerBound
 		self.max = actualRange.upperBound == Int.max ? nil : actualRange.upperBound - 1
 	}
 
 	public var description: String {
-		"\(repeatedPattern){\(min)...\(max.map(String.init) ?? "")}"
+		"\(wrapped){\(min)...\(max.map(String.init) ?? "")}"
 	}
 
+	@inlinable
 	public func createInstructions(_ instructions: inout Instructions) throws {
-		let repeatedInstructions = try repeatedPattern.createInstructions()
+		let repeatedInstructions = try wrapped.createInstructions()
 		for _ in 0 ..< min { instructions.append(contentsOf: repeatedInstructions) }
 		if let max = max {
 			let optionalRepeatedInstructions = Instructions {
@@ -43,41 +49,57 @@ public struct RepeatPattern<Repeated: Pattern>: Pattern {
 }
 
 extension Pattern {
+	/// Repeats this pattern from `range.lowerBound` to `range.upperBound` times.
+	@inlinable
 	public func `repeat`<R: RangeExpression>(_ range: R) -> RepeatPattern<Self> where R.Bound == Int {
-		return RepeatPattern(repeatedPattern: self, range: range)
+		return RepeatPattern(self, range: range)
 	}
 
+	/// Repeats this pattern `count` times.
+	@inlinable
 	public func `repeat`(_ count: Int) -> RepeatPattern<Self> {
-		RepeatPattern(repeatedPattern: self, range: count ... count)
+		RepeatPattern(self, range: count ... count)
 	}
 }
 
 postfix operator *
 
+/// Repeats the preceding pattern 0 or more times.
+@inlinable
 public postfix func * <P: Pattern>(me: P) -> RepeatPattern<P> {
 	me.repeat(0...)
 }
 
+/// Repeats the preceding pattern 0 or more times.
+@inlinable
 public postfix func * (me: Literal) -> RepeatPattern<Literal> {
 	me.repeat(0...)
 }
 
 postfix operator +
 
+/// Repeats the preceding pattern 1 or more times.
+@inlinable
 public postfix func + <P: Pattern>(me: P) -> RepeatPattern<P> {
 	me.repeat(1...)
 }
 
+/// Repeats the preceding pattern 1 or more times.
+@inlinable
 public postfix func + (me: Literal) -> RepeatPattern<Literal> {
 	me.repeat(1...)
 }
 
 postfix operator ¿
 
+/// Tries the preceding pattern, and continues even if it fails.
+@inlinable
 public postfix func ¿ <P: Pattern>(me: P) -> RepeatPattern<P> {
 	me.repeat(0 ... 1)
 }
 
+/// Tries the preceding pattern, and continues even if it fails.
+@inlinable
 public postfix func ¿ (me: Literal) -> RepeatPattern<Literal> {
 	me.repeat(0 ... 1)
 }

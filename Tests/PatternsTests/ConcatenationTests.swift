@@ -201,7 +201,7 @@ class ConcatenationTests: XCTestCase {
 			let notCaptured: String?
 		}
 
-		let matches = rangeAndProperty.matches(in: text).array()
+		let matches = Array(rangeAndProperty.matches(in: text))
 		let property = try matches.first!.decode(Property.self, from: text)
 		XCTAssertEqual(property, Property(codePoint: [5, 10], property: "Common", notCaptured: nil))
 
@@ -243,7 +243,7 @@ class ConcatenationTests: XCTestCase {
 
 	func testOperatorPrecedence() throws {
 		let p1 = "a" • Skip() • letter • !alphanumeric • "b"+
-		XCTAssert(type(of: p1.right.left) == Skip.self)
+		XCTAssert(type(of: p1.first.first.first.second) == Skip.self)
 		XCTAssert(type(of: "a" • "b" / "c" • "d")
 			== OrPattern<Concat<Literal, Literal>, Concat<Literal, Literal>>.self,
 		          #"`/` should have lower precedence than `•`"#)

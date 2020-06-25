@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Matches and consumes a single element.
 public struct OneOf: Pattern, RegexConvertible {
 	@usableFromInline
 	let group: Group<Input.Element>
@@ -25,33 +26,44 @@ public struct OneOf: Pattern, RegexConvertible {
 		self._regex = regex
 	}
 
+	/// Matches any element for which `contains` returns `true`.
+	/// - Parameters:
+	///   - description: A descriptive identifier for textual representation of the pattern.
+	///   - regex: An optional regex matching the same elements.
+	///   - contains: A closure returning true for any element that matches.
 	@inlinable
 	public init(description: String, regex: String? = nil, contains: @escaping (Input.Element) -> Bool) {
 		self.init(description: description, regex: regex, group: Group(contains: contains))
 	}
 
+	/// Matches any elements in `elements`.
+	/// - Parameter elements: A sequence of elements to match.
 	@inlinable
-	public init<S: Sequence>(_ characters: S) where S.Element == Input.Element {
-		group = Group(contentsOf: characters)
-		description = #"["\#(String(characters))"]"#
-		_regex = "[\(NSRegularExpression.escapedPattern(for: characters.map(String.init(describing:)).joined()))]"
+	public init<S: Sequence>(_ elements: S) where S.Element == Input.Element {
+		group = Group(contentsOf: elements)
+		description = #"[\#(String(elements))]"#
+		_regex = "[\(NSRegularExpression.escapedPattern(for: elements.map(String.init(describing:)).joined()))]"
 	}
 
+	/// Matches any elements _not_ in `elements`.
+	/// - Parameter elements: A sequence of elements _not_ to match.
 	@inlinable
-	public init<S: Sequence>(not characters: S) where S.Element == Input.Element {
-		group = Group(contentsOf: characters).inverted()
-		description = #"[^"\#(String(characters))"]"#
-		_regex = "[^\(NSRegularExpression.escapedPattern(for: characters.map(String.init(describing:)).joined()))]"
+	public init<S: Sequence>(not elements: S) where S.Element == Input.Element {
+		group = Group(contentsOf: elements).inverted()
+		description = #"[^\#(String(elements))]"#
+		_regex = "[^\(NSRegularExpression.escapedPattern(for: elements.map(String.init(describing:)).joined()))]"
 	}
 
+	/// Matches any of the provided elements.
 	@inlinable
 	public init(_ oneofs: OneOfConvertible...) {
 		let closures = oneofs.map { $0.contains(_:) }
 		group = Group(contains: { char in closures.contains(where: { $0(char) }) })
-		description = #"[\#(oneofs.map(String.init(describing:)).joined(separator: ","))]"#
+		description = "[\(oneofs.map(String.init(describing:)).joined(separator: ","))]"
 		_regex = nil
 	}
 
+	/// Matches anything that is _not_ among the provided elements.
 	@inlinable
 	public init(not oneofs: OneOfConvertible...) {
 		let closures = oneofs.map { $0.contains(_:) }
@@ -68,67 +80,80 @@ public struct OneOf: Pattern, RegexConvertible {
 
 // MARK: OneOfConvertible
 
+/// A type that `OneOf` can use.
 public protocol OneOfConvertible {
-	func contains(_: Character) -> Bool
+	@inlinable
+	func contains(_: Pattern.Input.Element) -> Bool
 }
 
 extension Character: OneOfConvertible {
-	public func contains(_ char: Character) -> Bool { char == self }
+	@inlinable
+	public func contains(_ char: Pattern.Input.Element) -> Bool { char == self }
 }
 
 extension String: OneOfConvertible {}
 extension Substring: OneOfConvertible {}
 
+@inlinable
 public func ... (lhs: Character, rhs: Character) -> ClosedRange<Character> {
-	precondition(lhs <= rhs, "The left side of the '...' operator must be less than or equal to the right side")
+	precondition(lhs <= rhs, "The left side of the '...' operator must be less than or equal to the right side.")
 	return ClosedRange(uncheckedBounds: (lower: lhs, upper: rhs))
 }
 
 extension ClosedRange: OneOfConvertible where Bound == Character {}
 
+@inlinable
 public func ..< (lhs: Character, rhs: Character) -> Range<Character> {
-	precondition(lhs <= rhs, "The left side of the '..<' operator must be less than or equal to the right side")
+	precondition(lhs <= rhs, "The left side of the '..<' operator must be less than or equal to the right side.")
 	return Range(uncheckedBounds: (lower: lhs, upper: rhs))
 }
 
 extension Range: OneOfConvertible where Bound == Character {}
 
 extension OneOf: OneOfConvertible {
-	public func contains(_ char: Character) -> Bool { group.contains(char) }
+	@inlinable
+	public func contains(_ char: Pattern.Input.Element) -> Bool { group.contains(char) }
 }
 
 // MARK: Join `&&OneOf • OneOf` into one.
 
+@inlinable
 public func • (lhs: AndPattern<OneOf>, rhs: OneOf) -> OneOf {
 	OneOf(description: "\(lhs) \(rhs)", group: lhs.wrapped.group.intersection(rhs.group))
 }
 
-public func • <P: Pattern>(lhs: AndPattern<OneOf>, rhs: Concat<OneOf, P>) -> Concat<OneOf, P> {
-	(lhs • rhs.left) • rhs.right
+@inlinable
+public func • <P: Pattern>(lhs: Concat<P, AndPattern<OneOf>>, rhs: OneOf) -> Concat<P, OneOf> {
+	lhs.first • (lhs.second • rhs)
 }
 
 // MARK: Join `!OneOf • Oneof` into one.
 
+@inlinable
 public func • (lhs: NotPattern<OneOf>, rhs: OneOf) -> OneOf {
 	OneOf(description: "\(lhs) \(rhs)", group: rhs.group.subtracting(lhs.wrapped.group))
 }
 
-public func • <P: Pattern>(lhs: NotPattern<OneOf>, rhs: Concat<OneOf, P>) -> Concat<OneOf, P> {
-	(lhs • rhs.left) • rhs.right
+@inlinable
+public func • <P: Pattern>(lhs: Concat<P, NotPattern<OneOf>>, rhs: OneOf) -> Concat<P, OneOf> {
+	lhs.first • (lhs.second • rhs)
 }
 
 // MARK: Join `OneOf / OneOf` into one.
 
+@inlinable
 public func / (lhs: OneOf, rhs: OneOf) -> OneOf {
 	OneOf(description: "\(lhs) / \(rhs)", group: lhs.group.union(rhs.group))
 }
 
+@inlinable
 public func / <P: Pattern>(lhs: OrPattern<P, OneOf>, rhs: OneOf) -> OrPattern<P, OneOf> {
 	lhs.first / (lhs.second / rhs)
 }
 
 // MARK: Common patterns.
 
+/// Succeeds anywhere except for the end of input, and consumes 1 element.
 public let any = OneOf(description: "any", regex: #"[.\p{Zl}]"#,
                        contains: { _ in true })
 public let alphanumeric = OneOf(description: "alphanumeric", regex: #"(?:\p{Alphabetic}|\p{Nd})"#,
@@ -159,16 +184,20 @@ public let currencySymbol = OneOf(description: "currencySymbol", regex: #"\p{Sc}
                                   contains: { $0.isCurrencySymbol })
 
 extension OneOf {
-	public static let basePatterns: [OneOf] = [
-		any, alphanumeric, letter, lowercase, uppercase, punctuation, whitespace, newline, hexDigit, digit,
+	/// Predefined OneOf patterns.
+	public static let patterns: [OneOf] = [
+		alphanumeric, letter, lowercase, uppercase, punctuation, whitespace, newline, hexDigit, digit,
 		ascii, symbol, mathSymbol, currencySymbol,
 	]
 
-	public static func patterns(for c: Input.Element) -> [Pattern] {
-		OneOf.basePatterns.filter { $0.group.contains(c) }
+	/// All the predefined OneOf patterns that match `element`.
+	public static func patterns(for element: Input.Element) -> [OneOf] {
+		OneOf.patterns.filter { $0.group.contains(element) }
 	}
 
-	public static func patterns<S: Sequence>(for s: S) -> [Pattern] where S.Element == Input.Element {
-		OneOf.basePatterns.filter { $0.group.contains(contentsOf: s) }
+	/// The predefined OneOf patterns that match _all_ the elements in `sequence`.
+	public static func patterns<S: Sequence>(for sequence: S) -> [OneOf] where S.Element == Input.Element {
+		let sequence = ContiguousArray(sequence)
+		return OneOf.patterns.filter { $0.group.contains(contentsOf: sequence) }
 	}
 }

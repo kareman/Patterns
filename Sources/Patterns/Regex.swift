@@ -12,7 +12,7 @@ public protocol RegexConvertible {
 }
 
 extension Literal: RegexConvertible {
-	public var regex: String { NSRegularExpression.escapedPattern(for: String(substring)) }
+	public var regex: String { NSRegularExpression.escapedPattern(for: String(elements)) }
 }
 
 extension Line: RegexConvertible {
@@ -31,28 +31,31 @@ extension Word.Boundary: RegexConvertible {
 	public var regex: String { #"\b"# }
 }
 
-extension CaptureStart: RegexConvertible {
-	public var regex: String { "(" }
+extension Capture: RegexConvertible where Wrapped: RegexConvertible {
+	public var regex: String {
+		let capturedRegex = wrapped.regex
+		return name.map { "(?<\($0)>\(capturedRegex))" } ?? "(\(capturedRegex))"
+	}
 }
 
-extension CaptureEnd: RegexConvertible {
-	public var regex: String { ")" }
-}
-
-extension Concat: RegexConvertible where Left: RegexConvertible, Right: RegexConvertible {
-	public var regex: String { left.regex + right.regex }
+extension Concat: RegexConvertible where First: RegexConvertible, Second: RegexConvertible {
+	public var regex: String { first.regex + second.regex }
 }
 
 extension OrPattern: RegexConvertible where First: RegexConvertible, Second: RegexConvertible {
 	public var regex: String { first.regex + "|" + second.regex }
 }
 
-extension RepeatPattern: RegexConvertible where Repeated: RegexConvertible {
+extension RepeatPattern: RegexConvertible where Wrapped: RegexConvertible {
 	public var regex: String {
-		"(?:\(repeatedPattern.regex){\(min),\(max.map(String.init(describing:)) ?? "")}"
+		"(?:\(wrapped.regex){\(min),\(max.map(String.init(describing:)) ?? "")}"
 	}
 }
 
 extension Skip: RegexConvertible {
 	public var regex: String { ".*?" }
+}
+
+extension NoPattern: RegexConvertible {
+	public var regex: String { "" }
 }

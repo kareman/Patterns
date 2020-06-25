@@ -6,44 +6,52 @@
 //
 
 precedencegroup PatternConcatenationPrecedence {
-	// so allmost all `Skip` will be to the left and we can see what comes after.
-	// TODO: Use ‘left’ instead as it is no longer needed?
-	associativity: right
+	associativity: left
 	higherThan: MultiplicationPrecedence // `/` has this
 }
 
 infix operator •: PatternConcatenationPrecedence
 
-public struct Concat<Left: Pattern, Right: Pattern>: Pattern {
-	public let left: Left
-	public let right: Right
-	public var description: String { "\(left) \(right)" }
+/// A pattern which first tries the `first` pattern,
+/// if that succeeds it continues with the `second` pattern.
+public struct Concat<First: Pattern, Second: Pattern>: Pattern {
+	public let first: First
+	public let second: Second
+	public var description: String { "\(first) \(second)" }
 
-	init(left: Left, right: Right) {
-		self.left = left
-		self.right = right
+	@inlinable
+	init(_ first: First, _ second: Second) {
+		self.first = first
+		self.second = second
 	}
-}
 
-extension Concat {
+	@inlinable
 	public func createInstructions(_ instructions: inout Instructions) throws {
-		try left.createInstructions(&instructions)
-		try right.createInstructions(&instructions)
+		try first.createInstructions(&instructions)
+		try second.createInstructions(&instructions)
 	}
 }
 
+/// First tries the pattern to the left, if that succeeds it tries the pattern to the right.
+@inlinable
 public func • <Left, Right>(lhs: Left, rhs: Right) -> Concat<Left, Right> {
-	Concat(left: lhs, right: rhs)
+	Concat(lhs, rhs)
 }
 
+/// First tries the pattern to the left, if that succeeds it tries the pattern to the right.
+@inlinable
 public func • <Right>(lhs: Literal, rhs: Right) -> Concat<Literal, Right> {
-	Concat(left: lhs, right: rhs)
+	Concat(lhs, rhs)
 }
 
+/// First tries the pattern to the left, if that succeeds it tries the pattern to the right.
+@inlinable
 public func • <Left>(lhs: Left, rhs: Literal) -> Concat<Left, Literal> {
-	Concat(left: lhs, right: rhs)
+	Concat(lhs, rhs)
 }
 
+/// First tries the pattern to the left, if that succeeds it tries the pattern to the right.
+@inlinable
 public func • (lhs: Literal, rhs: Literal) -> Concat<Literal, Literal> {
-	Concat(left: lhs, right: rhs)
+	Concat(lhs, rhs)
 }

@@ -5,7 +5,6 @@
 //  Created by Kåre Morstøl on 18/04/2020.
 //
 
-// TODO: struct?
 @usableFromInline
 struct VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Hashable {
 	@usableFromInline
@@ -19,8 +18,8 @@ struct VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Ha
 			try pattern.createInstructions(&$0)
 			$0.append(.match)
 		}
-		Self.moveMovablesForward(instructions: &instructions)
-		Self.replaceSkips(instructions: &instructions)
+		instructions.moveMovablesForward()
+		instructions.replaceSkips()
 		self.instructions = instructions
 	}
 

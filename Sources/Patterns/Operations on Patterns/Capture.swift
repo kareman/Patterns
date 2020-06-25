@@ -5,46 +5,72 @@
 //  Created by Kåre Morstøl on 25/05/2020.
 //
 
-public struct CaptureStart: Pattern {
-	public var description: String { "CaptureStart(\(name.map { "name: \($0)" } ?? "")" }
+/// Captures the current position as a range.
+///
+/// It can be retrieved in `Parser.Match.captures` or used for decoding into Decodables.
+public struct Capture<Wrapped: Pattern>: Pattern {
+	public var description: String {
+		let result: String
+		switch (name, wrapped) {
+		case (nil, is NoPattern):
+			result = ""
+		case let (name?, is NoPattern):
+			result = "name: \(name)"
+		case let (name?, wrapped):
+			result = "name: \(name), \(wrapped)"
+		case let (nil, wrapped):
+			result = wrapped.description
+		}
+		return "Capture(\(result))"
+	}
+
 	public let name: String?
+	public let wrapped: Wrapped
 
-	public init(name: String? = nil) {
+	/// Captures the position of `wrapped` as a range.
+	/// - Parameters:
+	///   - name: optional name
+	@inlinable
+	public init(name: String? = nil, _ wrapped: Wrapped) {
 		self.name = name
+		self.wrapped = wrapped
 	}
 
-	public func createInstructions(_ instructions: inout Instructions) {
+	@inlinable
+	public func createInstructions(_ instructions: inout Instructions) throws {
 		instructions.append(.captureStart(name: name))
-	}
-}
-
-public struct CaptureEnd: Pattern {
-	public var description: String { "CaptureEnd()" }
-
-	public init() {}
-
-	public func createInstructions(_ instructions: inout Instructions) {
+		try wrapped.createInstructions(&instructions)
 		instructions.append(.captureEnd)
 	}
 }
 
-/// Captures the current position in the input as an empty range.
-/// - returns: `CaptureStart(name: name) • CaptureEnd()`
-@inlinable
-public func Capture(name: String? = nil) -> Concat<CaptureStart, CaptureEnd> {
-	CaptureStart(name: name) • CaptureEnd()
+extension Capture where Wrapped == NoPattern {
+	/// Captures the current input position as an empty range.
+	/// - Parameter name: optional name
+	@inlinable
+	public init(name: String? = nil) {
+		self.wrapped = NoPattern()
+		self.name = name
+	}
 }
 
-/// Captures the position in the input of `wrapped` as a range.
-/// - returns: `CaptureStart(name: name) • wrapped • CaptureEnd()`
-@inlinable
-public func Capture<P: Pattern>(name: String? = nil, _ wrapped: P) -> Concat<CaptureStart, Concat<P, CaptureEnd>> {
-	CaptureStart(name: name) • wrapped • CaptureEnd()
+extension Capture where Wrapped == Literal {
+	/// Captures the position of `wrapped` as a range.
+	/// - Parameter name: optional name
+	@inlinable
+	public init(name: String? = nil, _ wrapped: Literal) {
+		self.wrapped = wrapped
+		self.name = name
+	}
 }
 
-/// Captures the position in the input of `wrapped` as a range.
-/// - returns: `CaptureStart(name: name) • wrapped • CaptureEnd()`
-@inlinable
-public func Capture(name: String? = nil, _ wrapped: Literal) -> Concat<CaptureStart, Concat<Literal, CaptureEnd>> {
-	CaptureStart(name: name) • wrapped • CaptureEnd()
+/// A pattern that does absolutely nothing.
+public struct NoPattern: Pattern {
+	public var description: String { "" }
+
+	@inlinable
+	public init() {}
+
+	@inlinable
+	public func createInstructions(_ instructions: inout Instructions) throws {}
 }
