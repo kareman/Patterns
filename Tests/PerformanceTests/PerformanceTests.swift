@@ -26,7 +26,7 @@ class PerformanceTests: XCTestCase {
 		if #available(OSX 10.15, *) {
 			let options = XCTMeasureOptions()
 			options.iterationCount = 10
-			self.measure(metrics: [XCTCPUMetric(), XCTClockMetric()], options: options, block: block)
+			self.measure(metrics: [XCTCPUMetric(limitingToCurrentThread: true)], options: options, block: block)
 		} else {
 			self.measure(block)
 		}
