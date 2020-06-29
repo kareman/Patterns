@@ -68,4 +68,20 @@ class SkipTests: XCTestCase {
 	func testDoubleSkip() throws {
 		assertParseMarkers(try Parser(Skip() • Skip() • " "), input: "This |is")
 	}
+
+	func testBeforeGrammarTailCall() {
+		let g = Grammar { g in
+			g.a <- " " • Skip() • g.a
+		}
+		assertParseMarkers(g, input: "This is a test text.")
+
+		/*
+		 		let g = Grammar { g in
+		 			g.a <- " " • Skip() • g.b
+		 			g.b <- smth
+		 		}
+
+		 g.a <- " " / g.a    // optimised?
+		 */
+	}
 }

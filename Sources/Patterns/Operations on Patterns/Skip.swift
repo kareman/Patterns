@@ -97,11 +97,12 @@ extension MutableCollection where Self: RandomAccessCollection, Index == Int {
 				} else {
 					i += offset
 				}
-			case let .jump(offset):
+			case let .jump(offset) where offset > 0:
+				// If we jump backwards we are likely to enter an infinite loop.
 				i += offset
 			case .elementEquals, .checkElement, .checkIndex, .moveIndex, .captureStart, .captureEnd, .call:
 				i += 1
-			case .commit, .choiceEnd, .return, .match, .skip, .search:
+			case .commit, .choiceEnd, .return, .match, .skip, .search, .jump:
 				moveSubranges(RangeSet(dummyIndex ..< (dummyIndex + 1)), to: i)
 				self[i - 1] = .commit
 				return

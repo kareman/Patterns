@@ -49,22 +49,33 @@ public class Grammar: Pattern {
 		var instructions = finalInstructions
 		let startIndex = instructions.endIndex
 		instructions.append(
-			.openCall(name: try firstPattern ?? Parser<Input>.InitError.message("Grammar is empty")))
+			.openCall(name: try firstPattern ?? Parser<Input>.InitError.message("Grammar is empty.")))
 		instructions.append(.jump(offset: .max)) // replaced later
-		var callTable = [String: Instructions.Index]()
+		var callTable = [String: Range<Instructions.Index>]()
 		for (name, pattern) in patterns {
-			callTable[name] = instructions.endIndex
+			let startIndex = instructions.endIndex
 			try pattern.createInstructions(&instructions)
-			precondition(callTable[name] != instructions.endIndex,
-			             "Pattern '\(name) <- \(pattern)' was empty")
 			instructions.append(.return)
+			guard (startIndex ..< instructions.endIndex).count > 1 else {
+				throw Parser<Input>.InitError.message("Pattern '\(name) <- \(pattern)' was empty.")
+			}
+			callTable[name] = startIndex ..< instructions.endIndex
 		}
 
 		for i in instructions.indices[startIndex...] {
 			if case let .openCall(name) = instructions[i] {
-				let address = try callTable[name]
-					?? Parser<Input>.InitError.message("Pattern '\(name)' was never defined with ´<-´ operator.")
-				instructions[i] = .call(offset: address - i)
+				guard let subpatternRange = callTable[name] else {
+					throw Parser<Input>.InitError.message("Pattern '\(name)' was never defined with ´<-´ operator.")
+				}
+				// If the last non-dummy (often .choiceEnd) instruction in a subpattern is a call to itself we perform
+				// a tail call optimisation by jumping directly instead.
+				// The very last instruction is a .return, so skip that.
+				if subpatternRange.upperBound - 2 == i
+					|| (subpatternRange.upperBound - 3 == i && instructions[i + 1].doesNotDoAnything) {
+					instructions[i] = .jump(offset: subpatternRange.lowerBound - i)
+				} else {
+					instructions[i] = .call(offset: subpatternRange.lowerBound - i)
+				}
 			}
 		}
 		instructions[startIndex + 1] = .jump(offset: instructions.endIndex - startIndex - 1)
