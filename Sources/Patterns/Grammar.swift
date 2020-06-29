@@ -67,7 +67,7 @@ public class Grammar: Pattern {
 				guard let subpatternRange = callTable[name] else {
 					throw Parser<Input>.InitError.message("Pattern '\(name)' was never defined with ´<-´ operator.")
 				}
-				// If the last non-dummy (often .choiceEnd) instruction in a subpattern is a call to itself we perform
+				// If the last non-dummy (i.e. .choiceEnd) instruction in a subpattern is a call to itself we perform
 				// a tail call optimisation by jumping directly instead.
 				// The very last instruction is a .return, so skip that.
 				if subpatternRange.upperBound - 2 == i

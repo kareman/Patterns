@@ -69,19 +69,17 @@ class SkipTests: XCTestCase {
 		assertParseMarkers(try Parser(Skip() • Skip() • " "), input: "This |is")
 	}
 
-	func testBeforeGrammarTailCall() {
-		let g = Grammar { g in
+	func testBeforeGrammarTailCall() throws {
+		let recursive = Grammar { g in
 			g.a <- " " • Skip() • g.a
 		}
-		assertParseMarkers(g, input: "This is a test text.")
+		assertParseAll(recursive, input: "This is a test text.", count: 0)
 
-		/*
-		 		let g = Grammar { g in
-		 			g.a <- " " • Skip() • g.b
-		 			g.b <- smth
-		 		}
-
-		 g.a <- " " / g.a    // optimised?
-		 */
+		let callOfAnother = Grammar { g in
+			g.a <- " " • Skip() • g.b
+			g.b <- letter
+		}
+		assertParseMarkers(callOfAnother, input: "This i|s a| t|est t|ext.")
+		assertParseMarkers(" " • Skip() • letter, input: "This i|s a| t|est t|ext.")
 	}
 }
