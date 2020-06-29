@@ -69,44 +69,6 @@ class ConcatenationTests: XCTestCase {
 			result: ["FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S"])
 	}
 
-	func testSkip1() throws {
-		let text = "This is a test text."
-		assertParseAll(
-			Capture(" " • Skip() • " "),
-			input: text, result: [" is ", " test "])
-
-		assertParseAll(
-			Capture(" " • Skip() • "d"),
-			input: " ad d", result: [" ad", " d"])
-	}
-
-	func testSkipAndCapture() throws {
-		let text = "This is a test text."
-		assertParseAll(
-			" " • Capture(letter • Skip()) • " ",
-			input: text, result: ["is", "a", "test"])
-		assertParseAll(
-			" " • Capture(Skip() • letter+) • " ",
-			input: text, result: ["is", "a", "test"])
-		assertParseAll(
-			" " • Capture(Skip()) • " ",
-			input: text, result: ["is", "a", "test"])
-
-		assertParseAll(
-			Line.start • Capture(Skip()) • Line.end,
-			input: """
-			1
-			2
-
-			3
-			""",
-			result: ["1", "2", "", "3"])
-
-		// undefined (Skip at end)
-		_ = try Parser(search: " " • Capture(Skip()))
-			.matches(in: text)
-	}
-
 	func testMatchFullRange() throws {
 		let text = """
 		line 1
