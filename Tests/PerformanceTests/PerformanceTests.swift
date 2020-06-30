@@ -26,7 +26,7 @@ class PerformanceTests: XCTestCase {
 		if #available(OSX 10.15, *) {
 			let options = XCTMeasureOptions()
 			options.iterationCount = 10
-			self.measure(metrics: [XCTCPUMetric(), XCTClockMetric()], options: options, block: block)
+			self.measure(metrics: [XCTCPUMetric(limitingToCurrentThread: true)], options: options, block: block)
 		} else {
 			self.measure(block)
 		}
@@ -46,17 +46,17 @@ class PerformanceTests: XCTestCase {
 
 	func testUppercaseWord() throws {
 		let pattern = try Parser(search: Word.boundary • uppercase+ • Word.boundary)
-		try speedTest(pattern, textFraction: 8, hits: 887)
+		try speedTest(pattern, textFraction: 2, hits: 3275)
 	}
 
 	func testLine() throws {
 		let pattern = try Parser(search: Line.start • Capture(Skip()) • Line.end)
-		try speedTest(pattern, textFraction: 6, hits: 2550)
+		try speedTest(pattern, textFraction: 2, hits: 7260)
 	}
 
 	func testNotNewLine() throws {
 		let pattern = try Parser(search: "," • Capture(Skip()) • Line.end)
-		try speedTest(pattern, textFraction: 8, hits: 1413)
+		try speedTest(pattern, textFraction: 2, hits: 4933)
 	}
 
 	func testLiteralSearch() throws {
@@ -73,12 +73,12 @@ class PerformanceTests: XCTestCase {
 
 	func testNonExistentLiteralSearch() throws {
 		let pattern = try Parser(search: "\n" • Skip() • "DOESN'T EXIST")
-		try speedTest(pattern, textFraction: 60, hits: 0)
+		try speedTest(pattern, textFraction: 1, hits: 0)
 	}
 
 	func testOptionalStringFollowedByNonOptionalString() throws {
 		let pattern = try Parser(search: Literal("\"")¿ • "I")
-		try speedTest(pattern, textFraction: 8, hits: 1136)
+		try speedTest(pattern, textFraction: 12, hits: 814)
 	}
 
 	func testOneOrMore() throws {
@@ -88,8 +88,8 @@ class PerformanceTests: XCTestCase {
 
 	func testSkipping1() throws {
 		// [ word.boundary ] * " " * ":" * " " * " " * " " * "{" * Line.end
-		let pattern = try Parser(search: Skip() • "." • Skip() • " " • Skip() • " ")
-		try speedTest(pattern, textFraction: 6, hits: 4779)
+		let pattern = try Parser(search: "." • Skip() • " " • Skip() • " ")
+		try speedTest(pattern, textFraction: 2, hits: 13939)
 	}
 
 	func testAnyNumeral() throws {

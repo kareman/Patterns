@@ -5,7 +5,7 @@
 //  Created by Kåre Morstøl on 27/05/2020.
 //
 
-import Patterns
+@testable import Patterns
 import XCTest
 
 class GrammarTests: XCTestCase {
@@ -53,5 +53,22 @@ class GrammarTests: XCTestCase {
 		let p = try Parser(g)
 		assertParseMarkers(p, input: "1+2-3*(4+3)|")
 		assertParseAll(p, input: "1+2(", count: 0)
+	}
+
+	func testOptimisesTailCall() throws {
+		let g = Grammar { g in
+			g.a <- " " / Skip() • g.a
+		}
+
+		func isCall(_ inst: Instruction<String>) -> Bool {
+			switch inst {
+			case .call:
+				return true
+			default: return false
+			}
+		}
+
+		XCTAssertEqual(try Parser(g).matcher.instructions.filter(isCall(_:)).count, 1)
+		XCTAssertEqual(try Parser(search: g).matcher.instructions.filter(isCall(_:)).count, 1)
 	}
 }

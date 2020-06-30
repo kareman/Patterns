@@ -130,6 +130,17 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Has
 			return nil
 		}
 	}
+
+	/// Returns false only if instruction has no effect.
+	@usableFromInline
+	var doesNotDoAnything: Bool {
+		switch self {
+		case .choiceEnd, .jump(+1):
+			return true
+		default:
+			return false
+		}
+	}
 }
 
 extension Sequence where Element == Instruction<Pattern.Input> {

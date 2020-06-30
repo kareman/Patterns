@@ -33,6 +33,7 @@ public struct Parser<Input: BidirectionalCollection> where Input.Element: Hashab
 		try self.init(Skip() • pattern)
 	}
 
+	@inlinable
 	public func ranges(in input: Input, from startindex: Input.Index? = nil)
 		-> AnySequence<Range<Input.Index>> {
 		AnySequence(matches(in: input, from: startindex).lazy.map { $0.range })

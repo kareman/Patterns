@@ -13,13 +13,12 @@ public struct Skip: Pattern {
 	@inlinable
 	public func createInstructions(_ instructions: inout Instructions) throws {
 		instructions.append(.skip)
-		instructions.append(.jump(offset: 1)) // dummy
 	}
 }
 
 import SE0270_RangeSet
 
-extension MutableCollection where Self: RandomAccessCollection, Index == Int {
+extension MutableCollection where Self: RandomAccessCollection, Self: RangeReplaceableCollection, Index == Int {
 	@usableFromInline
 	mutating func replaceSkips<Input>() where Element == Instruction<Input> {
 		for i in self.indices {
@@ -33,7 +32,7 @@ extension MutableCollection where Self: RandomAccessCollection, Index == Int {
 
 	@usableFromInline
 	mutating func setupSkip<Input>(at skipIndex: Index) where Element == Instruction<Input> {
-		let searchablesStartAt = skipIndex + 2
+		let searchablesStartAt = skipIndex + 1
 		switch self[searchablesStartAt] {
 		case let .checkIndex(function, atIndexOffset: 0):
 			self[skipIndex] = .search { input, index in
@@ -42,7 +41,7 @@ extension MutableCollection where Self: RandomAccessCollection, Index == Int {
 			}
 			self[searchablesStartAt] = .choice(offset: -1, atIndexOffset: 1)
 		case .checkIndex(_, atIndexOffset: _):
-			fatalError("Cannot see a valid reason for a `.checkIndex` with a non-zero offset to be located right after a `.skip` instruction. Correct me if I'm wrong.")
+			fatalError("Cannot see a valid reason for a `.checkIndex` with a non-zero offset to be located right after a `.skip` instruction.") // Correct me if I'm wrong.
 		case let .checkElement(test):
 			self[skipIndex] = .search { input, index in
 				input[index...].firstIndex(where: test)
@@ -75,14 +74,14 @@ extension MutableCollection where Self: RandomAccessCollection, Index == Int {
 			}
 		default:
 			self[skipIndex] = .choice(offset: 0, atIndexOffset: +1)
-			self.placeSkipCommit(dummyIsAt: skipIndex + 1, startSearchFrom: skipIndex + 2)
+			self.placeSkipCommit(startSearchFrom: skipIndex + 1)
 			return
 		}
-		self.placeSkipCommit(dummyIsAt: skipIndex + 1, startSearchFrom: skipIndex + 3)
+		self.placeSkipCommit(startSearchFrom: skipIndex + 2)
 	}
 
 	@usableFromInline
-	mutating func placeSkipCommit<Input>(dummyIsAt dummyIndex: Index, startSearchFrom: Index)
+	mutating func placeSkipCommit<Input>(startSearchFrom: Index)
 		where Element == Instruction<Input> {
 		var i = startSearchFrom
 		loop: while true {
@@ -97,16 +96,47 @@ extension MutableCollection where Self: RandomAccessCollection, Index == Int {
 				} else {
 					i += offset
 				}
-			case let .jump(offset):
+			case let .jump(offset) where offset > 0: // If we jump backwards we are likely to enter an infinite loop.
 				i += offset
-			case .elementEquals, .checkElement, .checkIndex, .moveIndex, .captureStart, .captureEnd, .call:
+			case .elementEquals, .checkElement, .checkIndex, .moveIndex, .captureStart, .captureEnd, .call, .jump:
 				i += 1
 			case .commit, .choiceEnd, .return, .match, .skip, .search:
-				moveSubranges(RangeSet(dummyIndex ..< (dummyIndex + 1)), to: i)
-				self[i - 1] = .commit
+				insertInstructions(.commit, at: i)
 				return
 			case .fail, .openCall:
 				fatalError()
+			}
+		}
+	}
+
+	/// Inserts new instructions at `location`. Adjusts the offsets of other instructions accordingly.
+	@usableFromInline
+	mutating func insertInstructions<Input>(_ newInstructions: Element..., at location: Index)
+		where Element == Instruction<Input> {
+		insert(contentsOf: newInstructions, at: location)
+		let insertedRange = location ..< (location + newInstructions.count + 1)
+		for i in startIndex ..< insertedRange.lowerBound {
+			switch self[i] {
+			case let .call(offset) where offset > (location - i):
+				self[i] = .call(offset: offset + newInstructions.count)
+			case let .jump(offset) where offset > (location - i):
+				self[i] = .jump(offset: offset + newInstructions.count)
+			case let .choice(offset, atIndexOffset) where offset > (location - i):
+				self[i] = .choice(offset: offset + newInstructions.count, atIndexOffset: atIndexOffset)
+			default:
+				break
+			}
+		}
+		for i in insertedRange.upperBound ..< endIndex {
+			switch self[i] {
+			case let .call(offset) where offset < (location - i):
+				self[i] = .call(offset: offset - newInstructions.count)
+			case let .jump(offset) where offset < (location - i):
+				self[i] = .jump(offset: offset - newInstructions.count)
+			case let .choice(offset, atIndexOffset) where offset < (location - i):
+				self[i] = .choice(offset: offset - newInstructions.count, atIndexOffset: atIndexOffset)
+			default:
+				break
 			}
 		}
 	}
