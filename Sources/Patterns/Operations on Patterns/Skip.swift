@@ -100,10 +100,10 @@ extension MutableCollection where Self: RandomAccessCollection, Self: RangeRepla
 				i += offset
 			case .elementEquals, .checkElement, .checkIndex, .moveIndex, .captureStart, .captureEnd, .call, .jump:
 				i += 1
-			case .commit, .choiceEnd, .return, .match, .skip, .search:
+			case .commit, .choiceEnd, .return, .match, .skip, .search, .fail:
 				insertInstructions(.commit, at: i)
 				return
-			case .fail, .openCall:
+			case .openCall:
 				fatalError()
 			}
 		}

@@ -75,11 +75,18 @@ class SkipTests: XCTestCase {
 		}
 		assertParseAll(recursive, input: "This is a test text.", count: 0)
 
-		let callOfAnother = Grammar { g in
+		let callAnother = Grammar { g in
 			g.a <- " " • Skip() • g.b
 			g.b <- letter
 		}
-		assertParseMarkers(callOfAnother, input: "This i|s a| t|est t|ext.")
+		assertParseMarkers(callAnother, input: "This i|s a| t|est t|ext.")
 		assertParseMarkers(" " • Skip() • letter, input: "This i|s a| t|est t|ext.")
+	}
+
+	func testBeforeGrammarCallInChoice() {
+		let g = Grammar { g in
+			g.a <- " " • (Skip() • g.a / letter)
+		}
+		assertParseMarkers(g, input: "This is a test t|ext.")
 	}
 }

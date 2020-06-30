@@ -137,9 +137,13 @@ extension VMBacktrackEngine {
 				case .choiceEnd:
 					thread.instructionIndex += 1
 				case .commit:
+					#if DEBUG
 					let entry = stack.popLast()
 					assert(entry != nil, "Empty stack during .commit")
 					assert(entry.map { !$0.isReturnAddress } ?? true, "Missing thread during .cancelLastSplit")
+					#else
+					stack.removeLast()
+					#endif
 					thread.instructionIndex += 1
 				case let .call(offset):
 					var returnAddress = thread
