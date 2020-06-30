@@ -27,9 +27,12 @@ private extension Instruction {
 import SE0270_RangeSet
 
 extension MutableCollection where Self: RandomAccessCollection, Index == Int {
+	/// Moves any `.checkIndex, .captureStart, .captureEnd` past any `.elementEquals, .checkElement`.
+	///
+	/// Improves performance noticeably.
 	@usableFromInline
 	mutating func moveMovablesForward<Input>() where Element == Instruction<Input> {
-		var movables = ContiguousArray<Index>()[...]
+		var movables = ContiguousArray<Index>()
 		for i in indices {
 			if self[i].isMovable {
 				movables.append(i)
@@ -52,7 +55,7 @@ extension MutableCollection where Self: RandomAccessCollection, Index == Int {
 				}
 				movables.removeAll()
 
-				// All `.checkIndex` should be first.
+				// All `.checkIndex` should be first. If they fail there is no point in capturing anything.
 				moveSubranges(checkIndexIndices, to: moved.lowerBound)
 			}
 		}

@@ -6,7 +6,7 @@
 //
 
 @usableFromInline
-struct VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Hashable {
+struct VMEngine<Input: BidirectionalCollection> where Input.Element: Hashable {
 	@usableFromInline
 	typealias Instructions = ContiguousArray<Instruction<Input>>
 	let instructions: Instructions
@@ -24,14 +24,14 @@ struct VMBacktrackEngine<Input: BidirectionalCollection> where Input.Element: Ha
 	}
 
 	@usableFromInline
-	func match(in input: Input, from startIndex: Input.Index) -> Parser<Input>.Match? {
+	func match(in input: Input, at startIndex: Input.Index) -> Parser<Input>.Match? {
 		launch(input: input, startIndex: startIndex)
 	}
 }
 
 extension Parser.Match {
 	@usableFromInline
-	init(_ thread: VMBacktrackEngine<Input>.Thread, instructions: VMBacktrackEngine<Input>.Instructions) {
+	init(_ thread: VMEngine<Input>.Thread, instructions: VMEngine<Input>.Instructions) {
 		var captures = [(name: String?, range: Range<Input.Index>)]()
 		captures.reserveCapacity(thread.captures.count / 2)
 		var captureBeginnings = [(name: String?, start: Input.Index)]()
@@ -53,7 +53,7 @@ extension Parser.Match {
 	}
 }
 
-extension VMBacktrackEngine {
+extension VMEngine {
 	@usableFromInline
 	struct Thread {
 		var instructionIndex: Instructions.Index

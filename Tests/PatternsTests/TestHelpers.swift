@@ -17,6 +17,13 @@ extension Array where Element: Hashable {
 	}
 }
 
+extension Parser {
+	func ranges(in input: Input, from startindex: Input.Index? = nil)
+		-> AnySequence<Range<Input.Index>> {
+		AnySequence(matches(in: input, from: startindex).lazy.map { $0.range })
+	}
+}
+
 extension XCTestCase {
 	func assertParseAll(_ parser: Parser<String>, input: String, result: [String],
 	                    file: StaticString = #file, line: UInt = #line) {

@@ -70,12 +70,15 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Has
 
 	/// Will be replaced by .call in preprocessing. Is never executed.
 	case openCall(name: String)
-	/// Goes to the sub-expression at `offset` relative to this instruction.
+	/// Goes to the subpattern at `offset` relative to this instruction.
+	/// When the subpattern finishes we move on to the instruction after this.
 	case call(offset: Distance)
-	/// Returns from this subexpression to where it was called from.
+	/// Returns from this subpattern to the instruction after where this was called from.
 	case `return`
 
 	/// Signals a failure.
+	///
+	/// The snapshot from the previous `.choice` is restored, if there aren't any left we stop matching altogether.
 	case fail
 	/// A match has been successfully completed!
 	///

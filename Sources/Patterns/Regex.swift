@@ -7,9 +7,13 @@
 
 import Foundation
 
-public protocol RegexConvertible {
+/// A pattern that can be converted to regex.
+public protocol RegexConvertible: Pattern {
+	/// The equivalent regex for this pattern.
 	var regex: String { get }
 }
+
+// For `OneOf` to be convertible the regex has to be provided manually when it is created.
 
 extension Literal: RegexConvertible {
 	public var regex: String { NSRegularExpression.escapedPattern(for: String(elements)) }

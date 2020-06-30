@@ -135,7 +135,7 @@ extension Parser.Match where Input == String {
 			var codingPath: [CodingKey] = []
 			@usableFromInline
 			var allKeys: [Key] {
-				matchDecoder.match.names.compactMap(Key.init(stringValue:))
+				matchDecoder.match.captureNames.compactMap(Key.init(stringValue:))
 			}
 
 			@usableFromInline

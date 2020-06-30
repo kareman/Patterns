@@ -5,6 +5,9 @@
 //  Created by Kåre Morstøl on 25/05/2020.
 //
 
+/// Skips 0 or more elements until a match for the next patterns are found.
+///
+/// If this is at the end of a pattern, it skips to the end of input.
 public struct Skip: Pattern {
 	public var description: String { "Skip()" }
 
@@ -109,7 +112,7 @@ extension MutableCollection where Self: RandomAccessCollection, Self: RangeRepla
 		}
 	}
 
-	/// Inserts new instructions at `location`. Adjusts the offsets of other instructions accordingly.
+	/// Inserts new instructions at `location`. Adjusts the offsets of the other instructions accordingly.
 	@usableFromInline
 	mutating func insertInstructions<Input>(_ newInstructions: Element..., at location: Index)
 		where Element == Instruction<Input> {
