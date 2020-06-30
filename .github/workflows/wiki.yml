@@ -1,6 +1,6 @@
 name: Wiki
 
-on: []
+on: [push]
 
 jobs:
   build:
