@@ -194,14 +194,6 @@ dependencies: [
 
 or choose “Add Package Dependency” from within Xcode.
 
-### [CocoaPods](http://cocoapods.org)
-
-Add to your Podfile:
-
-```ruby
-pod 'Patterns', :git => 'https://github.com/kareman/Patterns.git'
-```
-
 ## Implementation
 
 Patterns is implemented using a virtual parsing machine, similar to how [LPEG](http://www.inf.puc-rio.br/~roberto/lpeg/) is [implemented](http://www.inf.puc-rio.br/~roberto/docs/peg.pdf). See also the `backtrackingvm` function described [here](https://swtch.com/~rsc/regexp/regexp2.html).
