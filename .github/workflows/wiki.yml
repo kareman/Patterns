@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Generate Documentation
-        uses: kareman/swift-doc@fix-crash-for-operator-functions-when-no-baseURL
+        uses: kareman/swift-doc@support-kareman-Patterns
         with:
           inputs: "Sources/Patterns"
           module-name: Patterns
