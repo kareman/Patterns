@@ -1,6 +1,8 @@
 name: Wiki
 
-on: []
+on:
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -9,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Generate Documentation
-        uses: SwiftDocOrg/swift-doc@master
+        uses: kareman/swift-doc@support-kareman-Patterns
         with:
           inputs: "Sources/Patterns"
           module-name: Patterns
