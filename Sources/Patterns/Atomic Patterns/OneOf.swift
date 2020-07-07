@@ -153,33 +153,46 @@ public func / <P: Pattern>(lhs: OrPattern<P, OneOf>, rhs: OneOf) -> OrPattern<P,
 
 // MARK: Common patterns.
 
-/// Succeeds anywhere except for the end of input, and consumes 1 element.
+/// Succeeds anywhere except for at the end of input, and consumes 1 element.
 public let any = OneOf(description: "any", regex: #"[.\p{Zl}]"#,
                        contains: { _ in true })
-public let alphanumeric = OneOf(description: "alphanumeric", regex: #"(?:\p{Alphabetic}|\p{Nd})"#,
-                                contains: { $0.isWholeNumber || $0.isLetter })
-public let digit = OneOf(description: "digit", regex: #"\p{Nd}"#,
-                         contains: { $0.isWholeNumber })
+/// Matches one character representing a letter, i.e. where `Character.isLetter` is `true`.
 public let letter = OneOf(description: "letter", regex: #"\p{Alphabetic}"#,
                           contains: { $0.isLetter })
+/// Matches one character representing a lowercase character, i.e. where `Character.isLowercase` is `true`.
 public let lowercase = OneOf(description: "lowercase", regex: #"\p{Ll}"#,
                              contains: { $0.isLowercase })
-public let newline = OneOf(description: "newline", regex: #"\p{Zl}"#,
-                           contains: { $0.isNewline })
-public let punctuation = OneOf(description: "punctuation", regex: #"\p{P}"#,
-                               contains: { $0.isPunctuation })
-public let symbol = OneOf(description: "symbol", regex: #"\p{S}"#,
-                          contains: { $0.isSymbol })
+/// Matches one character representing an uppercase character, i.e. where `Character.isUppercase` is `true`.
 public let uppercase = OneOf(description: "uppercase", regex: #"\p{Lu}"#,
                              contains: { $0.isUppercase })
+/// Matches one character representing a whole number, i.e. where `Character.isWholeNumber` is `true`.
+public let digit = OneOf(description: "digit", regex: #"\p{Nd}"#,
+                         contains: { $0.isWholeNumber })
+/// Matches one letter or one digit.
+public let alphanumeric = OneOf(description: "alphanumeric", regex: #"(?:\p{Alphabetic}|\p{Nd})"#,
+                                contains: { $0.isWholeNumber || $0.isLetter })
+/// Matches one character representing a newline, i.e. where `Character.isNewline` is `true`.
+public let newline = OneOf(description: "newline", regex: #"\p{Zl}"#,
+                           contains: { $0.isNewline })
+/// Matches one character representing whitespace (including newlines), i.e. where `Character.isWhitespace` is `true`.
 public let whitespace = OneOf(description: "whitespace", regex: #"\p{White_Space}"#,
                               contains: { $0.isWhitespace })
+/// Matches one character representing punctuation, i.e. where `Character.isPunctuation` is `true`.
+public let punctuation = OneOf(description: "punctuation", regex: #"\p{P}"#,
+                               contains: { $0.isPunctuation })
+/// Matches one character representing a symbol, i.e. where `Character.isSymbol` is `true`.
+public let symbol = OneOf(description: "symbol", regex: #"\p{S}"#,
+                          contains: { $0.isSymbol })
+/// Matches one character representing a hexadecimal digit, i.e. where `Character.isHexDigit` is `true`.
 public let hexDigit = OneOf(description: "hexDigit", regex: #"\p{Hex_Digit}"#,
                             contains: { $0.isHexDigit })
+/// Matches one ASCII character, i.e. where `Character.isASCII` is `true`.
 public let ascii = OneOf(description: "ascii", regex: #"[[:ascii:]]"#,
                          contains: { $0.isASCII }) // regex might also be [ -~] or [\x00-\x7F]
+/// Matches one character representing a mathematical symbol, i.e. where `Character.isMathSymbol` is `true`.
 public let mathSymbol = OneOf(description: "mathSymbol", regex: #"\p{Sm}"#,
                               contains: { $0.isMathSymbol })
+/// Matches one character representing a currency symbol, i.e. where `Character.isCurrencySymbol` is `true`.
 public let currencySymbol = OneOf(description: "currencySymbol", regex: #"\p{Sc}"#,
                                   contains: { $0.isCurrencySymbol })
 
