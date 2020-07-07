@@ -8,20 +8,19 @@
 @usableFromInline
 struct SearchCache<Element: Hashable> {
 	@usableFromInline
-	let length: Int
-	@usableFromInline
 	let skipTable: [Element: Int]
-	// TODO: Store pattern in array
+	@usableFromInline
+	let target: [Element]
 
 	@usableFromInline
-	init<Target: BidirectionalCollection>(_ target: Target)
-		where Target.SubSequence.Element == Element {
-		length = target.count
-		var skipTable = [Element: Int](minimumCapacity: length)
-		for (i, c) in target.dropLast().enumerated() {
-			skipTable[c] = length - i - 1
+	init<Target: Sequence>(_ target: Target) where Target.Element == Element {
+		let newtarget = Array(target)
+		var skipTable = [Element: Int](minimumCapacity: newtarget.count)
+		for (i, c) in newtarget[...].dropLast().enumerated() {
+			skipTable[c] = newtarget.count - i - 1
 		}
 		self.skipTable = skipTable
+		self.target = newtarget
 	}
 }
 
@@ -30,17 +29,25 @@ extension BidirectionalCollection where Element: Hashable {
 	/// - Parameters:
 	///   - target: The sequence of elements to search for.
 	///   - start: Where to start the search from.
-	///   - cache: When searching for the same sequence multiple times, use a SearchCache for improved performance.
 	/// - Returns: The range where `target` was found, or nil if not found.
 	@inlinable
-	func range<Target: BidirectionalCollection>
-	(of target: Target, from start: Index? = nil, cache: SearchCache<Target.Element>? = nil) -> Range<Index>?
+	func range<Target: Sequence>(of target: Target, from start: Index? = nil) -> Range<Index>?
 		where Target.Element == Element {
-		// https://en.wikipedia.org/wiki/Boyer–Moore–Horspool_algorithm
-		let cache = cache ?? SearchCache(target)
-		guard cache.length > 0 else { return nil }
+		self.range(of: SearchCache(target), from: start)
+	}
 
-		var pos = self.index(start ?? self.startIndex, offsetBy: cache.length - 1, limitedBy: endIndex) ?? endIndex
+	/// Finds the next occurrence of `cache.target` in this collection, using the pre-created `cache`.
+	/// - Parameters:
+	///   - cache: When searching for the same sequence multiple times, use a SearchCache for improved performance.
+	///   - start: Where to start the search from.
+	/// - Returns: The range where `target` was found, or nil if not found.
+	@inlinable
+	func range(of cache: SearchCache<Element>, from start: Index? = nil) -> Range<Index>? {
+		// https://en.wikipedia.org/wiki/Boyer–Moore–Horspool_algorithm
+		let target = cache.target
+		guard !target.isEmpty else { return nil }
+
+		var pos = self.index(start ?? self.startIndex, offsetBy: target.count - 1, limitedBy: endIndex) ?? endIndex
 
 		while pos < endIndex {
 			var i = pos
@@ -55,7 +62,7 @@ extension BidirectionalCollection where Element: Hashable {
 				}
 			}
 
-			let advance = cache.skipTable[self[pos]] ?? cache.length
+			let advance = cache.skipTable[self[pos]] ?? target.count
 			pos = self.index(pos, offsetBy: advance, limitedBy: endIndex) ?? endIndex
 		}
 

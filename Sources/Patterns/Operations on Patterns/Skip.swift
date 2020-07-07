@@ -70,7 +70,7 @@ extension MutableCollection where Self: RandomAccessCollection, Self: RangeRepla
 			} else {
 				let cache = SearchCache(elements)
 				self[skipIndex] = .search { input, index in
-					input.range(of: elements, from: index, cache: cache)?.upperBound
+					input.range(of: cache, from: index)?.upperBound
 				}
 				self[searchablesStartAt] = .choice(offset: -1, atIndexOffset: (-elements.count) + 1)
 				self[searchablesStartAt + 1] = .jump(offset: elements.count - 1)
