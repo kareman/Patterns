@@ -39,7 +39,9 @@ See also:
 
 ## Usage
 
-Patterns are defined directly in code, instead of in a text string. 
+Patterns are defined directly in code, instead of in a text string.
+
+**Note**: Long patterns can give the Swift type checker a lot to think about, especially long series of `a / b / c / etc...`. To improve build times, try to split a long pattern into multiple shorter ones.
 
 ### Standard PEG
 
