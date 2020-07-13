@@ -149,7 +149,7 @@ class ConcatenationTests: XCTestCase {
 	lazy var rangeAndProperty: Parser<String> = {
 		let hexNumber = Capture(name: "codePoint", hexDigit+)
 		let hexRange = AnyPattern("\(hexNumber)..\(hexNumber)") / hexNumber
-		return try! Parser(search: AnyPattern("\n\(hexRange, Skip()); \(Capture(name: "property", Skip())) "))
+		return try! Parser(search: AnyPattern("\n\(hexRange • Skip()); \(Capture(name: "property", Skip())) "))
 	}()
 
 	func testStringInterpolation() throws {

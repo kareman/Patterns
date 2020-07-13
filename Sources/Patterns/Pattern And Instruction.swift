@@ -6,7 +6,7 @@
 //
 
 /// Something that can create Instructions for the Parser.
-public protocol Pattern: CustomStringConvertible {
+public protocol Pattern: CustomStringConvertible, Equatable {
 	typealias Input = String
 	typealias ParsedRange = Range<Input.Index>
 	typealias Instructions = ContiguousArray<Instruction<Input>>

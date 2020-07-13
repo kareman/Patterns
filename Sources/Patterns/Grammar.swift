@@ -112,6 +112,10 @@ public class Grammar: Pattern {
 
 		instructions[startIndex + 1] = .jump(offset: instructions.endIndex - startIndex - 1)
 	}
+
+	public static func == (lhs: Grammar, rhs: Grammar) -> Bool {
+		lhs.patterns.elementsEqual(rhs.patterns, by: { $0 == $1 })
+	}
 }
 
 infix operator <-: AssignmentPrecedence
