@@ -8,7 +8,7 @@
 import Foundation
 
 /// Matches and consumes a single element.
-public struct OneOf: Pattern, RegexConvertible {
+public struct OneOf<Input: BidirectionalCollection>: Pattern, RegexConvertible where Input.Element: Hashable {
 	@usableFromInline
 	let group: Group<Input.Element>
 	public let description: String
@@ -73,7 +73,7 @@ public struct OneOf: Pattern, RegexConvertible {
 	}
 
 	@inlinable
-	public func createInstructions(_ instructions: inout Instructions) {
+	public func createInstructions(_ instructions: inout Self.Instructions) {
 		instructions.append(.checkElement(group.contains))
 	}
 
@@ -122,36 +122,36 @@ extension OneOf: OneOfConvertible {
 // MARK: Join `&&OneOf • OneOf` into one.
 
 @inlinable
-public func • (lhs: AndPattern<OneOf>, rhs: OneOf) -> OneOf {
+public func • <Input>(lhs: AndPattern<OneOf<Input>>, rhs: OneOf<Input>) -> OneOf<Input> {
 	OneOf(description: "\(lhs) \(rhs)", group: lhs.wrapped.group.intersection(rhs.group))
 }
 
 @inlinable
-public func • <P: Pattern>(lhs: Concat<P, AndPattern<OneOf>>, rhs: OneOf) -> Concat<P, OneOf> {
+public func • <P: Pattern>(lhs: Concat<P, AndPattern<OneOf<P.Input>>>, rhs: OneOf<P.Input>) -> Concat<P, OneOf<P.Input>> {
 	lhs.first • (lhs.second • rhs)
 }
 
 // MARK: Join `!OneOf • Oneof` into one.
 
 @inlinable
-public func • (lhs: NotPattern<OneOf>, rhs: OneOf) -> OneOf {
+public func • <Input>(lhs: NotPattern<OneOf<Input>>, rhs: OneOf<Input>) -> OneOf<Input> {
 	OneOf(description: "\(lhs) \(rhs)", group: rhs.group.subtracting(lhs.wrapped.group))
 }
 
 @inlinable
-public func • <P: Pattern>(lhs: Concat<P, NotPattern<OneOf>>, rhs: OneOf) -> Concat<P, OneOf> {
+public func • <P: Pattern>(lhs: Concat<P, NotPattern<OneOf<P.Input>>>, rhs: OneOf<P.Input>) -> Concat<P, OneOf<P.Input>> {
 	lhs.first • (lhs.second • rhs)
 }
 
 // MARK: Join `OneOf / OneOf` into one.
 
 @inlinable
-public func / (lhs: OneOf, rhs: OneOf) -> OneOf {
+public func / <Input>(lhs: OneOf<Input>, rhs: OneOf<Input>) -> OneOf<Input> {
 	OneOf(description: "\(lhs) / \(rhs)", group: lhs.group.union(rhs.group))
 }
 
 @inlinable
-public func / <P: Pattern>(lhs: OrPattern<P, OneOf>, rhs: OneOf) -> OrPattern<P, OneOf> {
+public func / <P: Pattern>(lhs: OrPattern<P, OneOf<P.Input>>, rhs: OneOf<P.Input>) -> OrPattern<P, OneOf<P.Input>> {
 	lhs.first / (lhs.second / rhs)
 }
 

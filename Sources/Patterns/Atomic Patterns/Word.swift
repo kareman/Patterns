@@ -5,12 +5,7 @@
 //  Created by Kåre Morstøl on 28/06/2019.
 //
 
-public struct Word {
-	/// Detects boundaries between words.
-	///
-	/// Uses rules from https://www.unicode.org/reports/tr29/#Word_Boundary_Rules .
-	public static let boundary = Boundary()
-
+public struct Word<Input: BidirectionalCollection> where Input.Element == Character {
 	/// Detects boundaries between words.
 	///
 	/// Uses rules from https://www.unicode.org/reports/tr29/#Word_Boundary_Rules .
@@ -72,12 +67,19 @@ public struct Word {
 		}
 
 		@inlinable
-		public func createInstructions(_ instructions: inout Instructions) {
+		public func createInstructions(_ instructions: inout Self.Instructions) {
 			instructions.append(.checkIndex { (input, index) -> Bool in
 				self.parse(input, at: index) != nil
 			})
 		}
 	}
+}
+
+extension Word where Input == String {
+	/// Detects boundaries between words.
+	///
+	/// Uses rules from https://www.unicode.org/reports/tr29/#Word_Boundary_Rules .
+	public static let boundary = Boundary()
 }
 
 extension Group where Element == UInt32 {

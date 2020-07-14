@@ -8,13 +8,13 @@
 /// Skips 0 or more elements until a match for the next patterns are found.
 ///
 /// If this is at the end of a pattern, it skips to the end of input.
-public struct Skip: Pattern {
+public struct Skip<Input: BidirectionalCollection>: Pattern where Input.Element: Hashable {
 	public var description: String { "Skip()" }
 
 	public init() {}
 
 	@inlinable
-	public func createInstructions(_ instructions: inout Instructions) throws {
+	public func createInstructions(_ instructions: inout Self.Instructions) throws {
 		instructions.append(.skip)
 	}
 }

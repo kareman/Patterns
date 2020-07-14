@@ -7,6 +7,7 @@
 
 /// A pattern which matches the `wrapped` pattern, without consuming any input.
 public struct AndPattern<Wrapped: Pattern>: Pattern {
+	public typealias Input = Wrapped.Input
 	public let wrapped: Wrapped
 	public var description: String { "&\(wrapped)" }
 

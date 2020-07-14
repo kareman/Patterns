@@ -10,6 +10,7 @@
 ///
 /// Used by operators `*+¿`.
 public struct RepeatPattern<Wrapped: Pattern>: Pattern {
+	public typealias Input = Wrapped.Input
 	public let wrapped: Wrapped
 	public let min: Int
 	public let max: Int?
@@ -86,8 +87,8 @@ public postfix func + <P: Pattern>(me: P) -> RepeatPattern<P> {
 
 /// Repeats the preceding pattern 1 or more times.
 @inlinable
-public postfix func + (me: Literal) -> RepeatPattern<Literal> {
-	me.repeat(1...)
+public postfix func + (me: String) -> RepeatPattern<Literal<String>> {
+	Literal(me).repeat(1...)
 }
 
 postfix operator ¿

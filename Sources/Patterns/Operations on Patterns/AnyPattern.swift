@@ -7,12 +7,12 @@
 
 /// A type erased wrapper around a pattern.
 /// Can be used to store patterns in arrays and non-generic variables.
-public struct AnyPattern: Pattern {
+public struct AnyPattern<Input: BidirectionalCollection>: Pattern where Input.Element: Hashable {
 	@usableFromInline
 	let _instructions: (inout Instructions) throws -> Void
 
 	@inlinable
-	public func createInstructions(_ instructions: inout Instructions) throws {
+	public func createInstructions(_ instructions: inout Self.Instructions) throws {
 		try _instructions(&instructions)
 	}
 
@@ -22,7 +22,7 @@ public struct AnyPattern: Pattern {
 	/// The wrapped pattern. If you know the exact type you can unwrap it again.
 	public let wrapped: Any
 
-	public init<P: Pattern>(_ p: P) {
+	public init<P: Pattern>(_ p: P) where P.Input == Input {
 		_instructions = p.createInstructions
 		_description = { p.description }
 		wrapped = p
@@ -33,7 +33,7 @@ public struct AnyPattern: Pattern {
 		self = p
 	}
 
-	public init(_ p: Literal) {
+	public init<Input>(_ p: Literal<Input>) {
 		_instructions = p.createInstructions
 		_description = { p.description }
 		wrapped = p
@@ -48,7 +48,7 @@ public struct AnyPattern: Pattern {
 ///
 /// `let p: AnyPattern = "hi\(whitespace)there"`
 /// is the same as `"hi" • whitespace • "there"`.
-extension AnyPattern: ExpressibleByStringInterpolation {
+extension AnyPattern: ExpressibleByStringInterpolation where Input == String {
 	public struct StringInterpolation: StringInterpolationProtocol {
 		@usableFromInline
 		var pattern = AnyPattern("")

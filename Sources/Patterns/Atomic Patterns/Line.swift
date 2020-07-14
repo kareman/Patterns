@@ -5,17 +5,26 @@
 //  Created by Kåre Morstøl on 25/05/2020.
 //
 
+public protocol CharacterLike: Hashable {
+	var isNewline: Bool { get }
+}
+
+extension Character: CharacterLike {}
+extension Unicode.Scalar: CharacterLike {
+	public var isNewline: Bool {
+		self.isNewline
+	}
+}
+
 /// Matches one line, not including newline characters.
-public struct Line: Pattern {
+public struct Line<Input: BidirectionalCollection>: Pattern
+	where Input.Element: CharacterLike, Input.Index == String.Index {
 	public init() {}
 
 	public var description: String { "Line()" }
 
-	public static let start = Start()
-	public static let end = End()
-
 	@inlinable
-	public func createInstructions(_ instructions: inout Instructions) throws {
+	public func createInstructions(_ instructions: inout Self.Instructions) throws {
 		try (Start() • Skip() • End()).createInstructions(&instructions)
 	}
 
@@ -31,7 +40,7 @@ public struct Line: Pattern {
 		}
 
 		@inlinable
-		public func createInstructions(_ instructions: inout Instructions) {
+		public func createInstructions(_ instructions: inout Self.Instructions) {
 			instructions.append(.checkIndex(self.parse(_:at:)))
 		}
 	}
@@ -48,8 +57,13 @@ public struct Line: Pattern {
 		}
 
 		@inlinable
-		public func createInstructions(_ instructions: inout Instructions) {
+		public func createInstructions(_ instructions: inout Self.Instructions) {
 			instructions.append(.checkIndex(self.parse(_:at:)))
 		}
 	}
+}
+
+extension Line where Input == String {
+	public static let start = Start()
+	public static let end = End()
 }
