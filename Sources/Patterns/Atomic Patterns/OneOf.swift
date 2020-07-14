@@ -76,6 +76,10 @@ public struct OneOf: Pattern, RegexConvertible {
 	public func createInstructions(_ instructions: inout Instructions) {
 		instructions.append(.checkElement(group.contains))
 	}
+
+	public static func == (lhs: OneOf, rhs: OneOf) -> Bool {
+		lhs.description == rhs.description
+	}
 }
 
 // MARK: OneOfConvertible

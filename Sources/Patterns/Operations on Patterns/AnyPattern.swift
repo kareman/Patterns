@@ -22,7 +22,7 @@ public struct AnyPattern: Pattern {
 	/// The wrapped pattern. If you know the exact type you can unwrap it again.
 	public let wrapped: Any
 
-	public init(_ p: Pattern) {
+	public init<P: Pattern>(_ p: P) {
 		_instructions = p.createInstructions
 		_description = { p.description }
 		wrapped = p
@@ -38,6 +38,10 @@ public struct AnyPattern: Pattern {
 		_description = { p.description }
 		wrapped = p
 	}
+
+	public static func == (lhs: AnyPattern, rhs: AnyPattern) -> Bool {
+		lhs.description == rhs.description
+	}
 }
 
 /// Allows AnyPattern to be defined by a string with patterns in interpolations.
@@ -47,23 +51,21 @@ public struct AnyPattern: Pattern {
 extension AnyPattern: ExpressibleByStringInterpolation {
 	public struct StringInterpolation: StringInterpolationProtocol {
 		@usableFromInline
-		var patterns = [Pattern]()
+		var pattern = AnyPattern("")
 
 		@inlinable
-		public init(literalCapacity: Int, interpolationCount: Int) {
-			patterns.reserveCapacity(literalCapacity + interpolationCount)
-		}
+		public init(literalCapacity: Int, interpolationCount: Int) {}
 
 		@inlinable
 		public mutating func appendLiteral(_ literal: String) {
 			if !literal.isEmpty {
-				patterns.append(Literal(literal))
+				pattern = AnyPattern(pattern • Literal(literal))
 			}
 		}
 
 		@inlinable
-		public mutating func appendInterpolation(_ newpatterns: Pattern...) {
-			patterns.append(contentsOf: newpatterns)
+		public mutating func appendInterpolation<P: Pattern>(_ newpattern: P) {
+			pattern = AnyPattern(pattern • newpattern)
 		}
 	}
 
@@ -74,19 +76,6 @@ extension AnyPattern: ExpressibleByStringInterpolation {
 
 	@inlinable
 	public init(stringInterpolation: StringInterpolation) {
-		var patterns = stringInterpolation.patterns[...]
-		guard let first = patterns.popFirst() else {
-			self.init(Literal(""))
-			return
-		}
-		guard let second = patterns.popFirst() else {
-			self.init(first)
-			return
-		}
-		var result = AnyPattern(first) • AnyPattern(second)
-		while let next = patterns.popFirst() {
-			result = AnyPattern(result) • AnyPattern(next)
-		}
-		self.init(result)
+		self.init(stringInterpolation.pattern)
 	}
 }
