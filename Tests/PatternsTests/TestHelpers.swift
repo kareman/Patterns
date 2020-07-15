@@ -25,15 +25,33 @@ extension Parser {
 }
 
 extension XCTestCase {
-	func assertParseAll(_ parser: Parser<String>, input: String, result: [String],
-	                    file: StaticString = #file, line: UInt = #line) {
-		let parsed = parser.ranges(in: input).map { String(input[$0]) }
-		XCTAssertEqual(parsed, result, "\nThe differences are: \n"
-			+ parsed.difference(from: result).sorted().joined(separator: "\n"), file: file, line: line)
-	}
+	func XCTAssertEqualElements<S1: Sequence, S2: Sequence>
+	(_ seq1: @autoclosure () throws -> S1,
+	 _ seq2: @autoclosure () throws -> S2,
+	 _ message: @autoclosure () -> String = "",
+	 file: StaticString = #file, line: UInt = #line)
+		where S1.Element: Sequence, S2.Element: Sequence, S1.Element.Element: Equatable,
+		S1.Element.Element == S2.Element.Element {
+			do {
+				let seq1 = try seq1()
+				let seq2 = try seq2()
+				if !seq1.elementsEqual(seq2, by: { $0.elementsEqual($1) }) {
+					XCTFail("'\(seq1)' and '\(seq2)' are not equal.")
+				}
+			} catch {
+				XCTFail(String(describing: error))
+			}
+		}
 
-	func assertParseAll<P: Patterns.Pattern>(_ pattern: P, input: String, result: [String],
-	                                         file: StaticString = #file, line: UInt = #line) where P.Input == String {
+	func assertParseAll<Input: BidirectionalCollection>
+	(_ parser: Parser<Input>, input: Input, result: [Input], file: StaticString = #file, line: UInt = #line)
+		where Input.Element: Hashable {
+			let parsed = parser.ranges(in: input).map { input[$0] }
+			XCTAssertEqualElements(parsed, result, file: file, line: line)
+		}
+
+	func assertParseAll<P: Patterns.Pattern>
+	(_ pattern: P, input: P.Input, result: [P.Input], file: StaticString = #file, line: UInt = #line) {
 		do {
 			let parser = try Parser(search: pattern)
 			assertParseAll(parser, input: input, result: result, file: file, line: line)
@@ -42,19 +60,20 @@ extension XCTestCase {
 		}
 	}
 
-	func assertParseAll(_ parser: Parser<String>, input: String, result: String? = nil, count: Int,
-	                    file: StaticString = #file, line: UInt = #line) {
-		if let result = result {
-			assertParseAll(parser, input: input, result: Array(repeating: result, count: count), file: file, line: line)
-			return
-		} else {
-			let parsedCount = parser.matches(in: input).reduce(into: 0) { count, _ in count += 1 }
-			XCTAssertEqual(parsedCount, count, "Incorrect count.", file: file, line: line)
+	func assertParseAll<Input: BidirectionalCollection>
+	(_ parser: Parser<Input>, input: Input, result: Input? = nil, count: Int, file: StaticString = #file, line: UInt = #line)
+		where Input.Element: Hashable {
+			if let result = result {
+				assertParseAll(parser, input: input, result: Array(repeating: result, count: count), file: file, line: line)
+				return
+			} else {
+				let parsedCount = parser.matches(in: input).reduce(into: 0) { count, _ in count += 1 }
+				XCTAssertEqual(parsedCount, count, "Incorrect count.", file: file, line: line)
+			}
 		}
-	}
 
-	func assertParseAll<P: Patterns.Pattern>(_ pattern: P, input: String, result: String? = nil, count: Int,
-	                                         file: StaticString = #file, line: UInt = #line) where P.Input == String {
+	func assertParseAll<P: Patterns.Pattern>(_ pattern: P, input: P.Input, result: P.Input? = nil, count: Int,
+	                                         file: StaticString = #file, line: UInt = #line) {
 		do {
 			let parser = try Parser(search: pattern)
 			assertParseAll(parser, input: input, result: result, count: count, file: file, line: line)

@@ -23,6 +23,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		BA952D1924BF79F5000B2D78 /* OneOf.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* OneOf.swift */; };
 		BAAD706E24BF44960098E980 /* Skip.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_27 /* Skip.swift */; };
 		BAAD706F24BF44B50098E980 /* Concatenation.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_24 /* Concatenation.swift */; };
 		BAAD707224BF47B00098E980 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BAAD707124BF47B00098E980 /* AppKit.framework */; };
@@ -860,6 +861,7 @@
 				BAAD706F24BF44B50098E980 /* Concatenation.swift in Sources */,
 				OBJ_166 /* Group.swift in Sources */,
 				OBJ_170 /* Capture.swift in Sources */,
+				BA952D1924BF79F5000B2D78 /* OneOf.swift in Sources */,
 				OBJ_176 /* Optimise Instructions.swift in Sources */,
 				BAAD706E24BF44960098E980 /* Skip.swift in Sources */,
 				OBJ_177 /* Parser.swift in Sources */,
