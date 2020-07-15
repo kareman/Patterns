@@ -33,7 +33,7 @@ extension XCTestCase {
 	}
 
 	func assertParseAll<P: Patterns.Pattern>(_ pattern: P, input: String, result: [String],
-	                                         file: StaticString = #file, line: UInt = #line) {
+	                                         file: StaticString = #file, line: UInt = #line) where P.Input == String {
 		do {
 			let parser = try Parser(search: pattern)
 			assertParseAll(parser, input: input, result: result, file: file, line: line)
@@ -54,7 +54,7 @@ extension XCTestCase {
 	}
 
 	func assertParseAll<P: Patterns.Pattern>(_ pattern: P, input: String, result: String? = nil, count: Int,
-	                                         file: StaticString = #file, line: UInt = #line) {
+	                                         file: StaticString = #file, line: UInt = #line) where P.Input == String {
 		do {
 			let parser = try Parser(search: pattern)
 			assertParseAll(parser, input: input, result: result, count: count, file: file, line: line)
@@ -75,7 +75,7 @@ extension XCTestCase {
 	}
 
 	func assertParseMarkers<P: Patterns.Pattern>(_ pattern: P, input: String,
-	                                             file: StaticString = #file, line: UInt = #line) {
+	                                             file: StaticString = #file, line: UInt = #line) where P.Input == String {
 		assertParseMarkers(try! Parser(search: pattern), input: input, file: file, line: line)
 	}
 
@@ -99,7 +99,7 @@ extension XCTestCase {
 	}
 
 	func assertCaptures<P: Patterns.Pattern>(_ pattern: P, input: String, result: [[String]],
-	                                         file: StaticString = #file, line: UInt = #line) {
+	                                         file: StaticString = #file, line: UInt = #line) where P.Input == String {
 		assertCaptures(try! Parser(search: pattern), input: input, result: result, file: file, line: line)
 	}
 

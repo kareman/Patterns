@@ -39,18 +39,18 @@ public struct OneOf<Input: BidirectionalCollection>: Pattern, RegexConvertible w
 	/// Matches any elements in `elements`.
 	/// - Parameter elements: A sequence of elements to match.
 	@inlinable
-	public init<S: Sequence>(_ elements: S) where S.Element == Input.Element {
+	public init(_ elements: Input) {
 		group = Group(contentsOf: elements)
-		description = #"[\#(String(elements))]"#
+		description = "[\(String(describing: elements))]"
 		_regex = "[\(NSRegularExpression.escapedPattern(for: elements.map(String.init(describing:)).joined()))]"
 	}
 
 	/// Matches any elements _not_ in `elements`.
 	/// - Parameter elements: A sequence of elements _not_ to match.
 	@inlinable
-	public init<S: Sequence>(not elements: S) where S.Element == Input.Element {
+	public init(not elements: Input) {
 		group = Group(contentsOf: elements).inverted()
-		description = #"[^\#(String(elements))]"#
+		description = "[^\(String(describing: elements))]"
 		_regex = "[^\(NSRegularExpression.escapedPattern(for: elements.map(String.init(describing:)).joined()))]"
 	}
 
@@ -86,13 +86,14 @@ public struct OneOf<Input: BidirectionalCollection>: Pattern, RegexConvertible w
 
 /// A type that `OneOf` can use.
 public protocol OneOfConvertible {
+	associatedtype Element: Hashable
 	@inlinable
-	func contains(_: Pattern.Input.Element) -> Bool
+	func contains(_: Element) -> Bool
 }
 
-extension Character: OneOfConvertible {
+extension Character: OneOfConvertible where Element == Character {
 	@inlinable
-	public func contains(_ char: Pattern.Input.Element) -> Bool { char == self }
+	public func contains(_ char: Element) -> Bool { char == self }
 }
 
 extension String: OneOfConvertible {}

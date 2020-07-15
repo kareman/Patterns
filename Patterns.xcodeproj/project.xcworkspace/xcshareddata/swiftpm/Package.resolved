@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "swift-argument-parser",
+        "repositoryURL": "https://github.com/apple/swift-argument-parser",
+        "state": {
+          "branch": null,
+          "revision": "eb51f949cdd0c9d88abba9ce79d37eb7ea1231d0",
+          "version": "0.2.0"
+        }
+      },
+      {
+        "package": "swift-se0270-range-set",
+        "repositoryURL": "https://github.com/apple/swift-se0270-range-set",
+        "state": {
+          "branch": null,
+          "revision": "120fc7efe17b11f7eedd94e7a5e1885fc69efb49",
+          "version": "1.0.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
