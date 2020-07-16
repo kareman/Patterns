@@ -64,24 +64,6 @@ public struct OneOf<Input: BidirectionalCollection>: Pattern /*, RegexConvertibl
 		_regex = "[^\(NSRegularExpression.escapedPattern(for: elements.map(String.init(describing:)).joined()))]"
 	}
 
-	/// Matches any of the provided elements.
-	@inlinable
-	public init<OOC: OneOfConvertible>(_ oneofs: OOC...) where Input.Element == OOC.Element {
-		let closures = oneofs.map { $0.contains(_:) }
-		group = Group(contains: { (element: OOC.Element) -> Bool in closures.contains(where: { $0(element) }) })
-		description = "[\(oneofs.map(String.init(describing:)).joined(separator: ","))]"
-		_regex = nil
-	}
-
-	/// Matches anything that is _not_ among the provided elements.
-	@inlinable
-	public init<OOC: OneOfConvertible>(not oneofs: OOC...) where Input.Element == OOC.Element {
-		let closures = oneofs.map { $0.contains(_:) }
-		group = Group(contains: { element in !closures.contains(where: { $0(element) }) })
-		description = #"[^\#(oneofs.map(String.init(describing:)).joined(separator: ","))]"#
-		_regex = nil
-	}
-
 	@inlinable
 	public func createInstructions(_ instructions: inout Self.Instructions) {
 		instructions.append(.checkElement(group.contains))
@@ -94,11 +76,18 @@ public struct OneOf<Input: BidirectionalCollection>: Pattern /*, RegexConvertibl
 
 // MARK: OneOfConvertible
 
+// Allows for e.g. `OneOf("a" ..< "e", "g", uppercase)` and `OneOf(not: "a" ..< "e", "gåopr", uppercase)`
+
 /// A type that `OneOf` can use.
 public protocol OneOfConvertible {
 	associatedtype Element: Hashable
 	@inlinable
 	func contains(_: Element) -> Bool
+}
+
+extension OneOf: OneOfConvertible {
+	@inlinable
+	public func contains(_ char: Input.Element) -> Bool { group.contains(char) }
 }
 
 extension Character: OneOfConvertible {
@@ -135,9 +124,85 @@ public func ..< (lhs: Character, rhs: Character) -> Range<Character> {
 
 extension Range: OneOfConvertible where Bound == Character {}
 
-extension OneOf: OneOfConvertible {
+extension OneOf {
+	/* It will be a glorious day when all this can be replaced by two methods using variadic generics. */
+
+	@usableFromInline
+	internal init(closures: [(Input.Element) -> Bool], description: String, isNegated: Bool = false) {
+		group = Group(contains: isNegated
+			? { element in !closures.contains(where: { $0(element) }) }
+			: { element in closures.contains(where: { $0(element) }) })
+		self.description = description
+		_regex = nil
+	}
+
+	/// Matches any of the provided elements.
 	@inlinable
-	public func contains(_ char: Input.Element) -> Bool { group.contains(char) }
+	public init<O1: OneOfConvertible>(_ o1: O1)
+		where Input.Element == O1.Element {
+		let closures = [o1.contains(_:)]
+		self.init(closures: closures, description: "[\(o1)]")
+	}
+
+	/// Matches any of the provided elements.
+	@inlinable
+	public init<O1: OneOfConvertible, O2: OneOfConvertible>(_ o1: O1, _ o2: O2)
+		where Input.Element == O1.Element, O1.Element == O2.Element {
+		let closures = [o1.contains(_:), o2.contains(_:)]
+		self.init(closures: closures, description: "[\(o1), \(o2)]")
+	}
+
+	/// Matches any of the provided elements.
+	@inlinable
+	public init<O1: OneOfConvertible, O2: OneOfConvertible, O3: OneOfConvertible>(_ o1: O1, _ o2: O2, _ o3: O3)
+		where Input.Element == O1.Element, O1.Element == O2.Element, O2.Element == O3.Element {
+		let closures = [o1.contains(_:), o2.contains(_:), o3.contains(_:)]
+		self.init(closures: closures, description: "[\(o1), \(o2), \(o3)]")
+	}
+
+	/// Matches any of the provided elements.
+	@inlinable
+	public init<O1: OneOfConvertible, O2: OneOfConvertible, O3: OneOfConvertible, O4: OneOfConvertible>
+	(_ o1: O1, _ o2: O2, _ o3: O3, _ o4: O4)
+		where Input.Element == O1.Element, O1.Element == O2.Element, O2.Element == O3.Element, O3.Element == O4.Element {
+		let closures = [o1.contains(_:), o2.contains(_:), o3.contains(_:), o4.contains(_:)]
+		self.init(closures: closures, description: "[\(o1), \(o2), \(o3), \(o4)]")
+	}
+
+	// Not
+
+	/// Matches any _but_ the provided elements.
+	@inlinable
+	public init<O1: OneOfConvertible>(not o1: O1)
+		where Input.Element == O1.Element {
+		let closures = [o1.contains(_:)]
+		self.init(closures: closures, description: "[^\(o1)]", isNegated: true)
+	}
+
+	/// Matches any _but_ the provided elements.
+	@inlinable
+	public init<O1: OneOfConvertible, O2: OneOfConvertible>(not o1: O1, _ o2: O2)
+		where Input.Element == O1.Element, O1.Element == O2.Element {
+		let closures = [o1.contains(_:), o2.contains(_:)]
+		self.init(closures: closures, description: "[^\(o1), \(o2)]", isNegated: true)
+	}
+
+	/// Matches any _but_ the provided elements.
+	@inlinable
+	public init<O1: OneOfConvertible, O2: OneOfConvertible, O3: OneOfConvertible>(not o1: O1, _ o2: O2, _ o3: O3)
+		where Input.Element == O1.Element, O1.Element == O2.Element, O2.Element == O3.Element {
+		let closures = [o1.contains(_:), o2.contains(_:), o3.contains(_:)]
+		self.init(closures: closures, description: "[^\(o1), \(o2), \(o3)]", isNegated: true)
+	}
+
+	/// Matches any of the provided elements.
+	@inlinable
+	public init<O1: OneOfConvertible, O2: OneOfConvertible, O3: OneOfConvertible, O4: OneOfConvertible>
+	(not o1: O1, _ o2: O2, _ o3: O3, _ o4: O4)
+		where Input.Element == O1.Element, O1.Element == O2.Element, O2.Element == O3.Element, O3.Element == O4.Element {
+		let closures = [o1.contains(_:), o2.contains(_:), o3.contains(_:), o4.contains(_:)]
+		self.init(closures: closures, description: "[^\(o1), \(o2), \(o3), \(o4)]", isNegated: true)
+	}
 }
 
 /* TODO: uncomment

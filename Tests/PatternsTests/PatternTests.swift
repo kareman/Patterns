@@ -34,21 +34,26 @@ class PatternTests: XCTestCase {
 		assertParseAll(Capture(lowercaseASCII), input: "aTæøåk☀️", result: ["a", "k"])
 
 		assertParseAll(digit, input: "ab12c3,d4", count: 4)
+
+		assertParseAll(Capture(OneOf("a" ... "e")),
+		               input: "abgkxeryza", result: ["a", "b", "e", "a"])
+		assertParseAll(Capture(OneOf(not: "a" ... "e")),
+		               input: "abgkxeryza", result: ["g", "k", "x", "r", "y", "z"])
+	}
+
+	func testOneOfsMultiple() {
+		assertParseAll(Capture(OneOf("a" ... "e", "xyz")),
+		               input: "abegkxryz", result: ["a", "b", "e", "x", "y", "z"])
+		assertParseAll(Capture(OneOf("a" ..< "e", "g", uppercase)),
+		               input: "aBcdefgh", result: ["a", "B", "c", "d", "g"])
+
+		assertParseAll(Capture(OneOf(not: "a" ... "e", "xyz")),
+		               input: "abegkxryz", result: ["g", "k", "r"])
+		assertParseAll(Capture(OneOf(not: "a" ..< "e", "g", uppercase)),
+		               input: "aBcdefgh", result: ["e", "f", "h"])
 	}
 
 	/* TODO: uncomment
-	 func testOneOfsMultiple() {
-	 	assertParseAll(Capture(OneOf("a" ... "e", "xyz")),
-	 	               input: "abegkxryz", result: ["a", "b", "e", "x", "y", "z"])
-	 	assertParseAll(Capture(OneOf("a" ..< "e", "g", uppercase)),
-	 	               input: "aBcdefgh", result: ["a", "B", "c", "d", "g"])
-
-	 	assertParseAll(Capture(OneOf(not: "a" ... "e", "xyz")),
-	 	               input: "abegkxryz", result: ["g", "k", "r"])
-	 	assertParseAll(Capture(OneOf(not: "a" ..< "e", "g", uppercase)),
-	 	               input: "aBcdefgh", result: ["e", "f", "h"])
-	 }
-
 	 func testOptional() throws {
 	 	assertParseAll(letter • digit*, input: "123abc123d", count: 4)
 	 	assertParseAll(Capture(digit¿ • letter),
@@ -135,8 +140,8 @@ class PatternTests: XCTestCase {
 	 		input: text, result: ["1\nl", "2\nl", "3\nl"])
 
 	 /* TODO: Implement?
-	   	 XCTAssertThrowsError(Line.start • Line.start)
-	   	 XCTAssertThrowsError(Line.start • Capture(Line.start))
+	    	 XCTAssertThrowsError(Line.start • Line.start)
+	    	 XCTAssertThrowsError(Line.start • Capture(Line.start))
 	  */
 	 	XCTAssertNoThrow(Line.start • Skip() • Line.start)
 	 }
