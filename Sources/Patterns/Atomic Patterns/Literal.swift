@@ -29,7 +29,7 @@ public struct Literal<Input: BidirectionalCollection>: Pattern where Input.Eleme
 	}
 
 	@inlinable
-	public func createInstructions(_ instructions: inout Self.Instructions) {
+	public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) {
 		instructions.append(contentsOf: elements.map(Instruction<Input>.elementEquals))
 	}
 }

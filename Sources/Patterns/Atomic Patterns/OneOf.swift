@@ -8,7 +8,7 @@
 import Foundation
 
 /// Matches and consumes a single element.
-public struct OneOf<Input: BidirectionalCollection>: Pattern /*, RegexConvertible*/ where Input.Element: Hashable {
+public struct OneOf<Input: BidirectionalCollection>: Pattern /*, RegexConvertible*/ where Input.Element: Hashable & Comparable {
 	@usableFromInline
 	let group: Group<Input.Element>
 	public let description: String
@@ -80,7 +80,7 @@ public struct OneOf<Input: BidirectionalCollection>: Pattern /*, RegexConvertibl
 
 /// A type that `OneOf` can use.
 public protocol OneOfConvertible {
-	associatedtype Element: Hashable
+	associatedtype Element: Hashable & Comparable
 	@inlinable
 	func contains(_: Element) -> Bool
 }
@@ -114,7 +114,7 @@ public func ... (lhs: Character, rhs: Character) -> ClosedRange<Character> {
 	return ClosedRange(uncheckedBounds: (lower: lhs, upper: rhs))
 }
 
-extension ClosedRange: OneOfConvertible where Bound == Character {}
+extension ClosedRange: OneOfConvertible where Bound: Hashable {}
 
 @inlinable
 public func ..< (lhs: Character, rhs: Character) -> Range<Character> {
@@ -122,7 +122,7 @@ public func ..< (lhs: Character, rhs: Character) -> Range<Character> {
 	return Range(uncheckedBounds: (lower: lhs, upper: rhs))
 }
 
-extension Range: OneOfConvertible where Bound == Character {}
+extension Range: OneOfConvertible where Bound: Hashable {}
 
 extension OneOf {
 	/* It will be a glorious day when all this can be replaced by two methods using variadic generics. */
