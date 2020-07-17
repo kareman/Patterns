@@ -42,19 +42,43 @@ extension Literal where Input == String {
 	}
 }
 
-extension Literal: ExpressibleByUnicodeScalarLiteral where Input == String {
+// MARK: Create from string literal.
+
+extension Literal: ExpressibleByUnicodeScalarLiteral where Input: LosslessStringConvertible {
+	@inlinable
 	public init(unicodeScalarLiteral value: StaticString) {
-		elements = String(describing: value)
+		elements = Input(String(describing: value))!
 	}
 }
 
-extension Literal: ExpressibleByExtendedGraphemeClusterLiteral where Input == String {
+extension Literal: ExpressibleByExtendedGraphemeClusterLiteral where Input: LosslessStringConvertible {
 	public typealias ExtendedGraphemeClusterLiteralType = StaticString
 }
 
-extension Literal: ExpressibleByStringLiteral where Input == String {
+extension Literal: ExpressibleByStringLiteral where Input: LosslessStringConvertible {
 	@inlinable
 	public init(stringLiteral value: StaticString) {
-		self.init(String(describing: value))
+		elements = Input(String(describing: value))!
+	}
+}
+
+extension String.UTF8View: LosslessStringConvertible {
+	@inlinable
+	public init?(_ description: String) {
+		self = description.utf8
+	}
+}
+
+extension String.UTF16View: LosslessStringConvertible {
+	@inlinable
+	public init?(_ description: String) {
+		self = description.utf16
+	}
+}
+
+extension String.UnicodeScalarView: LosslessStringConvertible {
+	@inlinable
+	public init?(_ description: String) {
+		self = description.unicodeScalars
 	}
 }

@@ -195,6 +195,33 @@ class PatternTests: XCTestCase {
 		assertParseAll(Line.end, input: "\n", count: 2)
 	}
 
+	func testLineEndUTF8_16_UnicodeScalars() throws {
+		let pattern = Line<String.UTF16View>.End()
+		assertParseAll(pattern, input: "".utf16, result: "".utf16, count: 1)
+		assertParseAll(pattern, input: "\n".utf16, count: 2)
+		assertParseAll(pattern, input: "\n\n".utf16, count: 3)
+
+		let text = """
+		line 1
+		line 2
+		line 3
+		line 4
+		""".utf8
+		assertParseAll(Line.End(), input: text, count: 4)
+		assertParseAll(
+			" " • Capture(Skip()) • Line.End(),
+			input: text, result: ["1", "2", "3", "4"].map { $0.utf8 })
+		let asciiDigit = OneOf<String.UTF8View>(UInt8(ascii: "0") ... UInt8(ascii: "9"))
+		assertParseAll(
+			Capture(asciiDigit • Line.End()),
+			input: text, result: ["1", "2", "3", "4"].map { $0.utf8 })
+		assertParseAll(
+			Capture(asciiDigit • Line.End() • Skip() • "l"),
+			input: text, result: ["1\nl", "2\nl", "3\nl"].map { $0.utf8 })
+
+		assertParseAll(Line.End(), input: "\n".unicodeScalars, count: 2)
+	}
+
 	func testLine() throws {
 		let text = """
 		line 1
@@ -205,6 +232,7 @@ class PatternTests: XCTestCase {
 		"""
 
 		assertParseAll(Capture(Line()), input: text, result: ["line 1", "", "line 3", "line 4", ""])
+		assertParseAll(Capture(Line()), input: text.utf8, result: ["line 1", "", "line 3", "line 4", ""].map { $0.utf8 })
 	}
 
 	func testWordBoundary() throws {

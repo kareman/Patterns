@@ -10,9 +10,29 @@ public protocol CharacterLike: Hashable {
 }
 
 extension Character: CharacterLike {}
-extension Unicode.Scalar: CharacterLike {
+extension String.UTF8View.Element: CharacterLike {
+	@inlinable
 	public var isNewline: Bool {
-		self.isNewline
+		// “\n” (U+000A): LINE FEED (LF), U+000B: LINE TABULATION (VT), U+000C: FORM FEED (FF), “\r” (U+000D): CARRIAGE RETURN (CR)
+		(10 ... 13).contains(self)
+	}
+}
+
+// U+0085: NEXT LINE (NEL), U+2028: LINE SEPARATOR, U+2029: PARAGRAPH SEPARATOR
+@usableFromInline
+let newlines = Set([0x000A as UInt16, 0x000B, 0x000C, 0x000D, 0x0085, 0x2028, 0x2029].map { Unicode.Scalar($0)! })
+
+extension String.UnicodeScalarView.Element: CharacterLike {
+	@inlinable
+	public var isNewline: Bool {
+		newlines.contains(self)
+	}
+}
+
+extension String.UTF16View.Element: CharacterLike {
+	@inlinable
+	public var isNewline: Bool {
+		Unicode.Scalar(self).map(newlines.contains(_:)) ?? false
 	}
 }
 

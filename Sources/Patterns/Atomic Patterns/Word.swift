@@ -67,7 +67,7 @@ public struct Word<Input: BidirectionalCollection> where Input.Element == Charac
 		}
 
 		@inlinable
-		public func createInstructions(_ instructions: inout Self.Instructions) {
+		public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) {
 			instructions.append(.checkIndex { (input, index) -> Bool in
 				self.parse(input, at: index) != nil
 			})
