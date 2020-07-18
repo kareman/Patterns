@@ -13,6 +13,8 @@ public struct Skip<Input: BidirectionalCollection>: Pattern where Input.Element:
 
 	public init() {}
 
+	public init() where Input == String {}
+
 	@inlinable
 	public func createInstructions(_ instructions: inout Self.Instructions) throws {
 		instructions.append(.skip)

@@ -73,7 +73,7 @@ public postfix func * <P: Pattern>(me: P) -> RepeatPattern<P> {
 
 /// Repeats the preceding pattern 0 or more times.
 @inlinable
-public postfix func * (me: Literal) -> RepeatPattern<Literal> {
+public postfix func * <Input>(me: Literal<Input>) -> RepeatPattern<Literal<Input>> {
 	me.repeat(0...)
 }
 
@@ -87,8 +87,8 @@ public postfix func + <P: Pattern>(me: P) -> RepeatPattern<P> {
 
 /// Repeats the preceding pattern 1 or more times.
 @inlinable
-public postfix func + (me: String) -> RepeatPattern<Literal<String>> {
-	Literal(me).repeat(1...)
+public postfix func + <Input>(me: Literal<Input>) -> RepeatPattern<Literal<Input>> {
+	me.repeat(1...)
 }
 
 postfix operator ¿
@@ -101,6 +101,6 @@ public postfix func ¿ <P: Pattern>(me: P) -> RepeatPattern<P> {
 
 /// Tries the preceding pattern, and continues even if it fails.
 @inlinable
-public postfix func ¿ (me: Literal) -> RepeatPattern<Literal> {
+public postfix func ¿ <Input>(me: Literal<Input>) -> RepeatPattern<Literal<Input>> {
 	me.repeat(0 ... 1)
 }

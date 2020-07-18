@@ -9,6 +9,11 @@
 import Patterns
 import XCTest
 
+let asciiDigit = OneOf<String.UTF8View>(UInt8(ascii: "0") ... UInt8(ascii: "9"))
+let asciiLowercase = OneOf<String.UTF8View>(UInt8(ascii: "a") ... UInt8(ascii: "z"))
+let asciiUppercase = OneOf<String.UTF8View>(UInt8(ascii: "A") ... UInt8(ascii: "Z"))
+let asciiLetter = OneOf<String.UTF8View>(asciiLowercase, asciiUppercase)
+
 class PatternTests: XCTestCase {
 	func testLiteral() {
 		assertParseAll(Capture("a"), input: "abcd", result: "a", count: 1)
@@ -70,42 +75,51 @@ class PatternTests: XCTestCase {
 		               input: "aBcdefgh", result: ["e", "f", "h"])
 	}
 
+	func testOptional() throws {
+		assertParseAll(letter • digit*, input: "123abc123d", count: 4)
+		assertParseAll(Capture(digit¿ • letter),
+		               input: "123abc", result: ["3a", "b", "c"])
+
+		assertParseAll(asciiLetter • asciiDigit*, input: "123abc123d".utf8, count: 4)
+		assertParseAll(Capture(asciiDigit¿ • asciiLetter),
+		               input: "123abc".utf8, result: ["3a", "b", "c"].map { $0.utf8 })
+	}
+
+	func testRepeat() throws {
+		assertParseAll(digit.repeat(2...), input: "12a1bc123", count: 2)
+		assertParseAll(Capture(digit+), input: "123abc", result: "123", count: 1)
+		assertParseAll(Capture(digit.repeat(3...)), input: "123abc", result: "123", count: 1)
+		assertParseAll(digit.repeat(4...), input: "123abc", count: 0)
+
+		assertParseAll(Capture(digit+), input: "a123abc123d", result: "123", count: 2)
+		assertParseAll(digit+, input: "123abc09d4 8", count: 4)
+		assertParseAll(Capture(digit.repeat(...2) • letter),
+		               input: "123abc09d4 8", result: ["23a", "b", "c", "09d"])
+
+		assertParseAll(Capture(digit.repeat(1 ... 2)), input: "123abc09d48", result: ["12", "3", "09", "48"])
+
+		assertParseAll(Capture(digit.repeat(2)), input: "1234 5 6 78", result: ["12", "34", "78"])
+
+		assertParseAll(Capture("a"* • "b"), input: "b aabb ab", result: ["b", "aab", "b", "ab"])
+		assertParseAll(Capture("a"*), input: "b aabb ab", result: ["", "", "aa", "", "", "", "a", "", ""])
+
+		/* TODO: uncomment
+		 assertParseAll(
+		 	Capture((!newline • ascii)+),
+		 	input: "123\n4567\n89", result: ["123", "4567", "89"])
+		 */
+
+		XCTAssertEqual(digit+.description, "digit{1...}")
+	}
+
+	func testRepeatLiterals() throws {
+		assertParseAll(Capture("a"+), input: "a aa  aa", result: ["a", "aa", "aa"])
+		assertParseAll(Capture("a"+), input: "a aa  aa".utf8, result: ["a", "aa", "aa"].map { $0.utf8 })
+		assertParseAll(Capture("a" • "a"*), input: "a aaa  aa".utf16, result: ["a", "aaa", "aa"].map { $0.utf16 })
+		assertParseAll(Capture("a" • "a"¿), input: "a aa  aa".unicodeScalars, result: ["a", "aa", "aa"].map { $0.unicodeScalars })
+	}
+
 	/* TODO: uncomment
-	 func testOptional() throws {
-	 	assertParseAll(letter • digit*, input: "123abc123d", count: 4)
-	 	assertParseAll(Capture(digit¿ • letter),
-	 	               input: "123abc", result: ["3a", "b", "c"])
-	 }
-
-	 func testRepeat() throws {
-	 	assertParseAll(digit.repeat(2...), input: "12a1bc123", count: 2)
-	 	assertParseAll(Capture(digit+), input: "123abc", result: "123", count: 1)
-	 	assertParseAll(Capture(digit.repeat(3...)), input: "123abc", result: "123", count: 1)
-	 	assertParseAll(digit.repeat(4...), input: "123abc", count: 0)
-
-	 	assertParseAll(Capture(digit+), input: "a123abc123d", result: "123", count: 2)
-	 	assertParseAll(digit+, input: "123abc09d4 8", count: 4)
-	 	assertParseAll(Capture(digit.repeat(...2) • letter),
-	 	               input: "123abc09d4 8", result: ["23a", "b", "c", "09d"])
-
-	 	assertParseAll(Capture(digit.repeat(1 ... 2)), input: "123abc09d48", result: ["12", "3", "09", "48"])
-
-	 	assertParseAll(Capture(digit.repeat(2)), input: "1234 5 6 78", result: ["12", "34", "78"])
-
-	 	assertParseAll(Capture("a"* • "b"), input: "b aabb ab", result: ["b", "aab", "b", "ab"])
-	 	assertParseAll(Capture("a"*), input: "b aabb ab", result: ["", "", "aa", "", "", "", "a", "", ""])
-
-	 	// !a b == b - a
-	 	assertParseAll(
-	 		Capture((!newline • ascii)+),
-	 		input: "123\n4567\n89", result: ["123", "4567", "89"])
-	 	assertParseAll(
-	 		Capture((!newline • ascii)+),
-	 		input: "123\n4567\n89", result: ["123", "4567", "89"])
-
-	 	XCTAssertEqual(digit+.description, "digit{1...}")
-	 }
-
 	 func testOr() {
 	 	let pattern = Capture("a" / "b")
 	 	assertParseAll(pattern, input: "bcbd", result: "b", count: 2)
@@ -211,7 +225,6 @@ class PatternTests: XCTestCase {
 		assertParseAll(
 			" " • Capture(Skip()) • Line.End(),
 			input: text, result: ["1", "2", "3", "4"].map { $0.utf8 })
-		let asciiDigit = OneOf<String.UTF8View>(UInt8(ascii: "0") ... UInt8(ascii: "9"))
 		assertParseAll(
 			Capture(asciiDigit • Line.End()),
 			input: text, result: ["1", "2", "3", "4"].map { $0.utf8 })
@@ -272,4 +285,6 @@ class PatternTests: XCTestCase {
 	 	                   input: "xuxuxuxu|i")
 	 }
 	 */
+
+	func testInputDefaultsToString() {}
 }
