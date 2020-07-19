@@ -38,25 +38,30 @@ public struct Capture<Wrapped: Pattern>: Pattern {
 	}
 
 	@inlinable
-	public func createInstructions(_ instructions: inout Self.Instructions) throws {
+	public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) throws {
 		instructions.append(.captureStart(name: name))
 		try wrapped.createInstructions(&instructions)
 		instructions.append(.captureEnd)
 	}
 }
 
-/*
- extension Capture {
- /// Captures the current input position as an empty range.
- /// - Parameter name: optional name
- @inlinable
- public init<Input>(name: String? = nil) where Wrapped == NoPattern<Input> {
- 	self.wrapped = NoPattern<Input>()
- 	self.name = name
- }
- }
- */
 extension Capture {
+	/// Captures the current input position as an empty range.
+	/// - Parameter name: optional name
+	@inlinable
+	public init<Input>(name: String? = nil) where Wrapped == NoPattern<Input> {
+		self.wrapped = NoPattern<Input>()
+		self.name = name
+	}
+
+	/// Captures the current input position as an empty range.
+	/// - Parameter name: optional name
+	@inlinable
+	public init(name: String? = nil) where Wrapped == NoPattern<String> {
+		self.wrapped = NoPattern<Input>()
+		self.name = name
+	}
+
 	/// Captures the position of `wrapped` as a range.
 	/// - Parameter name: optional name
 	@inlinable
@@ -74,5 +79,5 @@ public struct NoPattern<Input: BidirectionalCollection>: Pattern where Input.Ele
 	public init() {}
 
 	@inlinable
-	public func createInstructions(_ instructions: inout Self.Instructions) throws {}
+	public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) throws {}
 }

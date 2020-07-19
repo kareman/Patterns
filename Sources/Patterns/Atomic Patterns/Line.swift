@@ -44,7 +44,7 @@ public struct Line<Input: BidirectionalCollection>: Pattern
 	public var description: String { "Line()" }
 
 	@inlinable
-	public func createInstructions(_ instructions: inout Self.Instructions) throws {
+	public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) throws {
 		try (Start() • Skip() • End()).createInstructions(&instructions)
 	}
 

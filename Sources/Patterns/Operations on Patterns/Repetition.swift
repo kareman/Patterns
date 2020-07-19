@@ -28,7 +28,7 @@ public struct RepeatPattern<Wrapped: Pattern>: Pattern {
 	}
 
 	@inlinable
-	public func createInstructions(_ instructions: inout Instructions) throws {
+	public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) throws {
 		let repeatedInstructions = try wrapped.createInstructions()
 		for _ in 0 ..< min { instructions.append(contentsOf: repeatedInstructions) }
 		if let max = max {

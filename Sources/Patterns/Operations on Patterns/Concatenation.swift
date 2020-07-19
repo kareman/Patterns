@@ -27,7 +27,7 @@ public struct Concat<First: Pattern, Second: Pattern>: Pattern where First.Input
 	}
 
 	@inlinable
-	public func createInstructions(_ instructions: inout Instructions) throws {
+	public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) throws {
 		try first.createInstructions(&instructions)
 		try second.createInstructions(&instructions)
 	}

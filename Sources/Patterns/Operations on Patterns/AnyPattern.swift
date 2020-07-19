@@ -12,7 +12,7 @@ public struct AnyPattern<Input: BidirectionalCollection>: Pattern where Input.El
 	let _instructions: (inout Instructions) throws -> Void
 
 	@inlinable
-	public func createInstructions(_ instructions: inout Self.Instructions) throws {
+	public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) throws {
 		try _instructions(&instructions)
 	}
 
@@ -22,7 +22,7 @@ public struct AnyPattern<Input: BidirectionalCollection>: Pattern where Input.El
 	/// The wrapped pattern. If you know the exact type you can unwrap it again.
 	public let wrapped: Any
 
-	public init<P: Pattern>(_ p: P) where P.Input == Input {
+	public init<P: Pattern>(_ p: P) where Input == P.Input {
 		_instructions = p.createInstructions
 		_description = { p.description }
 		wrapped = p
@@ -33,7 +33,7 @@ public struct AnyPattern<Input: BidirectionalCollection>: Pattern where Input.El
 		self = p
 	}
 
-	public init<Input>(_ p: Literal<Input>) {
+	public init(_ p: Literal<Input>) {
 		_instructions = p.createInstructions
 		_description = { p.description }
 		wrapped = p
@@ -42,6 +42,21 @@ public struct AnyPattern<Input: BidirectionalCollection>: Pattern where Input.El
 	public static func == (lhs: AnyPattern, rhs: AnyPattern) -> Bool {
 		lhs.description == rhs.description
 	}
+}
+
+extension AnyPattern: ExpressibleByUnicodeScalarLiteral where Input == String {
+	@inlinable
+	public init(unicodeScalarLiteral value: String) {
+		self.init(stringLiteral: String(describing: value))
+	}
+}
+
+extension AnyPattern: ExpressibleByExtendedGraphemeClusterLiteral where Input == String {
+	public typealias ExtendedGraphemeClusterLiteralType = String
+}
+
+extension AnyPattern: ExpressibleByStringLiteral where Input == String {
+	public typealias StringLiteralType = String
 }
 
 /// Allows AnyPattern to be defined by a string with patterns in interpolations.
@@ -64,7 +79,7 @@ extension AnyPattern: ExpressibleByStringInterpolation where Input == String {
 		}
 
 		@inlinable
-		public mutating func appendInterpolation<P: Pattern>(_ newpattern: P) {
+		public mutating func appendInterpolation<P: Pattern>(_ newpattern: P) where P.Input == Input {
 			pattern = AnyPattern(pattern • newpattern)
 		}
 	}

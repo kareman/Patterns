@@ -71,7 +71,7 @@ public class Grammar<Input: BidirectionalCollection>: Pattern where Input.Elemen
 	}
 
 	@inlinable
-	public func createInstructions(_ instructions: inout Instructions) throws {
+	public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) throws {
 		// We begin with a call to the first subpattern, followed by a jump to the end.
 		// This enables this grammar to be used inside other patterns (including other grammars).
 
