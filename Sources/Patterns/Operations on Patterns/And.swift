@@ -19,7 +19,7 @@ public struct AndPattern<Wrapped: Pattern>: Pattern {
 	@inlinable
 	public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) throws {
 		let wrappedInstructions = try wrapped.createInstructions()
-		if let indexMovedBy = wrappedInstructions.movesIndexBy {
+		if let indexMovedBy = wrappedInstructions.movesIndexBy() {
 			instructions.append(contentsOf: wrappedInstructions)
 			instructions.append(.moveIndex(offset: -indexMovedBy))
 		} else {

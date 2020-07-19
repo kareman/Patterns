@@ -277,14 +277,15 @@ class PatternTests: XCTestCase {
 	 	assertParseMarkers(!any, input: "  |") // EOF
 	 	assertParseMarkers(try Parser(!any), input: "|")
 	 }
-
-	 func testAnd() throws {
-	 	assertParseAll(Capture(&&letter • ascii), input: "1abøcæ", result: ["a", "b", "c"])
-	 	// find last occurence of "xuxu", even if it overlaps with itself.
-	 	assertParseMarkers(try Parser(Grammar { g in g.last <- &&"xuxu" • any / any • g.last }+ • any.repeat(3)),
-	 	                   input: "xuxuxuxu|i")
-	 }
 	 */
+	func testAnd() throws {
+		assertParseAll(Capture(&&letter • ascii), input: "1abøcæ", result: ["a", "b", "c"])
+		assertParseAll(Capture(&&Line.Start() • "a"), input: "abø\ncæa\na".utf8, result: "a".utf8, count: 2)
 
-	func testInputDefaultsToString() {}
+		/* TODO: uncomment
+		 // find last occurence of "xuxu", even if it overlaps with itself.
+		 assertParseMarkers(try Parser(Grammar { g in g.last <- &&"xuxu" • any / any • g.last }+ • any.repeat(3)),
+		 input: "xuxuxuxu|i")
+		 */
+	}
 }
