@@ -45,11 +45,11 @@ Patterns are defined directly in code, instead of in a text string.
 
 ### Standard PEG
 
-`"text"`
+##### `"text"`
 
 Text within double quotes matches that exact text, no need to escape special letters with `\`. If you want to turn a string variable `s` into a pattern, use `Literal(s)`.
 
-`OneOf(...)`
+##### `OneOf(...)`
 
 This is like character classes (`[...]`) from regular expressions, and matches 1 character. `OneOf("aeiouAEIOU")` matches any single character in that string, and `OneOf("a"..."e")` matches any of "abcde". They can also be combined, like `OneOf("aeiou", punctuation, "x"..."z")`. To match any character _except_ ..., use `OneOf(not: ...)`.
 
@@ -64,31 +64,31 @@ OneOf(description: "ten") { character in
 
 It takes a closure `@escaping (Character) -> Bool` and matches any character for which the closure returns `true`. The description parameter is only used when creating a textual representation of the pattern.
 
-`a • b • c`
+##### `a • b • c`
 
 The • operator (Option-8 on U.S. keyboards, Option-Q on Norwegian ones) first matches `a`, then `b` and then `c`. It is used to create a pattern from a sequence of other patterns.
 
-`a*`  
+##### `a*`  
 
-matches 0 or more, as many as it can (it is greedy, like the regex  `a*?`). So a pattern like `a* • a` will never match anything because the repeated `a` pattern will always match all it can, leaving nothing left for the last `a`.
+matches 0 or more, as many as it can (it is greedy, like the regex  `a*?`). So a pattern like `a* • a` will never match anything because the `a*` pattern will always match all it can, leaving nothing left for the last `a`.
 
-`a+`
+##### `a+`
 
  matches 1 or more, also as many as it can (like the regex  `a+?`).
 
-`a¿`
+##### `a¿`
 
 makes `a` optional, but it always matches if it can (the `¿` character is Option-Shift-TheKeyWith?OnIt on most keyboards).
 
-`a / b`
+##### `a / b`
 
 This first tries the pattern on the left. If that fails it tries the pattern on the right. This is _ordered choice_, once `a` has matched it will never go back and try `b` if a later part of the expression fails. This is the main difference between PEGs and most other grammars and regex'es.
 
-`&&a • b`
+##### `&&a • b`
 
 The "and predicate" first verifies that `a` matches, then moves the position in the input back to where `a` began and continues with `b`. In other words it verifies that both `a` and `b` match from the same position. So to match one ASCII letter you can use `&&ascii • letter`.
 
-`!a • b`
+##### `!a • b`
 
 The "not predicate" verifies that `a` does _not_ match, then just like above it moves the position in the input back to where `a` began and continues with `b`. You can read it like "b and not a".
 
@@ -119,25 +119,25 @@ They all have the same name as the last part of the property, except for `wholeN
 
 There is also `alphanumeric`, which is a `letter` or a `digit`.
 
-`any`
+##### `any`
 
 Matches any character. `!any` matches only the end of the text.
 
-`Line()` 
+##### `Line()` 
 
 Matches a single line, not including the newline characters. So `Line() • Line()` will never match anything, but `Line() • "\n" • Line()` matches 2 lines.
 
 `Line.start` matches at the beginning of the text, and after any newline characters. `Line.end` matches at the end of the text, and right before any newline characters. They both have a length of 0, which means the next pattern will start at the same position in the text.
 
-`Word.boundary` 
+##### `Word.boundary` 
 
 Matches the position right before or right after a word. Like `Line.start` and `Line.end` it also has a length of 0.
 
-`a.repeat(...)`
+##### `a.repeat(...)`
 
 `a.repeat(2)` matches 2 of that pattern in a row. `a.repeat(...2)` matches 0, 1 or 2, `a.repeat(2...)` matches 2 or more and `a.repeat(3...6)` between 3 and 6. 
 
-`Skip() • a • b`
+##### `Skip() • a • b`
 
 Finds the first match of `a • b` from the current position.
 
