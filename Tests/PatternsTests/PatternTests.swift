@@ -61,6 +61,9 @@ class PatternTests: XCTestCase {
 		               input: "abgkxeryza".utf8, result: ["a", "b", "e", "a"].map { $0.utf8 })
 		assertParseAll(Capture(OneOf<String.UTF8View>(not: UInt8(ascii: "a") ..< UInt8(ascii: "f"))),
 		               input: "abgkxeryza".utf8, result: ["g", "k", "x", "r", "y", "z"].map { $0.utf8 })
+
+		// requires String.UTF8View to be ExpressibleByStringLiteral
+		// assertParseAll(OneOf(".,"), input: "., ,".utf8, result: [".", ",", ","].map{$0.utf8})
 	}
 
 	func testOneOfsMultiple() {
@@ -254,30 +257,36 @@ class PatternTests: XCTestCase {
 		assertParseMarkers(pattern, input: "|this| |I| |-|3,875.08| |can't|,| |you| |letter|-|like|.| |And|?| |then|")
 	}
 
-	/*
-	 func testNot() throws {
-	 	assertParseMarkers(!alphanumeric, input: #"I| said|,| 3|"#)
-	 	assertParseAll(
-	 		Capture(Word.boundary • !digit • alphanumeric+),
-	 		input: "123 abc 1ab a32b",
-	 		result: ["abc", "a32b"])
-	 	assertParseAll(
-	 		Word.boundary • Capture(!digit • alphanumeric+),
-	 		input: "123 abc 1ab a32b",
-	 		result: ["abc", "a32b"])
-	 	assertParseAll(
-	 		Capture(!"abc" • letter+),
-	 		input: "ab abc abcd efg",
-	 		result: ["ab", "bc", "bcd", "efg"])
+	func testNot() throws {
+		assertParseMarkers(!alphanumeric, input: #"I| said|,| 3|"#)
+		assertParseAll(
+			Capture(Word.boundary • !digit • alphanumeric+),
+			input: "123 abc 1ab a32b",
+			result: ["abc", "a32b"])
+		assertParseAll(
+			Word.boundary • Capture(!digit • alphanumeric+),
+			input: "123 abc 1ab a32b",
+			result: ["abc", "a32b"])
+		assertParseAll(
+			Capture(!"abc" • letter+),
+			input: "ab abc abcd efg",
+			result: ["ab", "bc", "bcd", "efg"])
 
-	 	assertParseAll(
-	 		Capture(" " • (!OneOf(" ")).repeat(2) • "d"), // repeat a parser of length 0.
-	 		input: " d cd", result: [" d"])
+		func any<Input>() -> OneOf<Input> { OneOf(description: "any", contains: { _ in true }) }
 
-	 	assertParseMarkers(!any, input: "  |") // EOF
-	 	assertParseMarkers(try Parser(!any), input: "|")
-	 }
-	 */
+		assertParseAll(
+			Capture(!"abc" • !" " • any()),
+			input: "ab abc abcd ".utf8,
+			result: ["a", "b", "b", "c", "b", "c", "d"].map { $0.utf8 })
+
+		assertParseAll(
+			Capture(" " • (!OneOf(" ")).repeat(2) • "d"), // repeat a parser of length 0.
+			input: " d cd", result: [" d"])
+
+		assertParseMarkers(!any(), input: "  |") // EOF
+		assertParseMarkers(try Parser(!any()), input: "|")
+	}
+
 	func testAnd() throws {
 		assertParseAll(Capture(&&letter • ascii), input: "1abøcæ", result: ["a", "b", "c"])
 		assertParseAll(Capture(&&Line.Start() • "a"), input: "abø\ncæa\na".utf8, result: "a".utf8, count: 2)
