@@ -13,7 +13,8 @@ import XCTest
 // It's just there to notify us when the number of hits changes.
 
 class PerformanceTests: XCTestCase {
-	func speedTest(_ pattern: Parser<String>, testFile: String = "Long.txt", textFraction: Int = 1, hits: Int, file: StaticString = #file, line: UInt = #line) throws {
+	func speedTest(_ pattern: Parser<String>, testFile: String = "Long.txt", textFraction: Int = 1, hits: Int,
+	               file: StaticString = #filePath, line: UInt = #line) throws {
 		let fulltext = try String(contentsOf: getLocalURL(for: testFile))
 		let text = String(fulltext.prefix(fulltext.count / textFraction))
 		var result = 0
@@ -60,16 +61,18 @@ class PerformanceTests: XCTestCase {
 	}
 
 	func testLiteralSearch() throws {
-		let pattern = try Parser(search: Literal("Prince"))
+		let pattern = try Parser<String>(search: Literal("Prince"))
 		try speedTest(pattern, textFraction: 1, hits: 2168)
 	}
 
-	func testGrammarLiteralSearch() throws {
-		let g = Grammar()
-		g.a <- Capture("Prince") / any • g.a
-		let pattern = try Parser(g)
-		try speedTest(pattern, textFraction: 13, hits: 260)
-	}
+	/*
+	 func testGrammarLiteralSearch() throws {
+	 	let g = Grammar()
+	 	g.a <- Capture("Prince") / any • g.a
+	 	let pattern = try Parser(g)
+	 	try speedTest(pattern, textFraction: 13, hits: 260)
+	 }
+	 */
 
 	func testNonExistentLiteralSearch() throws {
 		let pattern = try Parser(search: "\n" • Skip() • "DOESN'T EXIST")
@@ -77,7 +80,7 @@ class PerformanceTests: XCTestCase {
 	}
 
 	func testOptionalStringFollowedByNonOptionalString() throws {
-		let pattern = try Parser(search: Literal("\"")¿ • "I")
+		let pattern = try Parser<String>(search: Literal("\"")¿ • "I")
 		try speedTest(pattern, textFraction: 12, hits: 814)
 	}
 
