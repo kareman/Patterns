@@ -65,3 +65,10 @@ public func / <First: Pattern>(p1: First, p2: Literal<First.Input>) -> OrPattern
 public func / <Input>(p1: Literal<Input>, p2: Literal<Input>) -> OrPattern<Literal<Input>, Literal<Input>> {
 	OrPattern(p1, or: p2)
 }
+
+/// First tries the pattern to the left,
+/// if that fails it tries the pattern to the right from the same position.
+@inlinable
+public func / (p1: Literal<String>, p2: Literal<String>) -> OrPattern<Literal<String>, Literal<String>> {
+	OrPattern(p1, or: p2)
+}

@@ -122,36 +122,32 @@ class PatternTests: XCTestCase {
 		assertParseAll(Capture("a" • "a"¿), input: "a aa  aa".unicodeScalars, result: ["a", "aa", "aa"].map { $0.unicodeScalars })
 	}
 
-	/* TODO: uncomment
-	 func testOr() {
-	 	let pattern = Capture("a" / "b")
-	 	assertParseAll(pattern, input: "bcbd", result: "b", count: 2)
-	 	assertParseAll(pattern, input: "acdaa", result: "a", count: 3)
-	 	assertParseAll(pattern, input: "abcdb", count: 3)
-	 }
+	func testOr() {
+		assertParseAll(Capture("a" / "b"), input: "bcbd".utf16, result: "b".utf16, count: 2)
+		let pattern = Capture("a" / "b")
+		assertParseAll(pattern, input: "acdaa", result: "a", count: 3)
+		assertParseAll(pattern, input: "abcdb", count: 3)
+	}
 
-	 func testOrWithCapture() throws {
-	 	let text = """
-	 	# Total code points: 88
+	func testOrWithCapture() throws {
+		let text = """
+		# Total code points: 88
 
-	 	# ================================================
+		# ================================================
 
-	 	0780..07A5    ; Thaana # Lo  [38] THAANA LETTER HAA..THAANA LETTER WAAVU
-	 	07B1          ; Thaana # Lo       THAANA LETTER NAA
+		0780..07A5    ; Thaana # Lo  [38] THAANA LETTER HAA..THAANA LETTER WAAVU
+		07B1          ; Thaana # Lo       THAANA LETTER NAA
 
-	 	"""
+		"""
 
-	 	let hexDigit = OneOf(description: "hexDigit", contains: {
-	 		$0.unicodeScalars.first!.properties.isHexDigit
-	 	})
-	 	let hexNumber = Capture(hexDigit+)
-	 	let hexRange = (hexNumber • ".." • hexNumber) / hexNumber
-	 	let rangeAndProperty = Line.start • hexRange • Skip() • "; " • Capture(Skip()) • " "
+		let hexNumber = Capture(hexDigit+)
+		let hexRange = (hexNumber • ".." • hexNumber) / hexNumber
+		let rangeAndProperty = Line.start • hexRange • Skip() • "; " • Capture(Skip()) • " "
 
-	 	assertCaptures(rangeAndProperty, input: text,
-	 	               result: [["0780", "07A5", "Thaana"], ["07B1", "Thaana"]])
-	 }
-	 */
+		assertCaptures(rangeAndProperty, input: text,
+		               result: [["0780", "07A5", "Thaana"], ["07B1", "Thaana"]])
+	}
+
 	func testLineStart() throws {
 		let text = """
 		line 1

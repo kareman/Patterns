@@ -62,14 +62,12 @@ class SkipTests: XCTestCase {
 		assertParseMarkers(" " • Skip() • letter, input: "This i|s a| t|est t|ext.")
 	}
 
-	/* TODO: uncomment
-	 func testInsideChoice() {
-	 	assertParseMarkers((Skip() • " ") / letter, input: "This |is |a |test |t|e|x|t|.")
-	 	assertParseMarkers((" " • Skip()) / letter, input: "T|h|i|s| |i|s|")
-	 	assertParseMarkers(letter / (" " • Skip()), input: "T|h|i|s| |i|s|")
-	 	assertParseMarkers(letter / (Skip() • " "), input: "T|h|i|s|, |i|s| |")
-	 }
-	 */
+	func testInsideChoice() {
+		assertParseMarkers((Skip() • " ") / letter, input: "This |is |a |test |t|e|x|t|.")
+		assertParseMarkers((" " • Skip()) / letter, input: "T|h|i|s| |i|s|")
+		assertParseMarkers(letter / (" " • Skip()), input: "T|h|i|s| |i|s|")
+		assertParseMarkers(letter / (Skip() • " "), input: "T|h|i|s|, |i|s| |")
+	}
 
 	func testDoubleSkip() throws {
 		assertParseMarkers(try Parser(Skip() • Skip() • " "), input: "This |is")
