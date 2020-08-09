@@ -65,7 +65,7 @@ public struct OneOf<Input: BidirectionalCollection>: Pattern /*, RegexConvertibl
 	}
 
 	@inlinable
-	public func createInstructions(_ instructions: inout Self.Instructions) {
+	public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) {
 		instructions.append(.checkElement(group.contains))
 	}
 
@@ -205,43 +205,41 @@ extension OneOf {
 	}
 }
 
-/* TODO: uncomment
- // MARK: Join `&&OneOf • OneOf` into one.
+// MARK: Join `&&OneOf • OneOf` into one.
 
- @inlinable
- public func • <Input>(lhs: AndPattern<OneOf<Input>>, rhs: OneOf<Input>) -> OneOf<Input> {
- OneOf(description: "\(lhs) \(rhs)", group: lhs.wrapped.group.intersection(rhs.group))
- }
+@inlinable
+public func • <Input>(lhs: AndPattern<OneOf<Input>>, rhs: OneOf<Input>) -> OneOf<Input> {
+	OneOf(description: "\(lhs) \(rhs)", group: lhs.wrapped.group.intersection(rhs.group))
+}
 
- @inlinable
- public func • <P: Pattern>(lhs: Concat<P, AndPattern<OneOf<P.Input>>>, rhs: OneOf<P.Input>) -> Concat<P, OneOf<P.Input>> {
- lhs.first • (lhs.second • rhs)
- }
+@inlinable
+public func • <P: Pattern>(lhs: Concat<P, AndPattern<OneOf<P.Input>>>, rhs: OneOf<P.Input>) -> Concat<P, OneOf<P.Input>> {
+	lhs.first • (lhs.second • rhs)
+}
 
- // MARK: Join `!OneOf • Oneof` into one.
+// MARK: Join `!OneOf • Oneof` into one.
 
- @inlinable
- public func • <Input>(lhs: NotPattern<OneOf<Input>>, rhs: OneOf<Input>) -> OneOf<Input> {
- OneOf(description: "\(lhs) \(rhs)", group: rhs.group.subtracting(lhs.wrapped.group))
- }
+@inlinable
+public func • <Input>(lhs: NotPattern<OneOf<Input>>, rhs: OneOf<Input>) -> OneOf<Input> {
+	OneOf(description: "\(lhs) \(rhs)", group: rhs.group.subtracting(lhs.wrapped.group))
+}
 
- @inlinable
- public func • <P: Pattern>(lhs: Concat<P, NotPattern<OneOf<P.Input>>>, rhs: OneOf<P.Input>) -> Concat<P, OneOf<P.Input>> {
- lhs.first • (lhs.second • rhs)
- }
+@inlinable
+public func • <P: Pattern>(lhs: Concat<P, NotPattern<OneOf<P.Input>>>, rhs: OneOf<P.Input>) -> Concat<P, OneOf<P.Input>> {
+	lhs.first • (lhs.second • rhs)
+}
 
- // MARK: Join `OneOf / OneOf` into one.
+// MARK: Join `OneOf / OneOf` into one.
 
- @inlinable
- public func / <Input>(lhs: OneOf<Input>, rhs: OneOf<Input>) -> OneOf<Input> {
- OneOf(description: "\(lhs) / \(rhs)", group: lhs.group.union(rhs.group))
- }
+@inlinable
+public func / <Input>(lhs: OneOf<Input>, rhs: OneOf<Input>) -> OneOf<Input> {
+	OneOf(description: "\(lhs) / \(rhs)", group: lhs.group.union(rhs.group))
+}
 
- @inlinable
- public func / <P: Pattern>(lhs: OrPattern<P, OneOf<P.Input>>, rhs: OneOf<P.Input>) -> OrPattern<P, OneOf<P.Input>> {
- lhs.first / (lhs.second / rhs)
- }
- */
+@inlinable
+public func / <P: Pattern>(lhs: OrPattern<P, OneOf<P.Input>>, rhs: OneOf<P.Input>) -> OrPattern<P, OneOf<P.Input>> {
+	lhs.first / (lhs.second / rhs)
+}
 
 // MARK: Common patterns.
 

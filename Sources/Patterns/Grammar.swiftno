@@ -42,7 +42,7 @@ public class Grammar<Input: BidirectionalCollection>: Pattern where Input.Elemen
 		}
 
 		@inlinable
-		public func createInstructions(_ instructions: inout Instructions) {
+		public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) {
 			instructions.append(.openCall(name: name))
 		}
 	}

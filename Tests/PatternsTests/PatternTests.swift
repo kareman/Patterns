@@ -106,11 +106,9 @@ class PatternTests: XCTestCase {
 		assertParseAll(Capture("a"* • "b"), input: "b aabb ab", result: ["b", "aab", "b", "ab"])
 		assertParseAll(Capture("a"*), input: "b aabb ab", result: ["", "", "aa", "", "", "", "a", "", ""])
 
-		/* TODO: uncomment
-		 assertParseAll(
-		 	Capture((!newline • ascii)+),
-		 	input: "123\n4567\n89", result: ["123", "4567", "89"])
-		 */
+		assertParseAll(
+			Capture((!newline • ascii)+),
+			input: "123\n4567\n89", result: ["123", "4567", "89"])
 
 		XCTAssertEqual(digit+.description, "digit{1...}")
 	}

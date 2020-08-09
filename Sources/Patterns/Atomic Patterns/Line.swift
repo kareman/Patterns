@@ -60,7 +60,7 @@ public struct Line<Input: BidirectionalCollection>: Pattern
 		}
 
 		@inlinable
-		public func createInstructions(_ instructions: inout Self.Instructions) {
+		public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) {
 			instructions.append(.checkIndex(self.parse(_:at:)))
 		}
 	}
@@ -77,7 +77,7 @@ public struct Line<Input: BidirectionalCollection>: Pattern
 		}
 
 		@inlinable
-		public func createInstructions(_ instructions: inout Self.Instructions) {
+		public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) {
 			instructions.append(.checkIndex(self.parse(_:at:)))
 		}
 	}
