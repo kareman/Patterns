@@ -88,8 +88,10 @@ class PerformanceTests: XCTestCase {
 	}
 
 	func testGrammarLiteralSearch() throws {
-		let g = Grammar()
-		g.a <- Capture("Prince") / any • g.a
+		func any<Input>() -> OneOf<Input> { OneOf(description: "any", contains: { _ in true }) }
+
+		let g = Grammar<String.UTF8View>()
+		g.a <- Capture("Prince") / any() • g.a
 		let pattern = try Parser(g)
 		try speedTest(pattern, textFraction: 13, hits: 260)
 	}

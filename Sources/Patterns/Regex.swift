@@ -13,8 +13,6 @@ public protocol RegexConvertible: Pattern {
 	var regex: String { get }
 }
 
-// For `OneOf` to be convertible the regex has to be provided manually when it is created.
-
 extension Literal: RegexConvertible where Input: StringProtocol {
 	public var regex: String { NSRegularExpression.escapedPattern(for: String(self.elements)) }
 }
@@ -63,3 +61,5 @@ extension Skip: RegexConvertible {
 extension NoPattern: RegexConvertible {
 	public var regex: String { "" }
 }
+
+// For `OneOf` to be convertible the regex has to be provided manually when it is created. See OneOf.swift.
