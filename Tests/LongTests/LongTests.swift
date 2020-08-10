@@ -4,20 +4,21 @@ import XCTest
 
 class LongTests: XCTestCase {
 	func testOr() {
-		XCTAssert(type(of: "a" / letter / ascii / punctuation / "b")
-			== OrPattern<OrPattern<Literal, OneOf>, Literal>.self,
+		let char = letter / ascii / punctuation
+		XCTAssert(type(of: "a" / char / "b")
+			== OrPattern<OrPattern<Literal<String>, OneOf<String>>, Literal<String>>.self,
 		          "'/' operator isn't optimizing OneOf's properly.")
 	}
 
 	func testNot() {
 		XCTAssert(
-			type(of: "a" • !letter • ascii • "b") == Concat<Concat<Literal, OneOf>, Literal>.self,
+			type(of: "a" • !letter • ascii • "b") == Concat<Concat<Literal<String>, OneOf<String>>, Literal<String>>.self,
 			"'•' operator isn't optimizing OneOf's properly.")
 	}
 
 	func testAnd() throws {
 		XCTAssert(
-			type(of: "a" • &&letter • ascii • "b") == Concat<Concat<Literal, OneOf>, Literal>.self,
+			type(of: "a" • &&letter • ascii • "b") == Concat<Concat<Literal<String>, OneOf<String>>, Literal<String>>.self,
 			"'•' operator isn't optimizing OneOf's properly.")
 	}
 
@@ -50,14 +51,15 @@ class LongTests: XCTestCase {
 	}
 
 	// from http://www.inf.puc-rio.br/~roberto/docs/peg.pdf, page 2 and 5
-	static let pegGrammar = Grammar { g in
+	static let pegGrammar = Grammar<String> { g in
 		//g.all     <- g.pattern • !any
 		g.pattern <- g.grammar / g.simplepatt
 		g.grammar <- (g.nonterminal • "<-" • g.sp • g.simplepatt)+
 		g.simplepatt <- g.alternative • ("/" • g.sp • g.alternative)*
 		g.alternative <- (OneOf("!&")¿ • g.sp • g.suffix)+
 		g.suffix <- g.primary • (OneOf("*+?") • g.sp)*
-		g.primary <- "(" • g.sp • g.pattern • ")" • g.sp / "." • g.sp / g.literal / g.charclass / g.nonterminal • !"<-"
+		let primaryPart1 = "(" • g.sp • g.pattern • ")" • g.sp / "." • g.sp / g.literal
+		g.primary <- primaryPart1 / g.charclass / g.nonterminal • !"<-"
 		g.literal <- "’" • (!"’" • any)* • "’" • g.sp
 		g.charclass <- "[" • (!"]" • (any • "-" • any / any))* • "]" • g.sp
 		g.nonterminal <- OneOf("a" ... "z", "A" ... "Z")+ • g.sp

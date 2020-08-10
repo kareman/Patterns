@@ -14,7 +14,7 @@ extension String.UTF8View.Element: CharacterLike {
 	@inlinable
 	public var isNewline: Bool {
 		// “\n” (U+000A): LINE FEED (LF), U+000B: LINE TABULATION (VT), U+000C: FORM FEED (FF), “\r” (U+000D): CARRIAGE RETURN (CR)
-		(10 ... 13).contains(self)
+		self < 14 && self > 9
 	}
 }
 
