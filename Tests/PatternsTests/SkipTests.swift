@@ -73,26 +73,24 @@ class SkipTests: XCTestCase {
 		assertParseMarkers(try Parser(Skip() • Skip() • " "), input: "This |is")
 	}
 
-	/* TODO: uncomment
-	 func testBeforeGrammarTailCall() throws {
-	 	let recursive = Grammar { g in
-	 		g.a <- " " • Skip() • g.a
-	 	}
-	 	assertParseAll(recursive, input: "This is a test text.", count: 0)
+	func testBeforeGrammarTailCall() throws {
+		let recursive = Grammar { g in
+			g.a <- " " • Skip() • g.a
+		}
+		assertParseAll(recursive, input: "This is a test text.", count: 0)
 
-	 	let callAnother = Grammar { g in
-	 		g.a <- " " • Skip() • g.b
-	 		g.b <- letter
-	 	}
-	 	assertParseMarkers(callAnother, input: "This i|s a| t|est t|ext.")
-	 	assertParseMarkers(" " • Skip() • letter, input: "This i|s a| t|est t|ext.")
-	 }
+		let callAnother = Grammar { g in
+			g.a <- " " • Skip() • g.b
+			g.b <- letter
+		}
+		assertParseMarkers(callAnother, input: "This i|s a| t|est t|ext.")
+		assertParseMarkers(" " • Skip() • letter, input: "This i|s a| t|est t|ext.")
+	}
 
-	 func testBeforeGrammarCallInChoice() {
-	 	let g = Grammar { g in
-	 		g.a <- " " • (Skip() • g.a / letter)
-	 	}
-	 	assertParseMarkers(g, input: "This is a test t|ext.")
-	 }
-	 */
+	func testBeforeGrammarCallInChoice() {
+		let g = Grammar { g in
+			g.a <- " " • (Skip() • g.a / letter)
+		}
+		assertParseMarkers(g, input: "This is a test t|ext.")
+	}
 }

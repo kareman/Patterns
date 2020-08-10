@@ -50,7 +50,7 @@ public class Grammar<Input: BidirectionalCollection>: Pattern where Input.Elemen
 	public var description: String { "Grammar" } // TODO:
 
 	/// All the subpatterns and their names.
-	public internal(set) var patterns: [(name: String, pattern: AnyPattern)] = []
+	public internal(set) var patterns: [(name: String, pattern: AnyPattern<Input>)] = []
 
 	/// The main subpattern, which will be called when this Grammar is being used.
 	public var firstPattern: String? { patterns.first?.name }
@@ -59,7 +59,16 @@ public class Grammar<Input: BidirectionalCollection>: Pattern where Input.Elemen
 	public init() {}
 
 	@inlinable
-	public convenience init(_ closure: (Grammar) -> Void) {
+	public init() where Input == String {}
+
+	@inlinable
+	public convenience init(_ closure: (Grammar<Input>) -> Void) {
+		self.init()
+		closure(self)
+	}
+
+	@inlinable
+	public convenience init(_ closure: (Grammar<String>) -> Void) where Input == String {
 		self.init()
 		closure(self)
 	}
