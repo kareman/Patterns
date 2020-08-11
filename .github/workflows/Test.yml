@@ -17,6 +17,9 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Set Swift version
+      if: matrix.os == 'ubuntu-18.04'
+      run: echo "5.3-DEVELOPMENT-SNAPSHOT-2020-08-08-a" > .swift-version
     - name: Install Swift
       uses: YOCKOW/Action-setup-swift@master
     - name: Build

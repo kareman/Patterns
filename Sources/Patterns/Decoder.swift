@@ -75,12 +75,12 @@ extension Parser.Match where Input == String {
 			@usableFromInline
 			var codingPath: [CodingKey]
 			@usableFromInline
-			let values: [Range<Pattern.Input.Index>]
+			let values: [Range<Input.Index>]
 			@usableFromInline
 			let string: String
 
 			@usableFromInline
-			init(codingPath: [CodingKey], values: [Range<Pattern.Input.Index>], string: String) {
+			init(codingPath: [CodingKey], values: [Range<Input.Index>], string: String) {
 				self.codingPath = codingPath
 				self.values = values
 				self.string = string

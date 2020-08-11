@@ -10,6 +10,7 @@
 ///
 /// Used by operators `*+¿`.
 public struct RepeatPattern<Wrapped: Pattern>: Pattern {
+	public typealias Input = Wrapped.Input
 	public let wrapped: Wrapped
 	public let min: Int
 	public let max: Int?
@@ -27,7 +28,7 @@ public struct RepeatPattern<Wrapped: Pattern>: Pattern {
 	}
 
 	@inlinable
-	public func createInstructions(_ instructions: inout Instructions) throws {
+	public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) throws {
 		let repeatedInstructions = try wrapped.createInstructions()
 		for _ in 0 ..< min { instructions.append(contentsOf: repeatedInstructions) }
 		if let max = max {
@@ -72,7 +73,7 @@ public postfix func * <P: Pattern>(me: P) -> RepeatPattern<P> {
 
 /// Repeats the preceding pattern 0 or more times.
 @inlinable
-public postfix func * (me: Literal) -> RepeatPattern<Literal> {
+public postfix func * <Input>(me: Literal<Input>) -> RepeatPattern<Literal<Input>> {
 	me.repeat(0...)
 }
 
@@ -86,7 +87,7 @@ public postfix func + <P: Pattern>(me: P) -> RepeatPattern<P> {
 
 /// Repeats the preceding pattern 1 or more times.
 @inlinable
-public postfix func + (me: Literal) -> RepeatPattern<Literal> {
+public postfix func + <Input>(me: Literal<Input>) -> RepeatPattern<Literal<Input>> {
 	me.repeat(1...)
 }
 
@@ -100,6 +101,6 @@ public postfix func ¿ <P: Pattern>(me: P) -> RepeatPattern<P> {
 
 /// Tries the preceding pattern, and continues even if it fails.
 @inlinable
-public postfix func ¿ (me: Literal) -> RepeatPattern<Literal> {
+public postfix func ¿ <Input>(me: Literal<Input>) -> RepeatPattern<Literal<Input>> {
 	me.repeat(0 ... 1)
 }

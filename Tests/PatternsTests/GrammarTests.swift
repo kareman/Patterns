@@ -9,7 +9,7 @@
 import XCTest
 
 class GrammarTests: XCTestCase {
-	let grammar1: Grammar = {
+	let grammar1: Grammar<String> = {
 		let g = Grammar()
 		g.letter <- Capture(letter)
 		g.space <- whitespace
@@ -17,7 +17,7 @@ class GrammarTests: XCTestCase {
 	}()
 
 	func testNamesAnonymousCaptures() {
-		XCTAssertEqual((grammar1.patterns.first?.pattern.wrapped as? Capture<OneOf>)?.name, "letter")
+		XCTAssertEqual((grammar1.patterns.first?.pattern.wrapped as? Capture<OneOf<String>>)?.name, "letter")
 	}
 
 	func testSetsFirstPattern() {
@@ -56,11 +56,11 @@ class GrammarTests: XCTestCase {
 	}
 
 	func testOptimisesTailCall() throws {
-		let g = Grammar { g in
+		let g = Grammar<String.UTF8View> { g in
 			g.a <- " " / Skip() • g.a
 		}
 
-		func isCall(_ inst: Instruction<String>) -> Bool {
+		func isCall(_ inst: Instruction<String.UTF8View>) -> Bool {
 			switch inst {
 			case .call:
 				return true

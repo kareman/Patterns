@@ -26,11 +26,11 @@
 ///   ```
 ///   will lead to infinite recursion.
 @dynamicMemberLookup
-public class Grammar: Pattern {
+public class Grammar<Input: BidirectionalCollection>: Pattern where Input.Element: Hashable {
 	/// Calls another subpattern in a grammar.
 	public struct CallPattern: Pattern {
 		/// The grammar that contains the subpattern being called.
-		public let grammar: Grammar
+		public let grammar: Grammar<Input>
 		/// The name of the subpattern being called.
 		public let name: String
 		public var description: String { "<\(name)>" }
@@ -42,7 +42,7 @@ public class Grammar: Pattern {
 		}
 
 		@inlinable
-		public func createInstructions(_ instructions: inout Instructions) {
+		public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) {
 			instructions.append(.openCall(name: name))
 		}
 	}
@@ -50,7 +50,7 @@ public class Grammar: Pattern {
 	public var description: String { "Grammar" } // TODO:
 
 	/// All the subpatterns and their names.
-	public internal(set) var patterns: [(name: String, pattern: AnyPattern)] = []
+	public internal(set) var patterns: [(name: String, pattern: AnyPattern<Input>)] = []
 
 	/// The main subpattern, which will be called when this Grammar is being used.
 	public var firstPattern: String? { patterns.first?.name }
@@ -59,7 +59,16 @@ public class Grammar: Pattern {
 	public init() {}
 
 	@inlinable
-	public convenience init(_ closure: (Grammar) -> Void) {
+	public init() where Input == String {}
+
+	@inlinable
+	public convenience init(_ closure: (Grammar<Input>) -> Void) {
+		self.init()
+		closure(self)
+	}
+
+	@inlinable
+	public convenience init(_ closure: (Grammar<String>) -> Void) where Input == String {
 		self.init()
 		closure(self)
 	}
@@ -71,7 +80,7 @@ public class Grammar: Pattern {
 	}
 
 	@inlinable
-	public func createInstructions(_ instructions: inout Instructions) throws {
+	public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) throws {
 		// We begin with a call to the first subpattern, followed by a jump to the end.
 		// This enables this grammar to be used inside other patterns (including other grammars).
 
@@ -113,20 +122,20 @@ public class Grammar: Pattern {
 		instructions[startIndex + 1] = .jump(offset: instructions.endIndex - startIndex - 1)
 	}
 
-	public static func == (lhs: Grammar, rhs: Grammar) -> Bool {
-		lhs.patterns.elementsEqual(rhs.patterns, by: { $0 == $1 })
+	public static func == <Input>(lhs: Grammar<Input>, rhs: Grammar<Input>) -> Bool {
+		lhs.patterns.elementsEqual(rhs.patterns, by: { $0.name == $1.name && $0.pattern == $1.pattern })
 	}
 }
 
 infix operator <-: AssignmentPrecedence
 
 /// Used by grammars to define subpatterns with `g.a <- ...`.
-public func <- <P: Pattern>(call: Grammar.CallPattern, pattern: P) {
+public func <- <P: Pattern>(call: Grammar<P.Input>.CallPattern, pattern: P) {
 	call.grammar.patterns.append((call.name, AnyPattern(pattern)))
 }
 
 /// In case of `g.name <- Capture(...)`, names the nameless Capture "name".
-public func <- <P: Pattern>(call: Grammar.CallPattern, capture: Capture<P>) {
+public func <- <P: Pattern>(call: Grammar<P.Input>.CallPattern, capture: Capture<P>) {
 	let newPattern = capture.name == nil
 		? Capture(name: call.name, capture.wrapped)
 		: capture

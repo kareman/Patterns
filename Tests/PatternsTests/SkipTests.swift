@@ -28,9 +28,13 @@ class SkipTests: XCTestCase {
 		assertParseAll(
 			" " • Capture(Skip() • letter+) • " ",
 			input: text, result: ["is", "a", "test"])
+		let p = " " • Capture(Skip()) • " "
+		assertParseAll(
+			p,
+			input: text, result: ["is", "a", "test"])
 		assertParseAll(
 			" " • Capture(Skip()) • " ",
-			input: text, result: ["is", "a", "test"])
+			input: text.utf8, result: ["is", "a", "test"].map { $0.utf8 })
 
 		let lines = """
 		1

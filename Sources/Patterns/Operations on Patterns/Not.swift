@@ -8,6 +8,7 @@
 /// A pattern which only succeeds if the `wrapped` pattern fails.
 /// The next pattern will continue from where `wrapped` started.
 public struct NotPattern<Wrapped: Pattern>: Pattern {
+	public typealias Input = Wrapped.Input
 	public let wrapped: Wrapped
 	public var description: String { "!\(wrapped)" }
 
@@ -17,7 +18,7 @@ public struct NotPattern<Wrapped: Pattern>: Pattern {
 	}
 
 	@inlinable
-	public func createInstructions(_ instructions: inout Instructions) throws {
+	public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) throws {
 		let wrappedInstructions = try wrapped.createInstructions()
 		instructions.append(.choice(offset: wrappedInstructions.count + 3))
 		instructions.append(contentsOf: wrappedInstructions)
@@ -34,6 +35,6 @@ public prefix func ! <P: Pattern>(pattern: P) -> NotPattern<P> {
 
 /// Will only succeed if the following pattern fails. Does not consume any input.
 @inlinable
-public prefix func ! (pattern: Literal) -> NotPattern<Literal> {
+public prefix func ! <Input>(pattern: Literal<Input>) -> NotPattern<Literal<Input>> {
 	NotPattern(pattern)
 }

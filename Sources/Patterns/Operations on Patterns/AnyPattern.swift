@@ -7,12 +7,12 @@
 
 /// A type erased wrapper around a pattern.
 /// Can be used to store patterns in arrays and non-generic variables.
-public struct AnyPattern: Pattern {
+public struct AnyPattern<Input: BidirectionalCollection>: Pattern where Input.Element: Hashable {
 	@usableFromInline
 	let _instructions: (inout Instructions) throws -> Void
 
 	@inlinable
-	public func createInstructions(_ instructions: inout Instructions) throws {
+	public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) throws {
 		try _instructions(&instructions)
 	}
 
@@ -22,7 +22,7 @@ public struct AnyPattern: Pattern {
 	/// The wrapped pattern. If you know the exact type you can unwrap it again.
 	public let wrapped: Any
 
-	public init<P: Pattern>(_ p: P) {
+	public init<P: Pattern>(_ p: P) where Input == P.Input {
 		_instructions = p.createInstructions
 		_description = { p.description }
 		wrapped = p
@@ -33,7 +33,7 @@ public struct AnyPattern: Pattern {
 		self = p
 	}
 
-	public init(_ p: Literal) {
+	public init(_ p: Literal<Input>) {
 		_instructions = p.createInstructions
 		_description = { p.description }
 		wrapped = p
@@ -44,11 +44,26 @@ public struct AnyPattern: Pattern {
 	}
 }
 
+extension AnyPattern: ExpressibleByUnicodeScalarLiteral where Input == String {
+	@inlinable
+	public init(unicodeScalarLiteral value: String) {
+		self.init(stringLiteral: String(describing: value))
+	}
+}
+
+extension AnyPattern: ExpressibleByExtendedGraphemeClusterLiteral where Input == String {
+	public typealias ExtendedGraphemeClusterLiteralType = String
+}
+
+extension AnyPattern: ExpressibleByStringLiteral where Input == String {
+	public typealias StringLiteralType = String
+}
+
 /// Allows AnyPattern to be defined by a string with patterns in interpolations.
 ///
 /// `let p: AnyPattern = "hi\(whitespace)there"`
 /// is the same as `"hi" • whitespace • "there"`.
-extension AnyPattern: ExpressibleByStringInterpolation {
+extension AnyPattern: ExpressibleByStringInterpolation where Input == String {
 	public struct StringInterpolation: StringInterpolationProtocol {
 		@usableFromInline
 		var pattern = AnyPattern("")
@@ -64,7 +79,7 @@ extension AnyPattern: ExpressibleByStringInterpolation {
 		}
 
 		@inlinable
-		public mutating func appendInterpolation<P: Pattern>(_ newpattern: P) {
+		public mutating func appendInterpolation<P: Pattern>(_ newpattern: P) where P.Input == Input {
 			pattern = AnyPattern(pattern • newpattern)
 		}
 	}

@@ -8,7 +8,7 @@
 import Foundation
 
 /// Matches and consumes a single element.
-public struct OneOf: Pattern, RegexConvertible {
+public struct OneOf<Input: BidirectionalCollection>: Pattern /*, RegexConvertible*/ where Input.Element: Hashable & Comparable {
 	@usableFromInline
 	let group: Group<Input.Element>
 	public let description: String
@@ -36,44 +36,36 @@ public struct OneOf: Pattern, RegexConvertible {
 		self.init(description: description, regex: regex, group: Group(contains: contains))
 	}
 
+	/// Matches any element for which `contains` returns `true`.
+	/// - Parameters:
+	///   - description: A descriptive identifier for textual representation of the pattern.
+	///   - regex: An optional regex matching the same elements.
+	///   - contains: A closure returning true for any element that matches.
+	@inlinable
+	public init(description: String, regex: String? = nil, contains: @escaping (Input.Element) -> Bool) where Input == String {
+		self.init(description: description, regex: regex, group: Group(contains: contains))
+	}
+
 	/// Matches any elements in `elements`.
 	/// - Parameter elements: A sequence of elements to match.
 	@inlinable
-	public init<S: Sequence>(_ elements: S) where S.Element == Input.Element {
+	public init(_ elements: Input) {
 		group = Group(contentsOf: elements)
-		description = #"[\#(String(elements))]"#
+		description = "[\(String(describing: elements))]"
 		_regex = "[\(NSRegularExpression.escapedPattern(for: elements.map(String.init(describing:)).joined()))]"
 	}
 
 	/// Matches any elements _not_ in `elements`.
 	/// - Parameter elements: A sequence of elements _not_ to match.
 	@inlinable
-	public init<S: Sequence>(not elements: S) where S.Element == Input.Element {
+	public init(not elements: Input) {
 		group = Group(contentsOf: elements).inverted()
-		description = #"[^\#(String(elements))]"#
+		description = "[^\(String(describing: elements))]"
 		_regex = "[^\(NSRegularExpression.escapedPattern(for: elements.map(String.init(describing:)).joined()))]"
 	}
 
-	/// Matches any of the provided elements.
 	@inlinable
-	public init(_ oneofs: OneOfConvertible...) {
-		let closures = oneofs.map { $0.contains(_:) }
-		group = Group(contains: { char in closures.contains(where: { $0(char) }) })
-		description = "[\(oneofs.map(String.init(describing:)).joined(separator: ","))]"
-		_regex = nil
-	}
-
-	/// Matches anything that is _not_ among the provided elements.
-	@inlinable
-	public init(not oneofs: OneOfConvertible...) {
-		let closures = oneofs.map { $0.contains(_:) }
-		group = Group(contains: { char in !closures.contains(where: { $0(char) }) })
-		description = #"[^\#(oneofs.map(String.init(describing:)).joined(separator: ","))]"#
-		_regex = nil
-	}
-
-	@inlinable
-	public func createInstructions(_ instructions: inout Instructions) {
+	public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) {
 		instructions.append(.checkElement(group.contains))
 	}
 
@@ -84,19 +76,37 @@ public struct OneOf: Pattern, RegexConvertible {
 
 // MARK: OneOfConvertible
 
+// Allows for e.g. `OneOf("a" ..< "e", "g", uppercase)` and `OneOf(not: "a" ..< "e", "gåopr", uppercase)`
+
 /// A type that `OneOf` can use.
 public protocol OneOfConvertible {
+	associatedtype Element: Hashable & Comparable
 	@inlinable
-	func contains(_: Pattern.Input.Element) -> Bool
+	func contains(_: Element) -> Bool
+}
+
+extension OneOf: OneOfConvertible {
+	@inlinable
+	public func contains(_ char: Input.Element) -> Bool { group.contains(char) }
 }
 
 extension Character: OneOfConvertible {
 	@inlinable
-	public func contains(_ char: Pattern.Input.Element) -> Bool { char == self }
+	public func contains(_ char: Character) -> Bool { char == self }
 }
 
+/* Should have been
+ extension Collection: OneOfConvertible where Element: Hashable { }
+ but "Extension of protocol 'Collection' cannot have an inheritance clause".
+ */
 extension String: OneOfConvertible {}
 extension Substring: OneOfConvertible {}
+extension String.UTF8View: OneOfConvertible {}
+extension Substring.UTF8View: OneOfConvertible {}
+extension String.UTF16View: OneOfConvertible {}
+extension Substring.UTF16View: OneOfConvertible {}
+extension String.UnicodeScalarView: OneOfConvertible {}
+extension Substring.UnicodeScalarView: OneOfConvertible {}
 
 @inlinable
 public func ... (lhs: Character, rhs: Character) -> ClosedRange<Character> {
@@ -104,7 +114,7 @@ public func ... (lhs: Character, rhs: Character) -> ClosedRange<Character> {
 	return ClosedRange(uncheckedBounds: (lower: lhs, upper: rhs))
 }
 
-extension ClosedRange: OneOfConvertible where Bound == Character {}
+extension ClosedRange: OneOfConvertible where Bound: Hashable {}
 
 @inlinable
 public func ..< (lhs: Character, rhs: Character) -> Range<Character> {
@@ -112,46 +122,122 @@ public func ..< (lhs: Character, rhs: Character) -> Range<Character> {
 	return Range(uncheckedBounds: (lower: lhs, upper: rhs))
 }
 
-extension Range: OneOfConvertible where Bound == Character {}
+extension Range: OneOfConvertible where Bound: Hashable {}
 
-extension OneOf: OneOfConvertible {
+extension OneOf {
+	/* It will be a glorious day when all this can be replaced by two methods using variadic generics. */
+
+	@usableFromInline
+	internal init(closures: [(Input.Element) -> Bool], description: String, isNegated: Bool = false) {
+		group = Group(contains: isNegated
+			? { element in !closures.contains(where: { $0(element) }) }
+			: { element in closures.contains(where: { $0(element) }) })
+		self.description = description
+		_regex = nil
+	}
+
+	/// Matches any of the provided elements.
 	@inlinable
-	public func contains(_ char: Pattern.Input.Element) -> Bool { group.contains(char) }
+	public init<O1: OneOfConvertible>(_ o1: O1)
+		where Input.Element == O1.Element {
+		let closures = [o1.contains(_:)]
+		self.init(closures: closures, description: "[\(o1)]")
+	}
+
+	/// Matches any of the provided elements.
+	@inlinable
+	public init<O1: OneOfConvertible, O2: OneOfConvertible>(_ o1: O1, _ o2: O2)
+		where Input.Element == O1.Element, O1.Element == O2.Element {
+		let closures = [o1.contains(_:), o2.contains(_:)]
+		self.init(closures: closures, description: "[\(o1), \(o2)]")
+	}
+
+	/// Matches any of the provided elements.
+	@inlinable
+	public init<O1: OneOfConvertible, O2: OneOfConvertible, O3: OneOfConvertible>(_ o1: O1, _ o2: O2, _ o3: O3)
+		where Input.Element == O1.Element, O1.Element == O2.Element, O2.Element == O3.Element {
+		let closures = [o1.contains(_:), o2.contains(_:), o3.contains(_:)]
+		self.init(closures: closures, description: "[\(o1), \(o2), \(o3)]")
+	}
+
+	/// Matches any of the provided elements.
+	@inlinable
+	public init<O1: OneOfConvertible, O2: OneOfConvertible, O3: OneOfConvertible, O4: OneOfConvertible>
+	(_ o1: O1, _ o2: O2, _ o3: O3, _ o4: O4)
+		where Input.Element == O1.Element, O1.Element == O2.Element, O2.Element == O3.Element, O3.Element == O4.Element {
+		let closures = [o1.contains(_:), o2.contains(_:), o3.contains(_:), o4.contains(_:)]
+		self.init(closures: closures, description: "[\(o1), \(o2), \(o3), \(o4)]")
+	}
+
+	// Not
+
+	/// Matches any _but_ the provided elements.
+	@inlinable
+	public init<O1: OneOfConvertible>(not o1: O1)
+		where Input.Element == O1.Element {
+		let closures = [o1.contains(_:)]
+		self.init(closures: closures, description: "[^\(o1)]", isNegated: true)
+	}
+
+	/// Matches any _but_ the provided elements.
+	@inlinable
+	public init<O1: OneOfConvertible, O2: OneOfConvertible>(not o1: O1, _ o2: O2)
+		where Input.Element == O1.Element, O1.Element == O2.Element {
+		let closures = [o1.contains(_:), o2.contains(_:)]
+		self.init(closures: closures, description: "[^\(o1), \(o2)]", isNegated: true)
+	}
+
+	/// Matches any _but_ the provided elements.
+	@inlinable
+	public init<O1: OneOfConvertible, O2: OneOfConvertible, O3: OneOfConvertible>(not o1: O1, _ o2: O2, _ o3: O3)
+		where Input.Element == O1.Element, O1.Element == O2.Element, O2.Element == O3.Element {
+		let closures = [o1.contains(_:), o2.contains(_:), o3.contains(_:)]
+		self.init(closures: closures, description: "[^\(o1), \(o2), \(o3)]", isNegated: true)
+	}
+
+	/// Matches any of the provided elements.
+	@inlinable
+	public init<O1: OneOfConvertible, O2: OneOfConvertible, O3: OneOfConvertible, O4: OneOfConvertible>
+	(not o1: O1, _ o2: O2, _ o3: O3, _ o4: O4)
+		where Input.Element == O1.Element, O1.Element == O2.Element, O2.Element == O3.Element, O3.Element == O4.Element {
+		let closures = [o1.contains(_:), o2.contains(_:), o3.contains(_:), o4.contains(_:)]
+		self.init(closures: closures, description: "[^\(o1), \(o2), \(o3), \(o4)]", isNegated: true)
+	}
 }
 
 // MARK: Join `&&OneOf • OneOf` into one.
 
 @inlinable
-public func • (lhs: AndPattern<OneOf>, rhs: OneOf) -> OneOf {
+public func • <Input>(lhs: AndPattern<OneOf<Input>>, rhs: OneOf<Input>) -> OneOf<Input> {
 	OneOf(description: "\(lhs) \(rhs)", group: lhs.wrapped.group.intersection(rhs.group))
 }
 
 @inlinable
-public func • <P: Pattern>(lhs: Concat<P, AndPattern<OneOf>>, rhs: OneOf) -> Concat<P, OneOf> {
+public func • <P: Pattern>(lhs: Concat<P, AndPattern<OneOf<P.Input>>>, rhs: OneOf<P.Input>) -> Concat<P, OneOf<P.Input>> {
 	lhs.first • (lhs.second • rhs)
 }
 
 // MARK: Join `!OneOf • Oneof` into one.
 
 @inlinable
-public func • (lhs: NotPattern<OneOf>, rhs: OneOf) -> OneOf {
+public func • <Input>(lhs: NotPattern<OneOf<Input>>, rhs: OneOf<Input>) -> OneOf<Input> {
 	OneOf(description: "\(lhs) \(rhs)", group: rhs.group.subtracting(lhs.wrapped.group))
 }
 
 @inlinable
-public func • <P: Pattern>(lhs: Concat<P, NotPattern<OneOf>>, rhs: OneOf) -> Concat<P, OneOf> {
+public func • <P: Pattern>(lhs: Concat<P, NotPattern<OneOf<P.Input>>>, rhs: OneOf<P.Input>) -> Concat<P, OneOf<P.Input>> {
 	lhs.first • (lhs.second • rhs)
 }
 
 // MARK: Join `OneOf / OneOf` into one.
 
 @inlinable
-public func / (lhs: OneOf, rhs: OneOf) -> OneOf {
+public func / <Input>(lhs: OneOf<Input>, rhs: OneOf<Input>) -> OneOf<Input> {
 	OneOf(description: "\(lhs) / \(rhs)", group: lhs.group.union(rhs.group))
 }
 
 @inlinable
-public func / <P: Pattern>(lhs: OrPattern<P, OneOf>, rhs: OneOf) -> OrPattern<P, OneOf> {
+public func / <P: Pattern>(lhs: OrPattern<P, OneOf<P.Input>>, rhs: OneOf<P.Input>) -> OrPattern<P, OneOf<P.Input>> {
 	lhs.first / (lhs.second / rhs)
 }
 
@@ -200,12 +286,12 @@ public let mathSymbol = OneOf(description: "mathSymbol", regex: #"\p{Sm}"#,
 public let currencySymbol = OneOf(description: "currencySymbol", regex: #"\p{Sc}"#,
                                   contains: { $0.isCurrencySymbol })
 
-extension OneOf {
+extension OneOf where Input == String {
 	/// Predefined OneOf patterns.
-	public static let patterns: [OneOf] = [
-		alphanumeric, letter, lowercase, uppercase, punctuation, whitespace, newline, hexDigit, digit,
-		ascii, symbol, mathSymbol, currencySymbol,
-	]
+	public static var patterns: [OneOf] {
+		[alphanumeric, letter, lowercase, uppercase, punctuation, whitespace, newline, hexDigit, digit,
+		 ascii, symbol, mathSymbol, currencySymbol]
+	}
 
 	/// All the predefined OneOf patterns that match `element`.
 	public static func patterns(for element: Input.Element) -> [OneOf] {
