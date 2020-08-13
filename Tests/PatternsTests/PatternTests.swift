@@ -289,4 +289,66 @@ class PatternTests: XCTestCase {
 		assertParseMarkers(try Parser(Grammar { g in g.last <- &&"xuxu" • any / any • g.last }+ • any.repeat(3)),
 		                   input: "xuxuxuxu|i")
 	}
+
+	func testReadmeExample() throws {
+		let text = "This is a point: (43,7), so is (0, 5). But my final point is (3,-1)."
+
+		let number = ("+" / "-" / "") • digit+
+		let point = "(" • Capture(name: "x", number)
+			• "," • " "¿ • Capture(name: "y", number) • ")"
+
+		struct Point: Codable, Equatable {
+			let x, y: Int
+		}
+
+		let points = try Parser(search: point).decode([Point].self, from: text)
+		XCTAssertEqual(points, [Point(x: 43, y: 7), Point(x: 0, y: 5), Point(x: 3, y: -1)])
+
+		assertCaptures(point, input: text, result: [["43", "7"], ["0", "5"], ["3", "-1"]])
+	}
+
+	func testReadme() throws {
+		do {
+			let l = OneOf(description: "ten") { character in
+				character.wholeNumberValue == 10
+			}
+
+			let arithmetic = Grammar { g in
+				g.all <- g.expr • !any
+				g.expr <- g.sum
+				g.sum <- g.product • (("+" / "-") • g.product)*
+				g.product <- g.power • (("*" / "/") • g.power)*
+				g.power <- g.value • ("^" • g.power)¿
+				g.value <- digit+ / "(" • g.expr • ")"
+			}
+
+			let parser = try Parser(search: l)
+			for match in parser.matches(in: "text") {
+				_ = match
+				// ...
+			}
+			_ = arithmetic
+		}
+
+		do {
+			let text = "This is a point: (43,7), so is (0, 5). But my final point is (3,-1)."
+
+			let number = ("+" / "-" / "") • digit+
+			let point = "(" • Capture(name: "x", number)
+				• "," • " "¿ • Capture(name: "y", number) • ")"
+
+			struct Point: Codable {
+				let x, y: Int
+			}
+
+			let parser = try Parser(search: point)
+			let points = try parser.decode([Point].self, from: text)
+
+			let pointsAsSubstrings = parser.matches(in: text).map { match in
+				(text[match[one: "x"]!], text[match[one: "y"]!])
+			}
+
+			_ = (points, pointsAsSubstrings)
+		}
+	}
 }
