@@ -72,14 +72,13 @@ class ConcatenationTests: XCTestCase {
 		XCTAssert(type(of: Literal("q".utf8) • Capture()).Input == String.UTF8View.self)
 	}
 
-	/*
-	 func testRepeatOrThenEndOfLine() throws {
-	 	assertParseAll(
-	 		Capture((alphanumeric / OneOf(" "))+ • Line.end),
-	 		input: "FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S",
-	 		result: ["FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S"])
-	 }
-	 */
+	func testRepeatOrThenEndOfLine() throws {
+		assertParseAll(
+			Capture((alphanumeric / OneOf(" "))+ • Line.end),
+			input: "FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S",
+			result: ["FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S"])
+	}
+
 	func testMatchFullRange() throws {
 		let text = """
 		line 1
@@ -156,71 +155,58 @@ class ConcatenationTests: XCTestCase {
 	0005..0010    ; Common # Cc  [32] <control-0000>..<control-001F>
 	002F          ; Common # Zs       SPACE
 	"""
-	/*
-	 lazy var rangeAndProperty: Parser<String> = {
-	 	let hexNumber = Capture(name: "codePoint", hexDigit+)
-	 	let hexRange = AnyPattern("\(hexNumber)..\(hexNumber)") / hexNumber
-	 	return try! Parser(search: AnyPattern("\n\(hexRange • Skip()); \(Capture(name: "property", Skip())) "))
-	 }()
 
-	 func testStringInterpolation() throws {
-	 	assertCaptures(rangeAndProperty, input: text, result: [["0005", "0010", "Common"], ["002F", "Common"]])
-	 }
+	lazy var rangeAndProperty: Parser<String> = {
+		let hexNumber = Capture(name: "codePoint", hexDigit+)
+		let hexRange = AnyPattern("\(hexNumber)..\(hexNumber)") / hexNumber
+		return try! Parser(search: AnyPattern("\n\(hexRange • Skip()); \(Capture(name: "property", Skip())) "))
+	}()
 
-	 func testMatchDecoding() throws {
-	 	struct Property: Decodable, Equatable {
-	 		let codePoint: [Int]
-	 		let property: String
-	 		let notCaptured: String?
-	 	}
+	func testStringInterpolation() throws {
+		assertCaptures(rangeAndProperty, input: text, result: [["0005", "0010", "Common"], ["002F", "Common"]])
+	}
 
-	 	let matches = Array(rangeAndProperty.matches(in: text))
-	 	let property = try matches.first!.decode(Property.self, from: text)
-	 	XCTAssertEqual(property, Property(codePoint: [5, 10], property: "Common", notCaptured: nil))
-
-	 	XCTAssertThrowsError(try matches.last!.decode(Property.self, from: text))
-	 }
-
-	 func testParserDecoding() {
-	 	struct Property: Decodable, Equatable {
-	 		let codePoint: [String]
-	 		let property: String
-	 	}
-
-	 	XCTAssertEqual(try rangeAndProperty.decode([Property].self, from: text),
-	 	               [Property(codePoint: ["0005", "0010"], property: "Common"),
-	 	                Property(codePoint: ["002F"], property: "Common")])
-	 	XCTAssertEqual(try rangeAndProperty.decodeFirst(Property.self, from: text),
-	 	               Property(codePoint: ["0005", "0010"], property: "Common"))
-	 }
-	 */
-	func testReadmeExample() throws {
-		let text = "This is a point: (43,7), so is (0,5). But my final point is (3,-1)."
-
-		let number = OneOf("+-")¿ • digit+
-		let point = try Parser(search: AnyPattern("(\(Capture(name: "x", number)),\(Capture(name: "y", number)))"))
-
-		let pointsAsSubstrings = point.matches(in: text).map { match in
-			(text[match[one: "x"]!], text[match[one: "y"]!])
+	func testMatchDecoding() throws {
+		struct Property: Decodable, Equatable {
+			let codePoint: [Int]
+			let property: String
+			let notCaptured: String?
 		}
+
+		let matches = Array(rangeAndProperty.matches(in: text))
+		let property = try matches.first!.decode(Property.self, from: text)
+		XCTAssertEqual(property, Property(codePoint: [5, 10], property: "Common", notCaptured: nil))
+
+		XCTAssertThrowsError(try matches.last!.decode(Property.self, from: text))
+	}
+
+	func testParserDecoding() {
+		struct Property: Decodable, Equatable {
+			let codePoint: [String]
+			let property: String
+		}
+
+		XCTAssertEqual(try rangeAndProperty.decode([Property].self, from: text),
+		               [Property(codePoint: ["0005", "0010"], property: "Common"),
+		                Property(codePoint: ["002F"], property: "Common")])
+		XCTAssertEqual(try rangeAndProperty.decodeFirst(Property.self, from: text),
+		               Property(codePoint: ["0005", "0010"], property: "Common"))
+	}
+
+	func testReadmeExample() throws {
+		let text = "This is a point: (43,7), so is (0, 5). But my final point is (3,-1)."
+
+		let number = ("+" / "-" / "") • digit+
+		let point = "(" • Capture(name: "x", number)
+			• "," • " "¿ • Capture(name: "y", number) • ")"
 
 		struct Point: Codable, Equatable {
 			let x, y: Int
 		}
 
-		let points = try point.decode([Point].self, from: text)
+		let points = try Parser(search: point).decode([Point].self, from: text)
+		XCTAssertEqual(points, [Point(x: 43, y: 7), Point(x: 0, y: 5), Point(x: 3, y: -1)])
 
 		assertCaptures(point, input: text, result: [["43", "7"], ["0", "5"], ["3", "-1"]])
-		_ = (pointsAsSubstrings, points)
 	}
-
-	/*
-	 func testOperatorPrecedence() throws {
-	 	let p1 = "a" • Skip() • letter • !alphanumeric • "b"+
-	 	XCTAssert(type(of: p1.first.first.first.second) == Skip.self)
-	 	XCTAssert(type(of: "a" • "b" / "c" • "d")
-	 		== OrPattern<Concat<Literal, Literal>, Concat<Literal, Literal>>.self,
-	 	          #"`/` should have lower precedence than `•`"#)
-	 }
-	 */
 }

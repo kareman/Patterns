@@ -22,6 +22,14 @@ class LongTests: XCTestCase {
 			"'•' operator isn't optimizing OneOf's properly.")
 	}
 
+	func testOperatorPrecedence() throws {
+		let p1 = "a" • Skip() • letter • !alphanumeric • "b"+
+		XCTAssert(type(of: p1.first.first.first.second) == Skip<String>.self)
+		XCTAssert(type(of: Literal<String.UTF8View>("a") • "b" / "c" • "d")
+			== OrPattern<Concat<Literal<String.UTF8View>, Literal<String.UTF8View>>, Concat<Literal<String.UTF8View>, Literal<String.UTF8View>>>.self,
+		          #"`/` should have lower precedence than `•`"#)
+	}
+
 	func testPlaygroundExample() throws {
 		let text = #"""
 		0   0.0   0.01
