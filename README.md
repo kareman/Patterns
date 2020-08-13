@@ -187,6 +187,30 @@ let pointsAsSubstrings = parser.matches(in: text).map { match in
 
 You can also use `match[multiple: name]` to get an array if captures with that name may be matched multiple times. `match[one: name]` only returns the first capture of that name.
 
+### Inputs
+
+By default, patterns have `String` as their input type. But you can use any `BidirectionalCollection` with `Hashable` elements for input. Just explicitly specify the input type of the first pattern, and the rest should get it automatically:
+
+```swift
+let text = "This is a point: (43,7), so is (0, 5). But my final point is (3,-1).".utf8
+
+let digit = OneOf<String.UTF8View>(UInt8(ascii: "0")...UInt8(ascii: "9"))
+let number = ("+" / "-" / "") • digit+
+let point = "(" • Capture(name: "x", number)
+	• "," • " "¿ • Capture(name: "y", number) • ")"
+
+struct Point: Codable {
+	let x, y: Int
+}
+
+let parser = try Parser(search: point)
+let pointsAsSubstrings = parser.matches(in: text).map { match in
+	(text[match[one: "x"]!], text[match[one: "y"]!])
+}
+```
+
+`Parser.decode` can (currently) only take String as input, but `.matches` handles all types.
+
 ## Setup
 
 ### [Swift Package Manager](https://swift.org/package-manager/)
