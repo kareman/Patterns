@@ -169,13 +169,14 @@ struct Point: Codable {
 	let x, y: Int
 }
 
-let points = try Parser(search: point).decode([Point].self, from: text)
+let parser = try Parser(search: point)
+let points = try parser.decode([Point].self, from: text)
 ```
 
 Or you can use subscripting:
 
 ```swift
-let pointsAsSubstrings = point.matches(in: text).map { match in
+let pointsAsSubstrings = parser.matches(in: text).map { match in
 	(text[match[one: "x"]!], text[match[one: "y"]!])
 }
 ```

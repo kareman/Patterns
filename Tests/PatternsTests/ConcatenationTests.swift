@@ -192,21 +192,4 @@ class ConcatenationTests: XCTestCase {
 		XCTAssertEqual(try rangeAndProperty.decodeFirst(Property.self, from: text),
 		               Property(codePoint: ["0005", "0010"], property: "Common"))
 	}
-
-	func testReadmeExample() throws {
-		let text = "This is a point: (43,7), so is (0, 5). But my final point is (3,-1)."
-
-		let number = ("+" / "-" / "") • digit+
-		let point = "(" • Capture(name: "x", number)
-			• "," • " "¿ • Capture(name: "y", number) • ")"
-
-		struct Point: Codable, Equatable {
-			let x, y: Int
-		}
-
-		let points = try Parser(search: point).decode([Point].self, from: text)
-		XCTAssertEqual(points, [Point(x: 43, y: 7), Point(x: 0, y: 5), Point(x: 3, y: -1)])
-
-		assertCaptures(point, input: text, result: [["43", "7"], ["0", "5"], ["3", "-1"]])
-	}
 }
