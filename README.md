@@ -1,6 +1,6 @@
 <p align="center">
    <a href="https://developer.apple.com/swift/">
-      <img src="https://img.shields.io/badge/Swift-5.2-orange.svg?style=flat" alt="Swift 5.2">
+      <img src="https://img.shields.io/badge/Swift-5.3-orange.svg?style=flat" alt="Swift 5.3">
    </a>
    <a href="https://github.com/apple/swift-package-manager">
       <img src="https://img.shields.io/badge/Swift%20Package%20Manager-compatible-brightgreen.svg" alt="SPM">
@@ -16,6 +16,10 @@ For general information about PEGs, see [the original paper](https://dl.acm.org/
 ![Example of using Patterns in a playground](Playground-screenshot.png)
 
 To try out Patterns in a playground, open Playground/Playground.xcworkspace in Xcode.
+
+### Note
+
+Patterns requires Swift 5.3, which is currently in beta. If using Xcode, version 12 (also in beta) is required. 
 
 ## Example
 
