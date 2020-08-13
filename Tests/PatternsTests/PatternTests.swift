@@ -307,48 +307,67 @@ class PatternTests: XCTestCase {
 		assertCaptures(point, input: text, result: [["43", "7"], ["0", "5"], ["3", "-1"]])
 	}
 
-	func testReadme() throws {
-		do {
-			let l = OneOf(description: "ten") { character in
-				character.wholeNumberValue == 10
-			}
-
-			let arithmetic = Grammar { g in
-				g.all <- g.expr • !any
-				g.expr <- g.sum
-				g.sum <- g.product • (("+" / "-") • g.product)*
-				g.product <- g.power • (("*" / "/") • g.power)*
-				g.power <- g.value • ("^" • g.power)¿
-				g.value <- digit+ / "(" • g.expr • ")"
-			}
-
-			let parser = try Parser(search: l)
-			for match in parser.matches(in: "text") {
-				_ = match
-				// ...
-			}
-			_ = arithmetic
+	func testReadme1() throws {
+		let l = OneOf(description: "ten") { character in
+			character.wholeNumberValue == 10
 		}
 
-		do {
-			let text = "This is a point: (43,7), so is (0, 5). But my final point is (3,-1)."
-
-			let number = ("+" / "-" / "") • digit+
-			let point = "(" • Capture(name: "x", number)
-				• "," • " "¿ • Capture(name: "y", number) • ")"
-
-			struct Point: Codable {
-				let x, y: Int
-			}
-
-			let parser = try Parser(search: point)
-			let points = try parser.decode([Point].self, from: text)
-
-			let pointsAsSubstrings = parser.matches(in: text).map { match in
-				(text[match[one: "x"]!], text[match[one: "y"]!])
-			}
-
-			_ = (points, pointsAsSubstrings)
+		let arithmetic = Grammar { g in
+			g.all <- g.expr • !any
+			g.expr <- g.sum
+			g.sum <- g.product • (("+" / "-") • g.product)*
+			g.product <- g.power • (("*" / "/") • g.power)*
+			g.power <- g.value • ("^" • g.power)¿
+			g.value <- digit+ / "(" • g.expr • ")"
 		}
+
+		let parser = try Parser(search: l)
+		for match in parser.matches(in: "text") {
+			_ = match
+			// ...
+		}
+
+		_ = arithmetic
+	}
+
+	func testReadme2() throws {
+		let text = "This is a point: (43,7), so is (0, 5). But my final point is (3,-1)."
+
+		let number = ("+" / "-" / "") • digit+
+		let point = "(" • Capture(name: "x", number)
+			• "," • " "¿ • Capture(name: "y", number) • ")"
+
+		struct Point: Codable {
+			let x, y: Int
+		}
+
+		let parser = try Parser(search: point)
+		let points = try parser.decode([Point].self, from: text)
+
+		let pointsAsSubstrings = parser.matches(in: text).map { match in
+			(text[match[one: "x"]!], text[match[one: "y"]!])
+		}
+
+		_ = (points, pointsAsSubstrings)
+	}
+
+	func testReadme3() throws {
+		let text = "This is a point: (43,7), so is (0, 5). But my final point is (3,-1).".utf8
+
+		let digit = OneOf<String.UTF8View>(UInt8(ascii: "0") ... UInt8(ascii: "9"))
+		let number = ("+" / "-" / "") • digit+
+		let point = "(" • Capture(name: "x", number)
+			• "," • " "¿ • Capture(name: "y", number) • ")"
+
+		struct Point: Codable {
+			let x, y: Int
+		}
+
+		let parser = try Parser(search: point)
+		let pointsAsSubstrings = parser.matches(in: text).map { match in
+			(text[match[one: "x"]!], text[match[one: "y"]!])
+		}
+
+		_ = pointsAsSubstrings
 	}
 }
