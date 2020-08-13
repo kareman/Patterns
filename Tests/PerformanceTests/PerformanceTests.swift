@@ -142,7 +142,7 @@ class PerformanceTests: XCTestCase {
 	}
 }
 
-func getLocalURL(for path: String, file: String = #file) -> URL {
+func getLocalURL(for path: String, file: String = #filePath) -> URL {
 	URL(fileURLWithPath: file)
 		.deletingLastPathComponent().appendingPathComponent(path)
 }

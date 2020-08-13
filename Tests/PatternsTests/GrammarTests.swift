@@ -27,17 +27,17 @@ class GrammarTests: XCTestCase {
 	func testDirectRecursion1() throws {
 		let g = Grammar()
 		g.a <- "a" / any • g.a
-		let g1Parser = try Parser(g)
-		assertParseAll(g1Parser, input: " aba", count: 2)
+		let parser = try Parser(g)
+		assertParseAll(parser, input: " aba", count: 2)
 	}
 
 	func testDirectRecursion2() throws {
 		let g = Grammar()
 		g.balancedParentheses <- "(" • (!OneOf("()") • any / g.balancedParentheses)* • ")"
-		let g2Parser = try Parser(g)
-		assertParseAll(g2Parser, input: "( )", count: 1)
-		assertParseAll(g2Parser, input: "((( )( )))", count: 1)
-		assertParseAll(g2Parser, input: "(( )", count: 0)
+		let parser = try Parser(g)
+		assertParseAll(parser, input: "( )", count: 1)
+		assertParseAll(parser, input: "((( )( )))", count: 1)
+		assertParseAll(parser, input: "(( )", count: 0)
 	}
 
 	func testArithmetic() throws {
@@ -62,8 +62,7 @@ class GrammarTests: XCTestCase {
 
 		func isCall(_ inst: Instruction<String.UTF8View>) -> Bool {
 			switch inst {
-			case .call:
-				return true
+			case .call: return true
 			default: return false
 			}
 		}

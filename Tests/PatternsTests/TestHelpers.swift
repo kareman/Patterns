@@ -29,7 +29,7 @@ extension XCTestCase {
 	(_ seq1: @autoclosure () throws -> S1,
 	 _ seq2: @autoclosure () throws -> S2,
 	 _ message: @autoclosure () -> String = "",
-	 file: StaticString = #file, line: UInt = #line)
+	 file: StaticString = #filePath, line: UInt = #line)
 		where S1.Element: Sequence, S2.Element: Sequence, S1.Element.Element: Equatable,
 		S1.Element.Element == S2.Element.Element {
 			do {
@@ -44,14 +44,14 @@ extension XCTestCase {
 		}
 
 	func assertParseAll<Input: BidirectionalCollection>
-	(_ parser: Parser<Input>, input: Input, result: [Input], file: StaticString = #file, line: UInt = #line)
+	(_ parser: Parser<Input>, input: Input, result: [Input], file: StaticString = #filePath, line: UInt = #line)
 		where Input.Element: Hashable {
 			let parsed = parser.ranges(in: input).map { input[$0] }
 			XCTAssertEqualElements(parsed, result, file: file, line: line)
 		}
 
 	func assertParseAll<P: Patterns.Pattern>
-	(_ pattern: P, input: P.Input, result: [P.Input], file: StaticString = #file, line: UInt = #line) {
+	(_ pattern: P, input: P.Input, result: [P.Input], file: StaticString = #filePath, line: UInt = #line) {
 		do {
 			let parser = try Parser(search: pattern)
 			assertParseAll(parser, input: input, result: result, file: file, line: line)
@@ -61,7 +61,7 @@ extension XCTestCase {
 	}
 
 	func assertParseAll<Input: BidirectionalCollection>
-	(_ parser: Parser<Input>, input: Input, result: Input? = nil, count: Int, file: StaticString = #file, line: UInt = #line)
+	(_ parser: Parser<Input>, input: Input, result: Input? = nil, count: Int, file: StaticString = #filePath, line: UInt = #line)
 		where Input.Element: Hashable {
 			if let result = result {
 				assertParseAll(parser, input: input, result: Array(repeating: result, count: count), file: file, line: line)
@@ -73,7 +73,7 @@ extension XCTestCase {
 		}
 
 	func assertParseAll<P: Patterns.Pattern>(_ pattern: P, input: P.Input, result: P.Input? = nil, count: Int,
-	                                         file: StaticString = #file, line: UInt = #line) {
+	                                         file: StaticString = #filePath, line: UInt = #line) {
 		do {
 			let parser = try Parser(search: pattern)
 			assertParseAll(parser, input: input, result: result, count: count, file: file, line: line)
@@ -94,12 +94,12 @@ extension XCTestCase {
 	}
 
 	func assertParseMarkers<P: Patterns.Pattern>(_ pattern: P, input: String,
-	                                             file: StaticString = #file, line: UInt = #line) where P.Input == String {
+	                                             file: StaticString = #filePath, line: UInt = #line) where P.Input == String {
 		assertParseMarkers(try! Parser(search: pattern), input: input, file: file, line: line)
 	}
 
 	func assertParseMarkers(_ pattern: Parser<String>, input: String,
-	                        file: StaticString = #file, line: UInt = #line) {
+	                        file: StaticString = #filePath, line: UInt = #line) {
 		let (string, correct) = processMarkers(input)
 		let parsedRanges = Array(pattern.ranges(in: string))
 		XCTAssert(parsedRanges.allSatisfy { $0.isEmpty }, "Not all results are empty ranges",
@@ -118,12 +118,12 @@ extension XCTestCase {
 	}
 
 	func assertCaptures<P: Patterns.Pattern>(_ pattern: P, input: String, result: [[String]],
-	                                         file: StaticString = #file, line: UInt = #line) where P.Input == String {
+	                                         file: StaticString = #filePath, line: UInt = #line) where P.Input == String {
 		assertCaptures(try! Parser(search: pattern), input: input, result: result, file: file, line: line)
 	}
 
 	func assertCaptures(_ pattern: Parser<String>, input: String, result: [[String]],
-	                    file: StaticString = #file, line: UInt = #line) {
+	                    file: StaticString = #filePath, line: UInt = #line) {
 		let matches = Array(pattern.matches(in: input))
 		let output = matches.map { match in match.captures.map { String(input[$0.range]) } }
 		XCTAssertEqual(output, result, file: file, line: line)
@@ -142,7 +142,7 @@ extension RangeReplaceableCollection where Self: BidirectionalCollection {
 	}
 }
 
-func getLocalURL(for path: String, file: String = #file) -> URL {
+func getLocalURL(for path: String, file: String = #filePath) -> URL {
 	URL(fileURLWithPath: file)
 		.deletingLastPathComponent().appendingPathComponent(path)
 }
