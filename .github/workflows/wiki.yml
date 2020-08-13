@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Generate Documentation
-        uses: SwiftDocOrg/swift-doc@master
+        uses: kareman/swift-doc@generate-pages-for-operators
         with:
           inputs: "Sources/Patterns"
           module-name: Patterns
