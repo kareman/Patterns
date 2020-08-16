@@ -2,7 +2,7 @@
 name: Bug report
 about: Create a bug report
 title: ''
-labels: ''
+labels: 'bug'
 assignees: ''
 
 ---
@@ -12,7 +12,7 @@ assignees: ''
 - Patterns version:
 - macOS version:
 - Xcode version:
-- Dependency manager (Carthage, CocoaPods, SPM, Manually):
+- Dependency manager (Swift Package Manager, Manually):
 
 ## What did you do?
 
