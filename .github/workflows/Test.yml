@@ -5,6 +5,12 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+    paths: 
+      - '**.swift'
+      - '.swift-version'
+      - 'Package.resolved'
+      - '.github/workflows/Test.yml'
+      - 'Tests/**'
     
 jobs:
   test:
