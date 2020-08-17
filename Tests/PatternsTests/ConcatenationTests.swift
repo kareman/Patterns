@@ -166,6 +166,19 @@ class ConcatenationTests: XCTestCase {
 		assertCaptures(rangeAndProperty, input: text, result: [["0005", "0010", "Common"], ["002F", "Common"]])
 	}
 
+	func testAnyPattern() throws {
+		let text = """
+		 : Test Case '-[PerformanceTests.PerformanceTests testAnyNumeral]' measured [CPU Instructions Retired, kI] average: 6071231.970, relative standard deviation: 0.300%, values: [6125777.558000, 6066280.613000, 6064787.491000, 6063915.538000, 6066853.091000, 6063079.064000, 6068140.744000, 6064901.279000, 6064321.893000, 6064262.431000], performanceMetricID:com.apple.dt.XCTMetric_CPU.instructions_retired, baselineName: "", baselineAverage: , maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.000, maxStandardDeviation: 0.000
+
+		"""
+		let skip = Skip()
+		let measurementPattern = AnyPattern("""
+		: Test Case '-[\(skip).\(Capture(name: "name", skip))]' measured [\(Capture(name: "measurementName", skip)), \(Capture(name: "measurementUnit", skip))] average: \(Capture(name: "average", skip)), relative standard deviation: \(Capture(name: "standardDeviation", skip))%\(skip), performanceMetricID:\(Capture(name: "measurementID", skip)),\(skip)
+
+		""")
+		assertParseAll(measurementPattern, input: text, count: 1)
+	}
+
 	func testMatchDecoding() throws {
 		struct Property: Decodable, Equatable {
 			let codePoint: [Int]
