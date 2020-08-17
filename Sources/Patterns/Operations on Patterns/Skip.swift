@@ -11,8 +11,10 @@
 public struct Skip<Input: BidirectionalCollection>: Pattern where Input.Element: Hashable {
 	public var description: String { "Skip()" }
 
+	@inlinable
 	public init() {}
 
+	@inlinable
 	public init() where Input == String {}
 
 	@inlinable
@@ -24,6 +26,7 @@ public struct Skip<Input: BidirectionalCollection>: Pattern where Input.Element:
 import SE0270_RangeSet
 
 extension MutableCollection where Self: RandomAccessCollection, Self: RangeReplaceableCollection, Index == Int {
+	/// Replaces all placeholder `.skip` instructions.
 	@usableFromInline
 	mutating func replaceSkips<Input>() where Element == Instruction<Input> {
 		// `setupSkip(at: i)` adds 1 new instruction somewhere after `ì`, so we cant loop over self.indices directly
@@ -38,26 +41,30 @@ extension MutableCollection where Self: RandomAccessCollection, Self: RangeRepla
 		} while i < self.endIndex
 	}
 
+	/// Replaces the dummy `.skip` instruction at `skipIndex` with one that will search using the instructions
+	/// right after `skipIndex`.
 	@usableFromInline
 	mutating func setupSkip<Input>(at skipIndex: Index) where Element == Instruction<Input> {
-		let searchablesStartAt = skipIndex + 1
-		switch self[searchablesStartAt] {
+		let afterSkip = skipIndex + 1
+		switch self[afterSkip] {
 		case let .checkIndex(function, atIndexOffset: 0):
 			self[skipIndex] = .search { input, index in
 				input[index...].indices.first(where: { function(input, $0) })
 					?? (function(input, input.endIndex) ? input.endIndex : nil)
 			}
-			self[searchablesStartAt] = .choice(offset: -1, atIndexOffset: 1)
+			self[afterSkip] = .choice(offset: -1, atIndexOffset: 1)
 		case .checkIndex(_, atIndexOffset: _):
-			fatalError("Cannot see a valid reason for a `.checkIndex` with a non-zero offset to be located right after a `.skip` instruction.") // Correct me if I'm wrong.
+			// A `.checkIndex` will only have a non-zero offset if it has been moved by `moveMovablesForward`,
+			// and that will never move anything beyond a `.skip`.
+			fatalError("A `.checkIndex` with a non-zero offset can't be located right after a `.skip` instruction.")
 		case let .checkElement(test):
 			self[skipIndex] = .search { input, index in
 				input[index...].firstIndex(where: test)
 					.map(input.index(after:))
 			}
-			self[searchablesStartAt] = .choice(offset: -1, atIndexOffset: 0)
+			self[afterSkip] = .choice(offset: -1, atIndexOffset: 0)
 		case .elementEquals:
-			let elements: [Input.Element] = self[searchablesStartAt...]
+			let elements: [Input.Element] = self[afterSkip...]
 				.mapPrefix {
 					switch $0 {
 					case let .elementEquals(element):
@@ -71,14 +78,14 @@ extension MutableCollection where Self: RandomAccessCollection, Self: RangeRepla
 					input[index...].firstIndex(of: elements[0])
 						.map(input.index(after:))
 				}
-				self[searchablesStartAt] = .choice(offset: -1, atIndexOffset: 0)
+				self[afterSkip] = .choice(offset: -1, atIndexOffset: 0)
 			} else {
 				let cache = SearchCache(elements)
 				self[skipIndex] = .search { input, index in
 					input.range(of: cache, from: index)?.upperBound
 				}
-				self[searchablesStartAt] = .choice(offset: -1, atIndexOffset: (-elements.count) + 1)
-				self[searchablesStartAt + 1] = .jump(offset: elements.count - 1)
+				self[afterSkip] = .choice(offset: -1, atIndexOffset: (-elements.count) + 1)
+				self[afterSkip + 1] = .jump(offset: elements.count - 1)
 			}
 		default:
 			self[skipIndex] = .choice(offset: 0, atIndexOffset: +1)
@@ -89,8 +96,7 @@ extension MutableCollection where Self: RandomAccessCollection, Self: RangeRepla
 	}
 
 	@usableFromInline
-	mutating func placeSkipCommit<Input>(startSearchFrom: Index)
-		where Element == Instruction<Input> {
+	mutating func placeSkipCommit<Input>(startSearchFrom: Index) where Element == Instruction<Input> {
 		var i = startSearchFrom
 		loop: while true {
 			switch self[i] {
@@ -98,7 +104,7 @@ extension MutableCollection where Self: RandomAccessCollection, Self: RangeRepla
 				fatalError("Not implemented.")
 			case let .choice(offset, _):
 				// Follow every choice offset.
-				// If one step back there is a jump forwards, then it's a '/' operation. So follow it too.
+				// If one step back there is a jump forwards, then it's a '/' pattern. So follow that jump too.
 				if case let .jump(jumpOffset) = self[i + offset - 1], jumpOffset > 0 {
 					i += offset - 1 + jumpOffset
 				} else {
@@ -112,17 +118,22 @@ extension MutableCollection where Self: RandomAccessCollection, Self: RangeRepla
 				insertInstructions(.commit, at: i)
 				return
 			case .openCall:
-				fatalError()
+				fatalError("`.openCall` instruction should have been replaced.")
 			}
 		}
 	}
 
-	/// Inserts new instructions at `location`. Adjusts the offsets of the other instructions accordingly.
+	/// Inserts `newInstructions` at `location`. Adjusts the offsets of the other instructions accordingly.
+	///
+	/// Since all offsets are relative to the positions of their instructions,
+	/// if `location` lies between an instruction with an offset and where that offset leads to,
+	/// the offset needs to be increased by the length of `newInstructions`.
 	@usableFromInline
 	mutating func insertInstructions<Input>(_ newInstructions: Element..., at location: Index)
 		where Element == Instruction<Input> {
 		insert(contentsOf: newInstructions, at: location)
 		let insertedRange = location ..< (location + newInstructions.count + 1)
+		/// instruction ... location ... offsetTarget
 		for i in startIndex ..< insertedRange.lowerBound {
 			switch self[i] {
 			case let .call(offset) where offset > (location - i):
@@ -135,6 +146,7 @@ extension MutableCollection where Self: RandomAccessCollection, Self: RangeRepla
 				break
 			}
 		}
+		/// offsetTarget ... location ... instruction
 		for i in insertedRange.upperBound ..< endIndex {
 			switch self[i] {
 			case let .call(offset) where offset < (location - i):

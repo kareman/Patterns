@@ -5,6 +5,7 @@
 //
 
 private extension Instruction {
+	/// Can this instruction be moved by `moveMovablesForward`?
 	var isMovable: Bool {
 		switch self {
 		case .checkIndex, .captureStart, .captureEnd:
@@ -14,6 +15,7 @@ private extension Instruction {
 		}
 	}
 
+	/// Does this instruction prohibit `moveMovablesForward` from moving anything past it?
 	var stopsMovables: Bool {
 		switch self {
 		case .elementEquals, .checkElement:
@@ -27,7 +29,7 @@ private extension Instruction {
 import SE0270_RangeSet
 
 extension MutableCollection where Self: RandomAccessCollection, Index == Int {
-	/// Moves any `.checkIndex, .captureStart, .captureEnd` past any `.elementEquals, .checkElement`.
+	/// Moves any `.checkIndex`, `.captureStart`, `.captureEnd` past any `.elementEquals`, `.checkElement`.
 	///
 	/// Improves performance noticeably.
 	@usableFromInline
@@ -50,7 +52,7 @@ extension MutableCollection where Self: RandomAccessCollection, Index == Int {
 						self[movedIndex] = .checkIndex(test, atIndexOffset: offset - distanceMoved)
 						checkIndexIndices.insert(movedIndex, within: self)
 					default:
-						fatalError()
+						fatalError("'\(self[movedIndex])' is not a 'movable'.")
 					}
 				}
 				movables.removeAll()
