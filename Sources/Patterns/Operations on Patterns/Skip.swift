@@ -26,13 +26,16 @@ import SE0270_RangeSet
 extension MutableCollection where Self: RandomAccessCollection, Self: RangeReplaceableCollection, Index == Int {
 	@usableFromInline
 	mutating func replaceSkips<Input>() where Element == Instruction<Input> {
-		for i in self.indices {
+		// `setupSkip(at: i)` adds 1 new instruction somewhere after `ì`, so we cant loop over self.indices directly
+		var i = self.startIndex
+		repeat {
 			switch self[i] {
 			case .skip:
 				self.setupSkip(at: i)
 			default: break
 			}
-		}
+			self.formIndex(after: &i)
+		} while i < self.endIndex
 	}
 
 	@usableFromInline
