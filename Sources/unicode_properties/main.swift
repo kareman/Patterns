@@ -72,10 +72,10 @@ func generateConstants(_ properties: [Substring: [ClosedRange<UInt32>]]) -> Stri
 
 struct Arguments: ParsableCommand {
 	@Flag(name: .customLong("enumAndDictionary"), help: "Outputs an enum containing all the property names, and a dictionary with the enum as keys and arrays of ranges as values. Is the default.")
-	var enumAndDictionary: Bool
+	var enumAndDictionary: Bool = false
 
 	@Flag(help: "Outputs the property names as constants with arrays of ranges as values.")
-	var constants: Bool
+	var constants: Bool = false
 
 	@Argument(help: "The path to the Unicode property data file.", transform: {
 		try String(contentsOfFile: $0)
