@@ -5,9 +5,32 @@
 //  Created by Kåre Morstøl on 25/05/2020.
 //
 
-/// Skips 0 or more elements until a match for the next patterns are found.
+/// Skips 0 or more elements until a match for the next patterns is found.
 ///
-/// If this is at the end of a pattern, it skips to the end of input.
+/// ```swift
+/// let s = Skip() • a
+/// ```
+/// is the same as `|S <- A / . <S>|` in standard PEG.
+///
+/// - note:
+/// If `Skip` is at the end of a pattern, it just succeeds without consuming input. So it will be pointless.
+///
+/// But this works:
+/// ```swift
+/// let s = Skip()
+/// let p = s • " "
+/// ```
+/// because here the `s` pattern is "inlined".
+///
+/// This, however, does not work:
+/// ```swift
+/// let g = Grammar { g in
+///   g.nextSpace <- g.skip • " "
+///   g.skip <- Skip()
+/// }
+/// ```
+/// because in grammars the subexpressions are called, like functions, not "inlined", like Swift variables.
+/// So the `Skip()` in `g.skip` can't tell what will come after it.
 public struct Skip<Input: BidirectionalCollection>: Pattern where Input.Element: Hashable {
 	public var description: String { "Skip()" }
 
