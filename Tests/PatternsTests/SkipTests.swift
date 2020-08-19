@@ -46,10 +46,6 @@ class SkipTests: XCTestCase {
 		               input: lines, result: ["1", "2", "", "3"])
 		assertParseAll(Capture(Line.start • Skip() • Line.end),
 		               input: lines, result: ["1", "2", "", "3"])
-
-		// undefined (Skip at end)
-		_ = try Parser(search: " " • Capture(Skip()))
-			.matches(in: text)
 	}
 
 	func testInsideOptional() throws {
@@ -71,6 +67,22 @@ class SkipTests: XCTestCase {
 
 	func testDoubleSkip() throws {
 		assertParseMarkers(try Parser(Skip() • Skip() • " "), input: "This |is")
+	}
+
+	func testAtTheEnd() throws {
+		assertParseMarkers(" " • Skip(), input: "a |bee")
+		assertParseAll(" " • Capture(Skip()), input: "a bee", result: [""])
+
+		// used in documentation for Skip.
+
+		let s = Skip()
+		assertParseMarkers(try Parser(s • " "), input: "jfd | |jlj |")
+
+		let g = Grammar { g in
+			g.nextSpace <- g.skip • " "
+			g.skip <- Skip() // Does not work.
+		}
+		assertParseMarkers(try Parser(g), input: "sdf ksj")
 	}
 
 	func testBeforeGrammarTailCall() throws {

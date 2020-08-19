@@ -94,12 +94,16 @@ public postfix func + <Input>(me: Literal<Input>) -> RepeatPattern<Literal<Input
 postfix operator ¿
 
 /// Tries the preceding pattern, and continues even if it fails.
+///
+/// - note: in standard PEG this operator is `?`, but that is not allowed in Swift.
 @inlinable
 public postfix func ¿ <P: Pattern>(me: P) -> RepeatPattern<P> {
 	me.repeat(0 ... 1)
 }
 
 /// Tries the preceding pattern, and continues even if it fails.
+///
+/// - note: in standard PEG this operator is `?`, but that is not allowed in Swift.
 @inlinable
 public postfix func ¿ <Input>(me: Literal<Input>) -> RepeatPattern<Literal<Input>> {
 	me.repeat(0 ... 1)

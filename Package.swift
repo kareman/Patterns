@@ -28,8 +28,7 @@ let package = Package(
 			name: "PatternsTests",
 			dependencies: ["Patterns"],
 			swiftSettings: [ // Move code that takes too long to build into 'LongTests'.
-				.unsafeFlags(["-Xfrontend", "-warn-long-expression-type-checking=200",
-				              "-Xfrontend", "-warn-long-function-bodies=200"]),
+				.unsafeFlags(["-Xfrontend", "-warn-long-expression-type-checking=200"]),
 			]),
 		.testTarget(
 			name: "PerformanceTests",

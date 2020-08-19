@@ -38,6 +38,8 @@ prefix operator &&
 
 extension Pattern {
 	/// Matches the following pattern without consuming any input.
+	///
+	/// - note: in standard PEG this operator is `&`, but that is not allowed in Swift.
 	@inlinable
 	public static prefix func && (me: Self) -> AndPattern<Self> {
 		AndPattern(me)
@@ -46,6 +48,8 @@ extension Pattern {
 
 extension Literal {
 	/// Matches the following pattern without consuming any input.
+	///
+	/// - note: in standard PEG this operator is `&`, but that is not allowed in Swift.
 	@inlinable
 	public static prefix func && (me: Literal) -> AndPattern<Literal> {
 		AndPattern(me)
