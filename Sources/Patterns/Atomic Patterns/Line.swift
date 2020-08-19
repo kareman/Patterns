@@ -6,6 +6,7 @@
 //
 
 public protocol CharacterLike: Hashable {
+	@inlinable
 	var isNewline: Bool { get }
 }
 

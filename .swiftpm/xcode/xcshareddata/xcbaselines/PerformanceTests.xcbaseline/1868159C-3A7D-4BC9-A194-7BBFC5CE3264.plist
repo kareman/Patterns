@@ -141,9 +141,9 @@
 				<key>com.apple.dt.XCTMetric_CPU.instructions_retired</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>5.9027e+06</real>
+					<real>1.3081e+06</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>19 Aug 2020 at 16:41:21</string>
+					<string>19 Aug 2020 at 20:14:16</string>
 				</dict>
 			</dict>
 			<key>testContainsClosure()</key>
@@ -151,9 +151,9 @@
 				<key>com.apple.dt.XCTMetric_CPU.instructions_retired</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>3.9698e+06</real>
+					<real>1.5442e+06</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>19 Aug 2020 at 16:41:21</string>
+					<string>19 Aug 2020 at 20:14:16</string>
 				</dict>
 			</dict>
 			<key>testGrammarLiteralSearch()</key>
@@ -161,9 +161,9 @@
 				<key>com.apple.dt.XCTMetric_CPU.instructions_retired</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>2.5648e+06</real>
+					<real>6.0042e+05</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>19 Aug 2020 at 16:41:21</string>
+					<string>19 Aug 2020 at 20:14:16</string>
 				</dict>
 			</dict>
 			<key>testLine()</key>
@@ -171,9 +171,9 @@
 				<key>com.apple.dt.XCTMetric_CPU.instructions_retired</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>5.5526e+06</real>
+					<real>1.7144e+06</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>19 Aug 2020 at 16:41:21</string>
+					<string>19 Aug 2020 at 20:14:16</string>
 				</dict>
 			</dict>
 			<key>testLiteralSearch()</key>
@@ -181,9 +181,9 @@
 				<key>com.apple.dt.XCTMetric_CPU.instructions_retired</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>7.227e+06</real>
+					<real>6.3992e+06</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>19 Aug 2020 at 16:41:21</string>
+					<string>19 Aug 2020 at 20:14:16</string>
 				</dict>
 			</dict>
 			<key>testNonExistentLiteralSearch()</key>
@@ -191,9 +191,9 @@
 				<key>com.apple.dt.XCTMetric_CPU.instructions_retired</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>3.7668e+06</real>
+					<real>3.4154e+06</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>19 Aug 2020 at 16:41:21</string>
+					<string>19 Aug 2020 at 20:14:16</string>
 				</dict>
 			</dict>
 			<key>testNotNewLine()</key>
@@ -201,9 +201,9 @@
 				<key>com.apple.dt.XCTMetric_CPU.instructions_retired</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>4.5843e+06</real>
+					<real>1.5535e+06</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>19 Aug 2020 at 16:41:21</string>
+					<string>19 Aug 2020 at 20:14:16</string>
 				</dict>
 			</dict>
 			<key>testOneOrMore()</key>
@@ -211,9 +211,9 @@
 				<key>com.apple.dt.XCTMetric_CPU.instructions_retired</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>2.8531e+06</real>
+					<real>9.2286e+05</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>19 Aug 2020 at 16:41:21</string>
+					<string>19 Aug 2020 at 20:14:16</string>
 				</dict>
 			</dict>
 			<key>testOptionalStringFollowedByNonOptionalString()</key>
@@ -221,9 +221,9 @@
 				<key>com.apple.dt.XCTMetric_CPU.instructions_retired</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>5.2138e+06</real>
+					<real>1.0759e+06</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>19 Aug 2020 at 16:41:21</string>
+					<string>19 Aug 2020 at 20:14:16</string>
 				</dict>
 			</dict>
 			<key>testSkipping1()</key>
@@ -231,9 +231,9 @@
 				<key>com.apple.dt.XCTMetric_CPU.instructions_retired</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>2.0053e+06</real>
+					<real>1.1965e+06</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>19 Aug 2020 at 16:41:21</string>
+					<string>19 Aug 2020 at 20:14:16</string>
 				</dict>
 			</dict>
 			<key>testUppercaseWord()</key>
@@ -241,9 +241,9 @@
 				<key>com.apple.dt.XCTMetric_CPU.instructions_retired</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>3.8446e+06</real>
+					<real>2.9068e+06</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>19 Aug 2020 at 16:41:21</string>
+					<string>19 Aug 2020 at 20:14:16</string>
 				</dict>
 			</dict>
 			<key>testWordBoundary()</key>
@@ -251,9 +251,9 @@
 				<key>com.apple.dt.XCTMetric_CPU.instructions_retired</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>6.113e+06</real>
+					<real>2.5362e+06</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>19 Aug 2020 at 16:41:21</string>
+					<string>19 Aug 2020 at 20:14:16</string>
 				</dict>
 			</dict>
 			<key>testWordBoundaryManyLanguages()</key>
@@ -261,9 +261,9 @@
 				<key>com.apple.dt.XCTMetric_CPU.instructions_retired</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>5.9374e+06</real>
+					<real>3.7748e+06</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>19 Aug 2020 at 16:41:21</string>
+					<string>19 Aug 2020 at 20:14:16</string>
 				</dict>
 			</dict>
 		</dict>
@@ -274,9 +274,9 @@
 				<key>com.apple.dt.XCTMetric_CPU.instructions_retired</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>2.4752e+06</real>
+					<real>4.1135e+05</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>19 Aug 2020 at 16:41:21</string>
+					<string>19 Aug 2020 at 20:14:16</string>
 				</dict>
 			</dict>
 			<key>testLine()</key>
@@ -284,9 +284,9 @@
 				<key>com.apple.dt.XCTMetric_CPU.instructions_retired</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>4.9969e+06</real>
+					<real>9.6233e+05</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>19 Aug 2020 at 16:41:21</string>
+					<string>19 Aug 2020 at 20:14:16</string>
 				</dict>
 			</dict>
 			<key>testLiteralSearch()</key>
@@ -294,9 +294,9 @@
 				<key>com.apple.dt.XCTMetric_CPU.instructions_retired</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>1.7787e+06</real>
+					<real>8.3321e+05</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>19 Aug 2020 at 16:41:21</string>
+					<string>19 Aug 2020 at 20:14:16</string>
 				</dict>
 			</dict>
 			<key>testNonExistentLiteralSearch()</key>
@@ -304,9 +304,9 @@
 				<key>com.apple.dt.XCTMetric_CPU.instructions_retired</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>9.9196e+05</real>
+					<real>6.0671e+05</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>19 Aug 2020 at 16:41:21</string>
+					<string>19 Aug 2020 at 20:14:16</string>
 				</dict>
 			</dict>
 			<key>testNotNewLine()</key>
@@ -314,9 +314,9 @@
 				<key>com.apple.dt.XCTMetric_CPU.instructions_retired</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>3.9867e+06</real>
+					<real>7.4556e+05</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>19 Aug 2020 at 16:41:21</string>
+					<string>19 Aug 2020 at 20:14:16</string>
 				</dict>
 			</dict>
 			<key>testOptionalStringFollowedByNonOptionalString()</key>
@@ -324,9 +324,9 @@
 				<key>com.apple.dt.XCTMetric_CPU.instructions_retired</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>5.1782e+06</real>
+					<real>8.219e+05</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>19 Aug 2020 at 16:41:21</string>
+					<string>19 Aug 2020 at 20:14:16</string>
 				</dict>
 			</dict>
 			<key>testSkipping1()</key>
@@ -334,9 +334,9 @@
 				<key>com.apple.dt.XCTMetric_CPU.instructions_retired</key>
 				<dict>
 					<key>baselineAverage</key>
-					<real>1.2982e+06</real>
+					<real>2.2521e+05</real>
 					<key>baselineIntegrationDisplayName</key>
-					<string>19 Aug 2020 at 16:41:21</string>
+					<string>19 Aug 2020 at 20:14:16</string>
 				</dict>
 			</dict>
 		</dict>

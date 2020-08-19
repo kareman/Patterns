@@ -24,6 +24,8 @@ struct VMEngine<Input: BidirectionalCollection> where Input.Element: Hashable {
 		self.instructions = instructions
 	}
 
+	@_specialize(where Input == String) // doesn't happen automatically (swiftlang-1200.0.28.1).
+	@_specialize(where Input == String.UTF8View)
 	@usableFromInline
 	func match(in input: Input, at startIndex: Input.Index) -> Parser<Input>.Match? {
 		launch(input: input, startIndex: startIndex)
