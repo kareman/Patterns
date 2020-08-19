@@ -9,6 +9,7 @@
 struct VMEngine<Input: BidirectionalCollection> where Input.Element: Hashable {
 	@usableFromInline
 	typealias Instructions = ContiguousArray<Instruction<Input>>
+	@usableFromInline
 	let instructions: Instructions
 
 	@usableFromInline
@@ -56,9 +57,13 @@ extension Parser.Match {
 extension VMEngine {
 	@usableFromInline
 	struct Thread {
+		@usableFromInline
 		var instructionIndex: Instructions.Index
+		@usableFromInline
 		var inputIndex: Input.Index
+		@usableFromInline
 		var captures: ContiguousArray<(index: Input.Index, instruction: Instructions.Index)>
+		@usableFromInline
 		var isReturnAddress: Bool = false
 
 		@usableFromInline

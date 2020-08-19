@@ -148,7 +148,7 @@ public enum Instruction<Input: BidirectionalCollection> where Input.Element: Has
 
 extension Sequence {
 	/// The offset by which these instructions will move the input index.
-	@inlinable
+	@usableFromInline
 	func movesIndexBy<P>() -> Int? where Element == Instruction<P> {
 		lazy .map { $0.movesIndexBy }.reduceIfNoNils(into: 0) { result, offset in result += offset }
 	}
