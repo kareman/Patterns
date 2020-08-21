@@ -9,6 +9,7 @@
 struct VMEngine<Input: BidirectionalCollection> where Input.Element: Hashable {
 	@usableFromInline
 	typealias Instructions = ContiguousArray<Instruction<Input>>
+	@usableFromInline
 	let instructions: Instructions
 
 	@usableFromInline
@@ -23,6 +24,8 @@ struct VMEngine<Input: BidirectionalCollection> where Input.Element: Hashable {
 		self.instructions = instructions
 	}
 
+	@_specialize(where Input == String) // doesn't happen automatically (swiftlang-1200.0.28.1).
+	@_specialize(where Input == String.UTF8View)
 	@usableFromInline
 	func match(in input: Input, at startIndex: Input.Index) -> Parser<Input>.Match? {
 		launch(input: input, startIndex: startIndex)
@@ -56,9 +59,13 @@ extension Parser.Match {
 extension VMEngine {
 	@usableFromInline
 	struct Thread {
+		@usableFromInline
 		var instructionIndex: Instructions.Index
+		@usableFromInline
 		var inputIndex: Input.Index
+		@usableFromInline
 		var captures: ContiguousArray<(index: Input.Index, instruction: Instructions.Index)>
+		@usableFromInline
 		var isReturnAddress: Bool = false
 
 		@usableFromInline

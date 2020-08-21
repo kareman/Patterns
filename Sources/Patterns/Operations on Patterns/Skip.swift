@@ -48,8 +48,10 @@ public struct Skip<Input: BidirectionalCollection>: Pattern where Input.Element:
 
 import SE0270_RangeSet
 
-extension MutableCollection where Self: RandomAccessCollection, Self: RangeReplaceableCollection, Index == Int {
+extension ContiguousArray {
 	/// Replaces all placeholder `.skip` instructions.
+	@_specialize(where Input == String, Element == Instruction<String>) // doesn't happen automatically (swiftlang-1200.0.28.1).
+	@_specialize(where Input == String.UTF8View, Element == Instruction<String.UTF8View>)
 	@usableFromInline
 	mutating func replaceSkips<Input>() where Element == Instruction<Input> {
 		// `setupSkip(at: i)` adds 1 new instruction somewhere after `ì`, so we cant loop over self.indices directly
