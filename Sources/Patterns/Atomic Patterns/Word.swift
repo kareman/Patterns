@@ -5,12 +5,15 @@
 //  Created by Kåre Morstøl on 28/06/2019.
 //
 
-public struct Word<Input: BidirectionalCollection> where Input.Element == Character {
+public struct Word {
 	/// Detects boundaries between words.
 	///
 	/// Uses rules from https://www.unicode.org/reports/tr29/#Word_Boundary_Rules .
 	public struct Boundary: Pattern {
-		public let description: String = "Word.boundary"
+		public typealias Input = String
+		public let description: String = "Word.Boundary()"
+
+		public init() {}
 
 		// TODO: Should use UnicodeScalars. And return bool.
 		@usableFromInline
@@ -75,10 +78,11 @@ public struct Word<Input: BidirectionalCollection> where Input.Element == Charac
 	}
 }
 
-extension Word where Input == String {
+extension Word {
 	/// Detects boundaries between words.
 	///
 	/// Uses rules from https://www.unicode.org/reports/tr29/#Word_Boundary_Rules .
+	@available(*, deprecated, renamed: "Boundary()")
 	public static let boundary = Boundary()
 }
 

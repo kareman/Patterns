@@ -246,7 +246,7 @@ class PatternTests: XCTestCase {
 	}
 
 	func testWordBoundary() throws {
-		let pattern = Word.boundary
+		let pattern = Word.Boundary()
 		assertParseMarkers(pattern, input: #"|I| |said| |"|hello|"|"#)
 		assertParseMarkers(pattern, input: "|this| |I| |-|3,875.08| |can't|,| |you| |letter|-|like|.| |And|?| |then|")
 	}
@@ -254,11 +254,11 @@ class PatternTests: XCTestCase {
 	func testNot() throws {
 		assertParseMarkers(!alphanumeric, input: #"I| said|,| 3|"#)
 		assertParseAll(
-			Capture(Word.boundary • !digit • alphanumeric+),
+			Capture(Word.Boundary() • !digit • alphanumeric+),
 			input: "123 abc 1ab a32b",
 			result: ["abc", "a32b"])
 		assertParseAll(
-			Word.boundary • Capture(!digit • alphanumeric+),
+			Word.Boundary() • Capture(!digit • alphanumeric+),
 			input: "123 abc 1ab a32b",
 			result: ["abc", "a32b"])
 		assertParseAll(

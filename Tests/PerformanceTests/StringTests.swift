@@ -36,17 +36,17 @@ class StringTests: XCTestCase {
 	}
 
 	func testWordBoundary() throws {
-		let pattern = try Parser(search: Word.boundary)
+		let pattern = try Parser(search: Word.Boundary())
 		try speedTest(pattern, textFraction: 16, hits: 79081)
 	}
 
 	func testWordBoundaryManyLanguages() throws {
-		let pattern = try Parser(search: Word.boundary)
+		let pattern = try Parser(search: Word.Boundary())
 		try speedTest(pattern, testFile: "Multi-language-short.txt", hits: 49801)
 	}
 
 	func testUppercaseWord() throws {
-		let pattern = try Parser(search: Word.boundary • uppercase+ • Word.boundary)
+		let pattern = try Parser(search: Word.Boundary() • uppercase+ • Word.Boundary())
 		try speedTest(pattern, textFraction: 2, hits: 3275)
 	}
 
@@ -115,7 +115,7 @@ class StringTests: XCTestCase {
 	}
 
 	func testContainsClosure() throws {
-		let pattern = try Parser(search: Word.boundary • (alphanumeric / symbol))
+		let pattern = try Parser(search: Word.Boundary() • (alphanumeric / symbol))
 		try speedTest(pattern, textFraction: 16, hits: 35643)
 	}
 }
