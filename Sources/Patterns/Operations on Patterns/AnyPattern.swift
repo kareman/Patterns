@@ -9,7 +9,7 @@
 /// Can be used to store patterns in arrays and non-generic variables.
 public struct AnyPattern<Input: BidirectionalCollection>: Pattern where Input.Element: Hashable {
 	@usableFromInline
-	let _instructions: (inout Instructions) throws -> Void
+	let _instructions: (inout ContiguousArray<Instruction<Input>>) throws -> Void
 
 	@inlinable
 	public func createInstructions(_ instructions: inout ContiguousArray<Instruction<Input>>) throws {
