@@ -42,9 +42,9 @@ class SkipTests: XCTestCase {
 
 		3
 		"""
-		assertParseAll(Line.start • Capture(Skip()) • Line.end,
+		assertParseAll(Line.Start() • Capture(Skip()) • Line.End(),
 		               input: lines, result: ["1", "2", "", "3"])
-		assertParseAll(Capture(Line.start • Skip() • Line.end),
+		assertParseAll(Capture(Line.Start() • Skip() • Line.End()),
 		               input: lines, result: ["1", "2", "", "3"])
 	}
 

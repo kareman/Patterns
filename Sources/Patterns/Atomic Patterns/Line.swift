@@ -40,7 +40,10 @@ extension String.UTF16View.Element: CharacterLike {
 /// Matches one line, not including newline characters.
 public struct Line<Input: BidirectionalCollection>: Pattern
 	where Input.Element: CharacterLike, Input.Index == String.Index {
+	@inlinable
 	public init() {}
+	@inlinable
+	public init() where Input == String {}
 
 	public var description: String { "Line()" }
 
@@ -51,9 +54,12 @@ public struct Line<Input: BidirectionalCollection>: Pattern
 
 	/// Matches the start of a line, including the start of input.
 	public struct Start: Pattern {
+		@inlinable
 		public init() {}
+		@inlinable
+		public init() where Input == String {}
 
-		public var description: String { "Line.start" }
+		public var description: String { "Line.Start()" }
 
 		@inlinable
 		func parse(_ input: Input, at index: Input.Index) -> Bool {
@@ -68,9 +74,12 @@ public struct Line<Input: BidirectionalCollection>: Pattern
 
 	/// Matches the end of a line, including the end of input.
 	public struct End: Pattern {
+		@inlinable
 		public init() {}
+		@inlinable
+		public init() where Input == String {}
 
-		public var description: String { "Line.end" }
+		public var description: String { "Line.End()" }
 
 		@inlinable
 		func parse(_ input: Input, at index: Input.Index) -> Bool {
@@ -85,6 +94,9 @@ public struct Line<Input: BidirectionalCollection>: Pattern
 }
 
 extension Line where Input == String {
+	@available(*, deprecated, renamed: "Start()")
 	public static let start = Start()
+
+	@available(*, deprecated, renamed: "End()")
 	public static let end = End()
 }

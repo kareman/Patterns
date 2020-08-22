@@ -51,7 +51,7 @@ class StringTests: XCTestCase {
 	}
 
 	func testLine() throws {
-		let pattern = try Parser(search: Line.start • Capture(Skip()) • Line.end)
+		let pattern = try Parser(search: Line.Start() • Capture(Skip()) • Line.End())
 		try speedTest(pattern, textFraction: 2, hits: 7260)
 	}
 
