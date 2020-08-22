@@ -29,7 +29,7 @@
 ///   g.skip <- Skip()
 /// }
 /// ```
-/// because in grammars the subexpressions are called, like functions, not "inlined", like Swift variables.
+/// because in grammars the subexpressions are _called_, like functions, not "_inlined_", like Swift variables.
 /// So the `Skip()` in `g.skip` can't tell what will come after it.
 public struct Skip<Input: BidirectionalCollection>: Pattern where Input.Element: Hashable {
 	public var description: String { "Skip()" }
@@ -54,20 +54,33 @@ extension ContiguousArray {
 	@_specialize(where Input == String.UTF8View, Element == Instruction<String.UTF8View>)
 	@usableFromInline
 	mutating func replaceSkips<Input>() where Element == Instruction<Input> {
-		// `setupSkip(at: i)` adds 1 new instruction somewhere after `ì`, so we cant loop over self.indices directly
+		// `setupSkip(at: i)` adds 1 new instruction somewhere after `ì`, so we cant loop over self.indices directly.
 		var i = self.startIndex
-		repeat {
+		while i < self.endIndex {
 			switch self[i] {
 			case .skip:
 				self.setupSkip(at: i)
 			default: break
 			}
 			self.formIndex(after: &i)
-		} while i < self.endIndex
+		}
 	}
 
 	/// Replaces the dummy `.skip` instruction at `skipIndex` with one that will search using the instructions
 	/// right after `skipIndex`.
+	///
+	/// In other words we look at the instructions right after the .skip and see if they can be searched for
+	/// efficiently.
+	///
+	/// Also places a .choice right after the search instruction replacing the .skip, and a corresponding .commit
+	/// somewhere after that again. So if the search succeeds, but a later instruction fails, we can start a new
+	/// search one step ahead from where the previous search succeeded.
+	/// In the sub-pattern `Skip() • "abc" • letter • Skip() • "xyz"`, if "abc" succeeds, but there is no
+	/// letter afterwards, we search for "abc" again from the "b". But if there is "abc" and another letter,
+	/// we don't search for "abc" again because the next instruction is another .skip, and if we can't find "xyz"
+	/// further on there's no point in searching for "abc" again.
+	///
+	/// See `placeSkipCommit` for more.
 	@usableFromInline
 	mutating func setupSkip<Input>(at skipIndex: Index) where Element == Instruction<Input> {
 		let afterSkip = skipIndex + 1
@@ -77,7 +90,7 @@ extension ContiguousArray {
 				input[index...].indices.first(where: { function(input, $0) })
 					?? (function(input, input.endIndex) ? input.endIndex : nil)
 			}
-			self[afterSkip] = .choice(offset: -1, atIndexOffset: 1)
+			self[afterSkip] = .choice(offset: -1, atIndexOffset: +1)
 		case .checkIndex(_, atIndexOffset: _):
 			// A `.checkIndex` will only have a non-zero offset if it has been moved by `moveMovablesForward`,
 			// and that will never move anything beyond a `.skip`.
@@ -105,6 +118,7 @@ extension ContiguousArray {
 				}
 				self[afterSkip] = .choice(offset: -1, atIndexOffset: 0)
 			} else {
+				// More than one literal, use Boyer–Moore–Horspool search.
 				let cache = SearchCache(elements)
 				self[skipIndex] = .search { input, index in
 					input.range(of: cache, from: index)?.upperBound
@@ -113,6 +127,8 @@ extension ContiguousArray {
 				self[afterSkip + 1] = .jump(offset: elements.count - 1)
 			}
 		default:
+			// Could not find instructions to search for efficiently,
+			// so we just try them and if they fail we move one step forward and try again.
 			self[skipIndex] = .choice(offset: 0, atIndexOffset: +1)
 			self.placeSkipCommit(startSearchFrom: skipIndex + 1)
 			return
@@ -120,6 +136,16 @@ extension ContiguousArray {
 		self.placeSkipCommit(startSearchFrom: skipIndex + 2)
 	}
 
+	/// Places a .commit after replacing a .skip .
+	///
+	/// Any instruction replacing a .skip will have a .choice right after it.
+	/// We place the corresponding .commit as far after it as possible.
+	/// As always we have to make sure that no pairs of corresponding .choice (or other instruction) and .commit
+	/// intersect with any other pair.
+	///
+	/// So we have to jump over any optional repetition (`¿+*` and `.repeat(range)`) and any `/` choice patterns.
+	/// All of them use the `.choice` instruction.
+	/// If we are inside any of these we put the .commit at the end of our part of the pattern.
 	@usableFromInline
 	mutating func placeSkipCommit<Input>(startSearchFrom: Index) where Element == Instruction<Input> {
 		var i = startSearchFrom
@@ -128,7 +154,7 @@ extension ContiguousArray {
 			case let .choice(_, indexOffset) where indexOffset < 0:
 				fatalError("Not implemented.")
 			case let .choice(offset, _):
-				// Follow every choice offset.
+				// We jump over this entire sub-pattern.
 				// If one step back there is a jump forwards, then it's a '/' pattern. So follow that jump too.
 				if case let .jump(jumpOffset) = self[i + offset - 1], jumpOffset > 0 {
 					i += offset - 1 + jumpOffset
@@ -140,6 +166,7 @@ extension ContiguousArray {
 			case .elementEquals, .checkElement, .checkIndex, .moveIndex, .captureStart, .captureEnd, .call, .jump:
 				i += 1
 			case .commit, .choiceEnd, .return, .match, .skip, .search, .fail:
+				// This is as far as we can go.
 				insertInstructions(.commit, at: i)
 				return
 			case .openCall:
@@ -158,7 +185,7 @@ extension ContiguousArray {
 		where Element == Instruction<Input> {
 		insert(contentsOf: newInstructions, at: location)
 		let insertedRange = location ..< (location + newInstructions.count + 1)
-		/// instruction ... location ... offsetTarget
+		// instruction ... location ... offsetTarget
 		for i in startIndex ..< insertedRange.lowerBound {
 			switch self[i] {
 			case let .call(offset) where offset > (location - i):
@@ -171,7 +198,7 @@ extension ContiguousArray {
 				break
 			}
 		}
-		/// offsetTarget ... location ... instruction
+		// offsetTarget ... location ... instruction
 		for i in insertedRange.upperBound ..< endIndex {
 			switch self[i] {
 			case let .call(offset) where offset < (location - i):

@@ -94,8 +94,8 @@ extension VMEngine {
 	@usableFromInline
 	func launch(input: Input, thread: Thread) -> Thread? {
 		var stack = ContiguousArray<Thread>()[...]
-
 		stack.append(thread)
+
 		while var thread = stack.popLast() {
 			assert(!thread.isReturnAddress, "Stack unexpectedly contains .returnAddress after fail")
 			defer { // Fail, when `break loop` is called.
@@ -147,7 +147,7 @@ extension VMEngine {
 					#if DEBUG
 					let entry = stack.popLast()
 					assert(entry != nil, "Empty stack during .commit")
-					assert(entry.map { !$0.isReturnAddress } ?? true, "Missing thread during .cancelLastSplit")
+					assert(entry.map { !$0.isReturnAddress } ?? true, "Missing thread during .commit")
 					#else
 					stack.removeLast()
 					#endif

@@ -9,6 +9,7 @@
 public protocol Pattern: CustomStringConvertible {
 	associatedtype Input: BidirectionalCollection where Input.Element: Hashable
 	typealias ParsedRange = Range<Input.Index>
+	// Ideally this should be used by all implementors, but that sometimes causes a compiler crash (Swift 5.3 beta)
 	typealias Instructions = ContiguousArray<Instruction<Input>>
 
 	/// Appends Instructions for the Parser to `instructions`.
