@@ -32,7 +32,7 @@ public struct RepeatPattern<Wrapped: Pattern>: Pattern {
 		let repeatedInstructions = try wrapped.createInstructions()
 		for _ in 0 ..< min { instructions.append(contentsOf: repeatedInstructions) }
 		if let max = max {
-			let optionalRepeatedInstructions = Instructions {
+			let optionalRepeatedInstructions = ContiguousArray<Instruction<Input>> {
 				$0.append(.choice(offset: repeatedInstructions.count + 2))
 				$0.append(contentsOf: repeatedInstructions)
 				$0.append(.commit)
