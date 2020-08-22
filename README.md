@@ -131,11 +131,11 @@ Matches any character. `!any` matches only the end of the text.
 
 Matches a single line, not including the newline characters. So `Line() • Line()` will never match anything, but `Line() • "\n" • Line()` matches 2 lines.
 
-`Line.start` matches at the beginning of the text, and after any newline characters. `Line.end` matches at the end of the text, and right before any newline characters. They both have a length of 0, which means the next pattern will start at the same position in the text.
+`Line.Start()` matches at the beginning of the text, and after any newline characters. `Line.End()` matches at the end of the text, and right before any newline characters. They both have a length of 0, which means the next pattern will start at the same position in the text.
 
-##### `Word.boundary` 
+##### `Word.Boundary()` 
 
-Matches the position right before or right after a word. Like `Line.start` and `Line.end` it also has a length of 0.
+Matches the position right before or right after a word. Like `Line.Start()` and `Line.End()` it also has a length of 0.
 
 ##### `a.repeat(...)`
 

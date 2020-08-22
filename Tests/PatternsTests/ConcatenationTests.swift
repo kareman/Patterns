@@ -74,7 +74,7 @@ class ConcatenationTests: XCTestCase {
 
 	func testRepeatOrThenEndOfLine() throws {
 		assertParseAll(
-			Capture((alphanumeric / OneOf(" "))+ • Line.end),
+			Capture((alphanumeric / OneOf(" "))+ • Line.End()),
 			input: "FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S",
 			result: ["FMA026712 TECNOAUTOMOTRIZ ATLACOMULCO S"])
 	}
@@ -99,7 +99,7 @@ class ConcatenationTests: XCTestCase {
 		cera user
 		dilled10 io
 		"""
-		let pattern = try Parser(search: Line.start • Capture())
+		let pattern = try Parser(search: Line.Start() • Capture())
 
 		let m = Array(pattern.matches(in: text))
 		XCTAssertEqual(m.map { text[$0.captures[0].range.lowerBound] }, ["a", "b", "c", "d"].map(Character.init))
@@ -116,12 +116,12 @@ class ConcatenationTests: XCTestCase {
 
 		"""
 
-		var pattern = try Parser(search: Line.end • Capture())
+		var pattern = try Parser(search: Line.End() • Capture())
 		var m = pattern.matches(in: text)
 		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].range.lowerBound] },
 		               Array(repeating: Character("\n"), count: 4))
 
-		pattern = try Parser(search: Capture() • Line.end)
+		pattern = try Parser(search: Capture() • Line.End())
 		m = pattern.matches(in: text)
 		XCTAssertEqual(m.dropLast().map { text[$0.captures[0].range.lowerBound] },
 		               Array(repeating: Character("\n"), count: 4))
@@ -138,7 +138,7 @@ class ConcatenationTests: XCTestCase {
 
 		let twoFirstWords = [["There", "was"], ["Whose", "speed"], ["She", "set"], ["In", "a"], ["And", "returned"]]
 		let pattern =
-			Line.start • Capture(name: "word", letter+)
+			Line.Start() • Capture(name: "word", letter+)
 			• " " • Capture(name: "word", letter+)
 
 		assertCaptures(pattern, input: text, result: twoFirstWords)

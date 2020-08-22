@@ -140,7 +140,7 @@ class PatternTests: XCTestCase {
 
 		let hexNumber = Capture(hexDigit+)
 		let hexRange = (hexNumber • ".." • hexNumber) / hexNumber
-		let rangeAndProperty = Line.start • hexRange • Skip() • "; " • Capture(Skip()) • " "
+		let rangeAndProperty = Line.Start() • hexRange • Skip() • "; " • Capture(Skip()) • " "
 
 		assertCaptures(rangeAndProperty, input: text,
 		               result: [["0780", "07A5", "Thaana"], ["07B1", "Thaana"]])
@@ -153,29 +153,29 @@ class PatternTests: XCTestCase {
 		line 3
 		line 4
 		"""
-		let pattern = Line.start
+		let pattern = Line.Start()
 		assertParseAll(pattern, input: "", result: "", count: 1)
 		assertParseAll(pattern, input: "\n", count: 2)
 		assertParseAll(pattern, input: text, result: "", count: 4)
 		assertParseAll(
-			Line.start • Capture(Skip()) • " ",
+			Line.Start() • Capture(Skip()) • " ",
 			input: text, result: "line", count: 4)
 		assertParseAll(
-			Capture(Line.start • "line"),
+			Capture(Line.Start() • "line"),
 			input: text, result: "line", count: 4)
 		assertParseAll(
-			Capture(digit • Skip() • Line.start • "l"),
+			Capture(digit • Skip() • Line.Start() • "l"),
 			input: text, result: ["1\nl", "2\nl", "3\nl"])
 
 		/* TODO: Implement?
 		 XCTAssertThrowsError(Line.start • Line.start)
 		 XCTAssertThrowsError(Line.start • Capture(Line.start))
 		 */
-		XCTAssertNoThrow(Line.start • Skip() • Line.start)
+		XCTAssertNoThrow(Line.Start() • Skip() • Line.Start())
 	}
 
 	func testLineEnd() throws {
-		let pattern = Line.end
+		let pattern = Line.End()
 		assertParseAll(pattern, input: "", result: "", count: 1)
 		assertParseAll(pattern, input: "\n", count: 2)
 		assertParseAll(pattern, input: "\n\n", count: 3)
@@ -188,22 +188,22 @@ class PatternTests: XCTestCase {
 		"""
 		assertParseAll(pattern, input: text, count: 4)
 		assertParseAll(
-			" " • Capture(Skip()) • Line.end,
+			" " • Capture(Skip()) • Line.End(),
 			input: text, result: ["1", "2", "3", "4"])
 		assertParseAll(
-			Capture(digit • Line.end),
+			Capture(digit • Line.End()),
 			input: text, result: ["1", "2", "3", "4"])
 		assertParseAll(
-			Capture(digit • Line.end • Skip() • "l"),
+			Capture(digit • Line.End() • Skip() • "l"),
 			input: text, result: ["1\nl", "2\nl", "3\nl"])
 
 		// TODO: Implement?
 		// XCTAssertThrowsError(Line.end • Line.end)
 		// XCTAssertThrowsError(Line.end • Capture(Line.end))
 
-		XCTAssertNoThrow(try Parser(search: Line.end • Skip() • Line.end))
+		XCTAssertNoThrow(try Parser(search: Line.End() • Skip() • Line.End()))
 
-		assertParseAll(Line.end, input: "\n", count: 2)
+		assertParseAll(Line.End(), input: "\n", count: 2)
 	}
 
 	func testLineEndUTF8_16_UnicodeScalars() throws {
@@ -246,7 +246,7 @@ class PatternTests: XCTestCase {
 	}
 
 	func testWordBoundary() throws {
-		let pattern = Word.boundary
+		let pattern = Word.Boundary()
 		assertParseMarkers(pattern, input: #"|I| |said| |"|hello|"|"#)
 		assertParseMarkers(pattern, input: "|this| |I| |-|3,875.08| |can't|,| |you| |letter|-|like|.| |And|?| |then|")
 	}
@@ -254,11 +254,11 @@ class PatternTests: XCTestCase {
 	func testNot() throws {
 		assertParseMarkers(!alphanumeric, input: #"I| said|,| 3|"#)
 		assertParseAll(
-			Capture(Word.boundary • !digit • alphanumeric+),
+			Capture(Word.Boundary() • !digit • alphanumeric+),
 			input: "123 abc 1ab a32b",
 			result: ["abc", "a32b"])
 		assertParseAll(
-			Word.boundary • Capture(!digit • alphanumeric+),
+			Word.Boundary() • Capture(!digit • alphanumeric+),
 			input: "123 abc 1ab a32b",
 			result: ["abc", "a32b"])
 		assertParseAll(
