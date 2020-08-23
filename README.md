@@ -15,7 +15,7 @@ For general information about PEGs, see [the original paper](https://dl.acm.org/
 
 ![Example of using Patterns in a playground](Playground-screenshot.png)
 
-To try out Patterns in a playground, open Playground/Playground.xcworkspace in Xcode.
+To try out Patterns in a playground, open Playground/Playground.xcworkspace in Xcode (does not work in Xcode 12 beta 5 or earlier).
 
 ### Note
 
@@ -219,7 +219,7 @@ Add this to your `Package.swift` file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/kareman/Patterns.git", .branch("master")),
+    .package(url: "https://github.com/kareman/Patterns.git", from: "0.1.0"),
 ]
 ```
 
@@ -227,7 +227,7 @@ or choose “Add Package Dependency” from within Xcode.
 
 ## Implementation
 
-Patterns is implemented using a virtual parsing machine, similar to how [LPEG](http://www.inf.puc-rio.br/~roberto/lpeg/) is [implemented](http://www.inf.puc-rio.br/~roberto/docs/peg.pdf). See also the `backtrackingvm` function described [here](https://swtch.com/~rsc/regexp/regexp2.html).
+Patterns is implemented using a virtual parsing machine, similar to how [LPEG](http://www.inf.puc-rio.br/~roberto/lpeg/) is [implemented](http://www.inf.puc-rio.br/~roberto/docs/peg.pdf), and the `backtrackingvm` function described [here](https://swtch.com/~rsc/regexp/regexp2.html).
 
 ## Contributing
 
