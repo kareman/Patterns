@@ -10,6 +10,9 @@ struct VMEngine<Input: BidirectionalCollection> where Input.Element: Hashable {
 	@usableFromInline
 	typealias Instructions = ContiguousArray<Instruction<Input>>
 	@usableFromInline
+	typealias Captures = ContiguousArray<(index: Input.Index,
+	                                      instruction: VMEngine<Input>.Instructions.Index)>.SubSequence
+	@usableFromInline
 	let instructions: Instructions
 
 	@usableFromInline
@@ -34,25 +37,27 @@ struct VMEngine<Input: BidirectionalCollection> where Input.Element: Hashable {
 
 extension Parser.Match {
 	@usableFromInline
-	init(_ thread: VMEngine<Input>.Thread, instructions: VMEngine<Input>.Instructions) {
-		var captures = [(name: String?, range: Range<Input.Index>)]()
-		captures.reserveCapacity(thread.captures.count / 2)
+	init(_ thread: VMEngine<Input>.Thread,
+	     instructions: VMEngine<Input>.Instructions,
+	     captures: VMEngine<Input>.Captures) {
+		var newCaptures = [(name: String?, range: Range<Input.Index>)]()
+		newCaptures.reserveCapacity(captures.count / 2)
 		var captureBeginnings = [(name: String?, start: Input.Index)]()
 		captureBeginnings.reserveCapacity(captures.capacity)
-		for capture in thread.captures {
+		for capture in captures {
 			switch instructions[capture.instruction] {
 			case let .captureStart(name, _):
 				captureBeginnings.append((name, capture.index))
 			case .captureEnd:
 				let beginning = captureBeginnings.removeLast()
-				captures.append((name: beginning.name, range: beginning.start ..< capture.index))
+				newCaptures.append((name: beginning.name, range: beginning.start ..< capture.index))
 			default:
 				fatalError("Captured wrong instructions.")
 			}
 		}
 		assert(captureBeginnings.isEmpty)
 		self.endIndex = thread.inputIndex
-		self.captures = captures
+		self.captures = newCaptures
 	}
 }
 
@@ -64,7 +69,7 @@ extension VMEngine {
 		@usableFromInline
 		var inputIndex: Input.Index
 		@usableFromInline
-		var captures: ContiguousArray<(index: Input.Index, instruction: Instructions.Index)>
+		var capturesEndIndex: Captures.Index
 		@usableFromInline
 		var isReturnAddress: Bool = false
 
@@ -72,32 +77,28 @@ extension VMEngine {
 		init(startAt instructionIndex: Int, withDataFrom other: Thread) {
 			self.instructionIndex = instructionIndex
 			self.inputIndex = other.inputIndex
-			self.captures = other.captures
+			self.capturesEndIndex = other.capturesEndIndex
 		}
 
 		@usableFromInline
 		init(instructionIndex: Instructions.Index, inputIndex: Input.Index) {
 			self.instructionIndex = instructionIndex
 			self.inputIndex = inputIndex
-			self.captures = []
+			self.capturesEndIndex = 0
 		}
 	}
 
 	@usableFromInline
 	func launch(input: Input, startIndex: Input.Index? = nil) -> Parser<Input>.Match? {
 		// Skip the first instruction, which is always '.fail'.
-		let thread = Thread(instructionIndex: instructions.startIndex + 1, inputIndex: startIndex ?? input.startIndex)
-		return launch(input: input, thread: thread)
-			.map { Parser.Match($0, instructions: instructions) }
-	}
-
-	@usableFromInline
-	func launch(input: Input, thread: Thread) -> Thread? {
 		var stack = ContiguousArray<Thread>()[...]
-		stack.append(thread)
+		stack.append(
+			Thread(instructionIndex: instructions.startIndex + 1, inputIndex: startIndex ?? input.startIndex))
+		var captures = Captures()
 
 		while var thread = stack.popLast() {
 			assert(!thread.isReturnAddress, "Stack unexpectedly contains .returnAddress after fail")
+			captures.removeSuffix(from: thread.capturesEndIndex)
 			defer { // Fail, when `break loop` is called.
 				stack.removeSuffix(where: { $0.isReturnAddress })
 			}
@@ -125,13 +126,10 @@ extension VMEngine {
 					thread.instructionIndex += 1
 				case let .jump(distance):
 					thread.instructionIndex += distance
-				case let .captureStart(_, offset):
+				case let .captureStart(_, offset),
+				     let .captureEnd(offset):
 					let index = input.index(thread.inputIndex, offsetBy: offset)
-					thread.captures.append((index: index, instruction: thread.instructionIndex))
-					thread.instructionIndex += 1
-				case let .captureEnd(offset):
-					let index = input.index(thread.inputIndex, offsetBy: offset)
-					thread.captures.append((index: index, instruction: thread.instructionIndex))
+					captures.append((index: index, instruction: thread.instructionIndex))
 					thread.instructionIndex += 1
 				case let .choice(offset, atIndex):
 					var newThread = Thread(startAt: thread.instructionIndex + offset, withDataFrom: thread)
@@ -139,6 +137,7 @@ extension VMEngine {
 						// we must always add to the stack here, so send it to an instruction that is always `.fail`
 						newThread.instructionIndex = instructions.startIndex
 					}
+					newThread.capturesEndIndex = captures.endIndex
 					stack.append(newThread)
 					thread.instructionIndex += 1
 				case .choiceEnd:
@@ -156,7 +155,6 @@ extension VMEngine {
 					var returnAddress = thread
 					returnAddress.instructionIndex += 1
 					returnAddress.isReturnAddress = true
-					returnAddress.captures.removeAll()
 					stack.append(returnAddress)
 					thread.instructionIndex += offset
 				case .return:
@@ -166,7 +164,7 @@ extension VMEngine {
 				case .fail:
 					break loop
 				case .match:
-					return thread
+					return Parser.Match(thread, instructions: instructions, captures: captures)
 				case .openCall:
 					fatalError("`.openCall` should be removed by Grammar.")
 				case .skip:

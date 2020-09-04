@@ -173,6 +173,12 @@ extension RangeReplaceableCollection where SubSequence == Self, Self: Bidirectio
 		}
 		removeAll()
 	}
+
+	@inlinable
+	mutating func removeSuffix(from index: Index) {
+		guard index < endIndex else { return }
+		removeLast(distance(from: index, to: endIndex))
+	}
 }
 
 extension RangeReplaceableCollection {
