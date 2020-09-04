@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Patterns
+@testable import Patterns
 import XCTest
 
 extension Array where Element: Hashable {
@@ -158,6 +158,24 @@ extension StringProtocol where Index == String.Index {
 			}
 			result.insert(marker, at: result.index(after: index))
 		}
+		return result
+	}
+}
+
+func debugVM<Input, C: BidirectionalCollection>(_ instructions: C, thread: VMEngine<Input>.Thread, input: Input)
+	where C.Index == Int, Input: StringProtocol, Input: RangeReplaceableCollection {
+	for i in instructions.indices {
+		print(i == thread.instructionIndex ? ">" : " ", terminator: "")
+		print("\(i)".padding(toLength: 2, withPad: " ", startingAt: 0), instructions[i])
+	}
+	print(input.showIndex(thread.inputIndex))
+	print()
+}
+
+extension StringProtocol where Self: RangeReplaceableCollection {
+	func showIndex(_ index: Index) -> Self {
+		var result = self
+		result.insert("_", at: index)
 		return result
 	}
 }
