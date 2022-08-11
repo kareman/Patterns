@@ -13,14 +13,6 @@ Patterns is a Swift library for Parser Expression Grammars (PEGs). It can be use
 
 For general information about PEGs, see [the original paper](https://dl.acm.org/doi/10.1145/982962.964011) or [Wikipedia](https://en.wikipedia.org/wiki/Parsing_expression_grammar).
 
-![Example of using Patterns in a playground](Playground-screenshot.png)
-
-To try out Patterns in a playground, open Playground/Playground.xcworkspace in Xcode (does not work in Xcode 12 beta 5 or earlier).
-
-### Note
-
-Patterns requires Swift 5.3, which is currently in beta. If using Xcode, version 12 (also in beta) is required. 
-
 ## Example
 
 ```swift
